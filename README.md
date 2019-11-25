@@ -2,13 +2,14 @@ Lab Note
 ========
 
 Laboratory notebook of lab 404.
+Property of A 
 
 
 ## Structure of lab notes
-In this notebook using Markdown markup.
+In this notebook using Markdown markup for text notes and CSV sheets format for storing reagents compositions.
 
 
 There are three main directories:
-1. Solutions (composition of reagents)
+1. Notes (current working notes in chronological order)
 2. Protocols (description of protocols)
-3. Notes (current working notes in chronological order)
+3. Solutions (composition of reagents)
