@@ -2,7 +2,7 @@ Lab Note
 ========
 
 Laboratory notebook of lab 404.
-Property of A 
+Property of I, A & B.
 
 
 ## Structure of lab notes
