@@ -1,5 +1,5 @@
-chemical,Concentration,MW (g/mol),Stock Solution,vol
-a,1 mM,1,solid,1 mg
-b,1 uM,1,1 mM,1 ul
+Chemical,ID,Concentration,MW (g/mol),Stock Solution,vol
+a,Signa,1 mM,1,solid,1 mg
+b,Sigma,1 uM,1,1 mM,1 ul
 ,,,,
-Note: store at +4 C,,,,
+Note: store at +4 C,,,,,
