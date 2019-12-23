@@ -17,7 +17,7 @@ There are three main directories:
 
 ## Projects
 Contain individual directories for each project.
-Each project folders must contain head file with detail description of project and individual folders for daily notes and results files.
+Each project folders must have unique tag and year in name and contain head file with detail description of project and individual folders for daily notes and results files.
 
 ## Protocols
 Descriptions of standard protocols for laboratory manipulations. Presence of detailed protocol will simplify writing of future work notes (just insert reference to standard protocol).
