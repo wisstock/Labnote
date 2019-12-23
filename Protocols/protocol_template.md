@@ -10,4 +10,8 @@ _Note: use italic for note to current step of the protocol_
 
 **Warning: use bold to highlight important comments or conditions to current step of the protocol**
 
+---
+
 2. Second step
+
+---
