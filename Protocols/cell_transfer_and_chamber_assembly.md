@@ -1,4 +1,6 @@
-Transfer neuronal cell culture to work solution & sample chamber assembly
+Transfer neuronal cell culture to work solution
+===============================================
+& sample chamber assembly
 =========================================================================
 
 
