@@ -21,6 +21,6 @@ Transfer neuronal cell culture to work solution & sample chamber assembly
 
 	1.4. Put tools and equipment on BSC
 
-	1.5. Start BSC sterilization (15 min UV) **Warning: DO NOT stare at UV light even trough the glass)
+	1.5. Start BSC sterilization (15 min UV) **Warning: DO NOT stare at UV light even trough the glass**)
 
 	1.6. 
