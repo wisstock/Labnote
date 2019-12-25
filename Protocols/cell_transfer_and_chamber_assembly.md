@@ -1,6 +1,4 @@
-Transfer neuronal cell culture to work solution
-===============================================
-& sample chamber assembly
+Transfer neuronal cell culture to work solution & sample chamber assembly
 =========================================================================
 
 
@@ -26,6 +24,9 @@ Transfer neuronal cell culture to work solution
 1.4. Put tools and equipment on BSC
     
 1.5. Start BSC sterilization by 15-20 min UV
-  **Warning: DO NOT stare at UV light even trough the glass**
+
+**Warning: DO NOT stare at UV light even trough the glass**
     
-1.6. 
+1.6. Open observe door of the CO2-incubator to choosing multidish with appropriate cultivations term
+
+1.7. 
