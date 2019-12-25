@@ -4,9 +4,13 @@ Transfer neuronal cell culture to work solution & sample chamber assembly
 
 ## Protocol:
 1. Preparation
+
 	1.1. Washing small petri dish (30 mm) for cover glass in distillated water twice
+
 	1.2. Clean workspace of the tissue culture hood using 70% ethanol in sprayer
+
 	1.3. Check for required equipment (table below):
+	
 | Tool       | Description                  | Note                        |
 |------------|------------------------------|-----------------------------|
 | Pipette    | 1 ml                         |                             |
