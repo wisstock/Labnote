@@ -23,10 +23,13 @@ Transfer neuronal cell culture to work solution & sample chamber assembly
 
 1.4. Put tools and equipment on BSC
     
-1.5. Start BSC sterilization by 15-20 min UV
+1.5. Start BSC sterilization by 15-20 minI recommend that you store all updates in reagents and protocols folders in **master** branch and personal project records in separate branch (ex. gr. **researcher_name** branch).
+ UV
 
 **Warning: DO NOT stare at UV light even trough the glass**
-    
-1.6. Open observe door of the CO2-incubator to choosing multidish with appropriate cultivations term
 
-1.7. 
+### 2. Taking a cover glasses
+    
+2.1. Open observe door of the CO2-incubator to choosing multidish with appropriate cultivations term
+
+2.2. 

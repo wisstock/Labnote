@@ -6,7 +6,14 @@ Property of I, A & B.
 
 
 ## Structure of lab notes
-In this notebook using Markdown markup for text notes and CSV sheets format for storing reagents compositions.
+In this notebook using Markdown markup for text notes and CSV sheets format for storing reagents compositions. I recommend that you store all updates in reagents and protocols folders in **master** branch and personal project records in separate branch (ex. gr. **researcher_name** branch). And separate branches require independent repositories in local machine. Main **git** commands that you may needed for work are present below, enjoy.
+
+
+### GitHub cheatsheet
+1. Clone **master** from GitHub repo: '''git clone https://github.com/wisstock/Labnote.git'''
+2. Create personal branch and switch to it: '''git clone Labnote Labnote_researcher_name'''
+3. 
+
 
 
 There are three main directories:
