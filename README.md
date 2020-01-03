@@ -10,8 +10,8 @@ In this notebook using Markdown markup for text notes and CSV sheets format for 
 
 
 ### GitHub cheatsheet
-1. Clone **master** from GitHub repo: 'git clone https://github.com/wisstock/Labnote.git'
-2. Create personal branch and switch to it: 'git clone Labnote Labnote_researcher_name'
+1. Clone **master** from GitHub repo: `git clone https://github.com/wisstock/Labnote.git`
+2. Create personal branch and switch to it: `git clone Labnote Labnote_researcher_name`
 3. 
 
 
