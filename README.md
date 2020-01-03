@@ -46,9 +46,7 @@ Main **git** commands that you may needed for work are present below, enjoy.
 5. For saving changes in reagents or protocols folder in `master` branch follow next steps:
 ```
 git add --all
-
 git commit -m "commit massange"
-
 git push origin master
 
 ```
