@@ -44,8 +44,11 @@ Main **git** commands that you may needed for work are present below, enjoy.
 3. Create personal branch and switch to it: `git branch researcher_name`
 4. For editing reagents or protocols go to **Labnote** folder and switch to `master` branch: `git checkout master`
 5. For saving changes in reagents or protocols folder in `master` branch follow next steps:
-...```
-...git add --all
-...git commit -m "commit massange"
-...git push origin master
-...```
+```
+git add --all
+
+git commit -m "commit massange"
+
+git push origin master
+
+```
