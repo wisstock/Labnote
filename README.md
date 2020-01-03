@@ -43,7 +43,7 @@ Main **git** commands that you may needed for work are present below, enjoy.
 - Clone repo for personal use `git clone Labnote Labnote_researcher_name`
 - Create personal branch and switch to it: `git branch researcher_name`
 
-
+&nbsp
 
 - For editing reagents or protocols go to **Labnote** folder and switch to `master` branch: `git checkout master`
 - For saving changes in Reagents or Protocols folder in `master` branch follow next steps (**Warning: use master for Reagents and Protocols only, not for personal records and push updates of this folders from Labnote repo only!**):
@@ -53,7 +53,7 @@ git commit -m "commit message"
 git push origin master
 ```
 
-
+&nbsp
 
 - For editing projects records go to **Labnote_researcher_name** and switch to `researcher_name` branch:
 ```
