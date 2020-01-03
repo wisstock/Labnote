@@ -39,14 +39,26 @@ Data storing in CSV table format and have next columns:
 Main **git** commands that you may needed for work are present below, enjoy.
 
 
-1. Clone **master** from GitHub repo: `git clone https://github.com/wisstock/Labnote.git`
-2. Clone repo for personal use `git clone Labnote Labnote_researcher_name`
-3. Create personal branch and switch to it: `git branch researcher_name`
-4. For editing reagents or protocols go to **Labnote** folder and switch to `master` branch: `git checkout master`
-5. For saving changes in reagents or protocols folder in `master` branch follow next steps:
+- Clone `master` from GitHub repo: `git clone https://github.com/wisstock/Labnote.git`
+- Clone repo for personal use `git clone Labnote Labnote_researcher_name`
+- Create personal branch and switch to it: `git branch researcher_name`
+
+- For editing reagents or protocols go to **Labnote** folder and switch to `master` branch: `git checkout master`
+- For saving changes in Reagents or Protocols folder in `master` branch follow next steps (**Warning: use master for Reagents and Protocols only, not for personal records!**):
 ```
 git add --all
-git commit -m "commit massange"
+git commit -m "commit message"
 git push origin master
+```
 
+- For editing projects records go to **Labnote_researcher_name** and switch to `researcher_name` branch: `git checkout researcher_name`
+- For saving changes in projects records follow next steps:
+```
+git add --all
+git commit -m "commit message"
+git puch origin researcher_name
+```
+- Sync you personal repo **Labnote_researcher_name** with update of Reagents and Protocols from `master` branch:
+```
+git merge master
 ```
