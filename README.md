@@ -34,10 +34,11 @@ Data storing in CSV table format and have next columns:
 
 ---
 
+#### GitHub cheatsheet
+
 Main **git** commands that you may needed for work are present below, enjoy.
 
 
-### GitHub cheatsheet
 1. Clone **master** from GitHub repo: `git clone https://github.com/wisstock/Labnote.git`
 2. Create personal branch and switch to it: `git checkout -b researcher_name`
 3. `git clone Labnote Labnote_researcher_name`
