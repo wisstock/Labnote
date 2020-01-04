@@ -16,15 +16,14 @@ Transfer neuronal cell culture to work solution & sample chamber assembly
 |------------|------------------------------|-----------------------------|
 | Pipette    | 1 ml                         |                             |
 | Tips       | 1 ml                         |                             |
-| Tweezers   | 89                           |                             |
+| Tweezers   |                              |                             |
 | Ethanol    | 96%                          |  for tweezers sterilization |
 | Petri dish | D=30 mm, previosly cleaned   |                             |
 
 
 1.4. Put tools and equipment on BSC
     
-1.5. Start BSC sterilization by 15-20 minI recommend that you store all updates in reagents and protocols folders in **master** branch and personal project records in separate branch (ex. gr. **researcher_name** branch).
- UV
+1.5. Start BSC sterilization by 15-20 min UV
 
 **Warning: DO NOT stare at UV light even trough the glass**
 
