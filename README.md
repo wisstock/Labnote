@@ -1,7 +1,7 @@
 Lab Note
 ========
 
-Laboratory notebook of lab 404.
+Laboratory notebook of lab 404, Department of Molecular biophysics, Bogomoletz Institute of Physiology.
 Property of I, A & B.
 
 

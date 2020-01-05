@@ -1,9 +1,12 @@
 Transfer neuronal cell culture to work solution & sample chamber assembly
 =========================================================================
 
+Protocol for preparing the hippocampal neurons cell culture to the electrophysiology experiments.
+
+Borys Olifirov, 2020
 
 ## Protocol:
-#### 1. Preparation
+### 1. Preparation
 
 1.1. Prepare aliquot of a Outside Solution what qualified for your experiment and add glucose (Mr = 180.2 g/mol) to concentration 10 mM and 
 warm the solution to room temperature
@@ -21,7 +24,7 @@ warm the solution to room temperature
 | Tips       | 1 ml                         |                                             |
 | Tweezers   |                              |                                             |
 | Ethanol    | 96%                          | for tweezers sterilization                  |
-| Petri dish | D=30 mm                      | cleaned using distilled water twice         |
+| Petri dish | D=30 mm                      | twice rinse with distilled water            |
 
 
 1.4. Put tools and equipment on BSC
@@ -31,25 +34,34 @@ warm the solution to room temperature
 **Warning: DO NOT stare at UV light even trough the glass**
 
 
-#### 2. Cover glasses transfer
+### 2. Cover glasses transfer
     
 2.1. Take 24-well plate from CO2-incubator and choose the well for next preparation using inverted microscope
 
-*Warning*
+**Warning: **
 
 2.2. 
 
 
-#### 3. Osmolarity transfer
+### 3. Osmolarity transfer
 
 3.1. Add 3 ul of DL-AP5 Stock Solution (S.S.) to the dish with cover glass and gently mix contents
 
 *Note: DL-AP5 is the NMDA-channels antagonist. It increases cell survivance by depressing spontaneous neuronal activity*
 
-3.2. Replace a culture medium to the Outside Solution step by step to decrease osmotic shock. The sequence for replacing the solution is in the table below:
+3.2. Replace a culture medium to the Outside Solution step by step to decrease osmotic shock:
 
 |  remove vol.  |  add vol.  |  Incubation time  |
 |---------------|------------|-------------------|
 |      -        |  500 ul    |  10 min           | 
 |  500 ul       |  700 ul    |  10 min           |
 |  700 ul       |  1 ml      |  10 min           |
+
+*Note: after the last step of the solution transfer, cells can stay at the dish for long time,  just replace ~1 ml of Outside Solution every 40 min - 1 hour*
+
+
+### 4. Sample chamber assembly
+
+4.1. Rinse parts of the chamber with distilled water wipe wipe their dry
+
+4.2. silicone grease
