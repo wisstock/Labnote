@@ -46,7 +46,7 @@ Main **git** commands that you may needed for work are present below, enjoy.
 &nbsp;
 
 - For editing reagents or protocols go to **Labnote** folder and switch to `master` branch: `git checkout master`
-- For saving changes in Reagents or Protocols folder in `master` branch follow next steps (**Warning: use master for Reagents and Protocols only, not for personal records and push updates of this folders from Labnote repo only!**):
+- For saving changes in Reagents or Protocols folder in `master` branch follow next steps (**Warning: DO NOT use master branch or Labnote repo for personal records, for Reagents and/or Protocols only!**):
 ```
 git add --all
 git commit -m "commit message"
