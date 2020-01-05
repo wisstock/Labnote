@@ -27,7 +27,11 @@ Transfer neuronal cell culture to work solution & sample chamber assembly
 
 **Warning: DO NOT stare at UV light even trough the glass**
 
-### 2. Taking a cover glasses
+1.6. Prepare aliquot of Outside Solution what  qualified for your experiment and add glucose to concentration 10 mM
+
+*Note: for an experiment lasting 5-6 hours approximately and one sample chamber volume of ~2 ml, 10 ml (18 mg of glucose) of Outside Solution will be enough*
+
+#### 2. Taking a cover glasses
     
 2.1. Open observe door of the CO2-incubator to choosing multidish with appropriate cultivations term
 
