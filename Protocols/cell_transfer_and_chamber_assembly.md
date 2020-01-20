@@ -13,7 +13,7 @@ warm the solution to room temperature
 
 *Note: for an experiment lasting 5-6 hours and one sample chamber volume of ~2 ml, 10 ml (18 mg of glucose) of Outside Solution will be enough*
 
-1.2. Clean workspace of the Biological Safety Cabinet (BSC) using 70% ethanol in sprayer
+1.2. Clean the Biological Safety Cabinet (BSC) work surface using 70% ethanol in sprayer
 
 1.3. Check for required equipment (table below):
 
@@ -22,9 +22,10 @@ warm the solution to room temperature
 |------------|------------------------------|---------------------------------------------|
 | Pipette    | 1 ml                         |                                             |
 | Tips       | 1 ml                         |                                             |
+| Petri dish | D=30 mm                      | rinse with distilled water twice            |
 | Tweezers   |                              |                                             |
 | Ethanol    | 96%                          | for tweezers sterilization                  |
-| Petri dish | D=30 mm                      | twice rinse with distilled water            |
+| Lighter    |                              | for ethanol burning                         |
 
 
 1.4. Put tools and equipment on BSC
@@ -36,18 +37,35 @@ warm the solution to room temperature
 
 ### 2. Cover glasses transfer
     
-2.1. Take 24-well plate from CO2-incubator and choose the well for next preparation using inverted microscope
+2.1. Take 24-well culture plate from CO2-incubator and choose the well for preparation using inverted microscope
 
-**Warning: **
+2.2. Put culture plate to the BSC work surface
 
-2.2. 
+2.3. Sterilize tweezers using 96% ethanol: dip tweezers tip into alcohol, burning it and wait until it goes out. Put tweezers without touching it tip with the work surface.
 
+**Warning: DO NOT dip burning tweezers in flac with ethanol! If ethanol in the flac ignites, just cover the throat of the flac with a cap**
+
+2.4. Open the culture plate and transfer 500 ul medium from the selected well to the Petri dish
+
+2.5. Grab the cover glass over the edge with tweezers and transfer it to Petri dish
+
+**Warning: DO NOT mix sides of the cover glass**
+
+*Note:  be careful don't damage the cell monolayer*
+
+2.6. Transfer else 500 ul medium to the Petri dish
+
+2.7. Close the culture plate and back it to the CO2-incubator
+
+2.8. Sterilize tweezers again and put all equipments in its place
+
+2.9. At the end clean the BSC work surface using 70% ethanol and don't forget turn off the BSC
 
 ### 3. Osmolarity transfer
 
-3.1. Add 3 ul of DL-AP5 Stock Solution (S.S.) to the dish with cover glass and gently mix contents
+3.1. Add 3 ul of DL-AP5 Stock Solution (70 mM S.S.) to the dish with cover glass and gently mix contents
 
-*Note: DL-AP5 is the NMDA-channels antagonist. It increases cell survivance by depressing spontaneous neuronal activity*
+*Note: DL-AP5 is the NMDA-channels antagonist, used for decreasing excitotoxicity*
 
 3.2. Replace a culture medium to the Outside Solution step by step to decrease osmotic shock:
 
@@ -64,4 +82,28 @@ warm the solution to room temperature
 
 4.1. Rinse parts of the chamber with distilled water wipe wipe their dry
 
-4.2. silicone grease
+4.2. Apply narrow band of the silicone grease around top side of the platform hole and bottom side of the bath hole
+
+*Note: use for this manipulation tiny brush or toothpick and make sure that silicone band is smooth and unbreakable, it's important for hermetic state of the chamber*
+
+**Warning: points below are special important, DO IT quickly and accurately, cell survival depends on it**
+
+4.3. By using tweezers get the cover glass from Petri dish and put it on top of the platform hole. Glass should be 
+right in the center of the hole
+
+4.4. Apply ~ 0.5 ml Outside Solution to the surface of cover glass
+
+4.5. Install bath to the platform, move to the centre sliding clamps and tighten the screws
+
+4.6. Add ~ 1.5 ml Outsde solution to the bath and replace it after ~ 2 min
+
+*Note: during stress cells release large amounts of neurotransmitters and calcium and we replace Outside Solution for decreasing excitotoxicity influences*
+
+4.7. Replace Outside Solution every 40 min - 1 h and you cells will be alive estimate 5-6 h
+
+*Note: optimal temperature for physiological experiments with cell culture is 18-25 oC*
+
+
+### 5. Preparing Internal Solution aliquot
+
+5.1. 
