@@ -102,8 +102,3 @@ right in the center of the hole
 4.7. Replace Outside Solution every 40 min - 1 h and you cells will be alive estimate 5-6 h
 
 *Note: optimal temperature for physiological experiments with cell culture is 18-25 oC*
-
-
-### 5. Preparing Internal Solution aliquot
-
-5.1. 
