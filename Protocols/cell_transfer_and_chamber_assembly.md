@@ -80,25 +80,25 @@ warm the solution to room temperature
 
 ### 4. Sample chamber assembly
 
-4.1. Rinse parts of the chamber with distilled water wipe wipe their dry
+	4.1. Rinse parts of the chamber with distilled water wipe wipe their dry
 
-4.2. Apply narrow band of the silicone grease around top side of the platform hole and bottom side of the bath hole
+	4.2. Apply narrow band of the silicone grease around top side of the platform hole and bottom side of the bath hole
 
 *Note: use for this manipulation tiny brush or toothpick and make sure that silicone band is smooth and unbreakable, it's important for hermetic state of the chamber*
 
 **Warning: points below are special important, DO IT quickly and accurately, cell survival depends on it**
 
-4.3. By using tweezers get the cover glass from Petri dish and put it on top of the platform hole. Glass should be 
+	4.3. By using tweezers get the cover glass from Petri dish and put it on top of the platform hole. Glass should be 
 right in the center of the hole
 
-4.4. Apply ~ 0.5 ml Outside Solution to the surface of cover glass
+	4.4. Apply ~ 0.5 ml Outside Solution to the surface of cover glass
 
-4.5. Install bath to the platform, move to the centre sliding clamps and tighten the screws
+	4.5. Install bath to the platform, move to the centre sliding clamps and tighten the screws
 
-4.6. Add ~ 1.5 ml Outsde solution to the bath and replace it after ~ 2 min
+	4.6. Add ~ 1.5 ml Outsde solution to the bath and replace it after ~ 2 min
 
 *Note: during stress cells release large amounts of neurotransmitters and calcium and we replace Outside Solution for decreasing excitotoxicity influences*
 
-4.7. Replace Outside Solution every 40 min - 1 h and you cells will be alive estimate 5-6 h
+	4.7. Replace Outside Solution every 40 min - 1 h and you cells will be alive estimate 5-6 h
 
 *Note: optimal temperature for physiological experiments with cell culture is 18-25 oC*
