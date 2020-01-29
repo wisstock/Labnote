@@ -37,7 +37,7 @@ warm the solution to room temperature
 
 ### 2. Cover glasses transfer
     
-2.1. Take 24-well culture plate from CO2-incubator and choose the well for preparation using inverted microscope
+2.1. Take 12-well culture plate from CO2-incubator and choose the well for preparation using inverted microscope
 
 2.2. Put culture plate to the BSC work surface
 
@@ -45,15 +45,15 @@ warm the solution to room temperature
 
 **Warning: DO NOT dip burning tweezers in flac with ethanol! If ethanol in the flac ignites, just cover the throat of the flac with a cap**
 
-2.4. Open the culture plate and transfer 500 ul medium from the selected well to the Petri dish
+2.4. Open the culture plate and put 500 ul medium from selected well into the Petri dish
 
 2.5. Grab the cover glass over the edge with tweezers and transfer it to Petri dish
 
 **Warning: DO NOT mix sides of the cover glass**
 
-*Note:  be careful don't damage the cell monolayer*
+*Note: try to replace the medium as quickly as possible and be careful don't damage the cell monolayer*
 
-2.6. Transfer else 500 ul medium to the Petri dish
+2.6. Put else 500 ul medium into the Petri dish
 
 2.7. Close the culture plate and back it to the CO2-incubator
 
@@ -80,18 +80,18 @@ warm the solution to room temperature
 
 ### 4. Sample chamber assembly
 
-  4.1. Rinse parts of the chamber with distilled water wipe wipe their dry
+4.1. Rinse parts of the chamber with distilled water and wipe their dry
 
-  4.2. Apply narrow band of the silicone grease around top side of the platform hole and bottom side of the bath hole
+4.2. Apply narrow band of the silicone grease around top side of the platform hole and bottom side of the bath hole
 
 *Note: use for this manipulation tiny brush or toothpick and make sure that silicone band is smooth and unbreakable, it's important for hermetic state of the chamber*
 
 **Warning: points below are special important, DO IT quickly and accurately, cell survival depends on it**
 
-  4.3. By using tweezers get the cover glass from Petri dish and put it on top of the platform hole. Glass should be 
+4.3. By using tweezers get the cover glass from Petri dish and put it on top of the platform hole. Glass should be 
 right in the center of the hole
 
-  4.4. Apply ~ 0.5 ml Outside Solution to the surface of cover glass
+4.4. Apply ~ 0.3 ml of Outside Solution to the surface of cover glass
 
 4.5. Install bath to the platform, move to the centre sliding clamps and tighten the screws
 
