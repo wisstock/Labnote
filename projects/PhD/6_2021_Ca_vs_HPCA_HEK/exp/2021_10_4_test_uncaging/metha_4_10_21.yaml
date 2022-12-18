@@ -1,0 +1,34 @@
+# 4.10.2021
+# Fluo-4 + NP-EGTA loading of HEK cells
+# feature is 405 nm stimulation power in %
+# registration design 20|100, Tornado area 185 ms, saturation test
+
+# 80%
+cell5_01: 80
+cell9_01: 80
+cell11_01: 80
+cell13_01: 80
+cell14_01: 80
+
+# 60%
+cell6_01: 60
+cell10_01: 60
+cell15_01: 60
+cell17_01: 60
+cell18_01: 60
+
+# 40%
+cell4_01: 40
+cell7_01: 40
+cell8_01: 40
+cell12_01: 40
+cell16_01: 40
+
+# 5%
+cell19_01: 5
+cell20_01: 5
+cell21_01: 5
+cell22_01: 5
+cell23_01: 5
+cell24_01: 5
+cell25_01: 5
