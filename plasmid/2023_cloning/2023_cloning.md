@@ -6,11 +6,11 @@ Plasmids cloning
 ## Design
 Cloning vector N1, selective marker *KanR/NeoR* (Kanamicin 50 ug/ml).
 
-Bacterial strain E. coli DH5α.
-
-Plasmid prep kit thermo scientific GeneJET Plasmid Miniprep Kit (#K0502).
+Bacterial strain E. coli DH10B.
 
 Tranformation protocol *e_coli_mini_transformation.md*.
+
+Plasmid prep kit thermo scientific GeneJET Plasmid Miniprep Kit (#K0502).
 
 ## Shopping list
 | Name            | ID                 | Source |
@@ -31,6 +31,7 @@ HPCA-CFP       |1807.3   |1.9   |2.15   |10 ul|0.5 ul
 PHD-CFP        |125.9    |2.0   |1.9   |20 ul|3 ul
 
 **Low priority**
+
 Plasmid        |C (ng/ul)|260/280|260/230|Approx. volume|Trans. volume
 ---------------|---------|-------|-------|--------------|-
 EYFP-Mem       |217.0   |2.0   |1.1   |25 ul|2 ul
@@ -49,7 +50,7 @@ Experiment requirements approx. __50-80 ug__ of plasmid DNA - __4x columns per p
 # Cloning
 ## N1 HPCA-CFP
 ### Transformation
-*18-19.04.2023*
+*17-19.04.2023*
 
 Transformation volume - \~5-10 ul (\~12-15 mg).
 
@@ -63,7 +64,7 @@ _in progress_
 
 ## N1 NCALD-EYFP
 ### Transformation
-*18-19.04.2023*
+*17-19.04.2023*
 
 Transformation volume - \~5-10 ul (\~4-6 ng).
 
