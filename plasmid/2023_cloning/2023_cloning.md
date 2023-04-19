@@ -2,14 +2,21 @@ Plasmids cloning
 ===============
 *2.03.2023-??.??.2023*
 
+# Preparing
 ## Design
-Cloning vector N1, selective marker *KanR/NeoR* (neomycin 50 ug/ml).
+Cloning vector N1, selective marker *KanR/NeoR* (Kanamicin 50 ug/ml).
 
 Bacterial strain E. coli DH5α.
 
 Plasmid prep kit thermo scientific GeneJET Plasmid Miniprep Kit (#K0502).
 
-Tranformation protocol *e_coli_transformation.md*.
+Tranformation protocol *e_coli_mini_transformation.md*.
+
+## Shopping list
+| Name            | ID                 | Source |
+| --------------- | ------------------ | ------ |
+| Yeast Extract   | Sigma Y1625-250G   | Алси   |
+| Peptone special | Sigma 68971-500G-F | Алси   |
 
 ## Selected plasmids
 *measured 2.03.2022, 2023_c_raw.csv*
@@ -39,12 +46,31 @@ Maximal column capacity __~20 ug__ of dsDNA - __~5 ml__ of overnight E. coli cul
 
 Experiment requirements approx. __50-80 ug__ of plasmid DNA - __4x columns per plasmid__ (20 ml of culture).
 
+# Cloning
+## N1 HPCA-CFP
+### Transformation
+*18-19.04.2023*
 
-## Prep list
-- 150 ml LB 
-- 150 ml LB agar
-- Basket for bottles
-- Sprayer for EtOH
-- 8x Petri dish
-- 5 glass test-tubes
-- 2x 150 ml con. glass
+Transformation volume - \~5-10 ul (\~12-15 mg).
+
+ <img src="pic/hpca-cfp_1x.jpeg" width="100%"> | <img src="pic/hpca-cfp_01x.jpeg" width="100%"> 
+ :-------------------------------------------: | :--------------------------------------------: 
+ x1 (>500 colonies)               |               0.1x (27 colonies)               
+
+### Clonig
+_in progress_
+**Cfin = ???**
+
+## N1 NCALD-EYFP
+### Transformation
+*18-19.04.2023*
+
+Transformation volume - \~5-10 ul (\~4-6 ng).
+
+ <img src="pic/ncald-eyfp_1x.jpeg" width="100%"> | <img src="pic/ncald-eyfp_01x.jpeg" width="100%"> 
+ :-------------------------------------------: | :--------------------------------------------: 
+ x1 (>500 colonies)               |               0.1x (0 colonies)               
+
+### Clonig
+_in progress_
+**Cfin = ???**
