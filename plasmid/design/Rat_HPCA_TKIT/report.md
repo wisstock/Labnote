@@ -9,7 +9,7 @@ R. norvegicus _Hpca_ KO with TKIT approach
 - Gene ID: 29177
 - mRatBN7.2 location: Chromosome 5 -NC_051340.1 (141455616..141466252, complement) 
 
-<img src="report_pic/Hpca_rat_total_map.png" width="100%">
+<img src="pic/Hpca_rat_total_map.png" width="100%">
 
 __Alignment__
 | Name         | Query cover | Identity |
@@ -47,7 +47,7 @@ __PROSITE profiles__
 | EF_HAND_2 EF-hand domain | 96-131   | 331       | RLEQKLMWAFSMYDLDGNGYISREEMLEIVQAIYKM | <img src="report_pic/ef2_prof.png" width="100%"> |
 | EF_HAND_2 EF-hand domain | 144-179  | 287       | TPEKRTEKIFRQMDTNNDGKLSLEEFIRGAKSDPSI | <img src="report_pic/ef3_prof.png" width="100%"> |
 
-<img src="report_pic/HPCA_prot.png" width="100%">
+<img src="pic/HPCA_prot.png" width="100%">
 
 __Alignment__
 | Name         | Query cover | Identity |
@@ -55,7 +55,7 @@ __Alignment__
 | Mus musculus | 100%         | 100%    |
 | Homo sapiens | 100%         | 100%    |
 
-<img src="report_pic/aa_algn.png" width="100%">
+<img src="pic/aa_algn.png" width="100%">
 _colors represent hydrophobicity_
 
 
@@ -75,7 +75,7 @@ __Selected gRNAs__
 |152rev| 3' UTR |gatctcccaggattccaact| ggg | 80      |136 (>4 mismatch)|
 
 __gRNAs position__
-<img src="report_pic/Hpca_rat_grna_map.png" width="100%">
+<img src="pic/Hpca_rat_grna_map.png" width="100%">
 
 
 
@@ -97,7 +97,7 @@ __gRNAs double-stranded oligos__
 | Hpca_5UTR_gRNA_1rev | BbsI |50 bp            |attGAAGACaacaccagtcggtgtctcggcgttgcgtttaaGTCTTCtat|
 |Hpca_3UTR_gRNA_152rev| BsaI | 48 bp             |attGGTCTCacaccgatctcccaggattccaactgtttaGAGACCtat  |
 
-<img src="report_pic/pX333_Hpca_full-gene_gRNA_map.png" width="70%">
+<img src="pic/pX333_Hpca_full-gene_gRNA_map.png" width="70%">
 
 
 
@@ -115,9 +115,9 @@ __Primers with gRNAs seq. for LSSmOrange extraction __
 
 
 __pLSSmOrange-N1 forvard primer region __
-<img src="report_pic/LSSmOrange_for_primer.png" width="100%">
+<img src="pic/LSSmOrange_for_primer.png" width="100%">
 __pLSSmOrange-N1 reverse primer region __
-<img src="report_pic/LSSmOrange_rev_primer.png" width="100%">
+<img src="pic/LSSmOrange_rev_primer.png" width="100%">
 
 
 
@@ -129,7 +129,7 @@ _Note: restriction sites could be changed according to available cloning vector_
 
 
 __Assembled pMiniT 2.0 donor vector __
-<img src="report_pic/pMiniT2_LSSmOrange_donor_map.png" width="50%">
+<img src="pic/pMiniT2_LSSmOrange_donor_map.png" width="50%">
 
 
 
