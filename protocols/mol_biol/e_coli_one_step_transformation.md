@@ -1,7 +1,7 @@
 One-step preparation of competent E. coli
 ====================================
 
-*Borys Olifirov, 22.05.2023*
+*Borys Olifirov, 1.06.2023*
 
 One-step preparation of competent Escherichia coli: Transformation and storage of bacterial cells in the same solution.
 Tested on DH10B strain.
@@ -23,20 +23,20 @@ Based on Chung et al., 1989 (doi: 10.1073/pnas.86.7.2172)
 Place the ingredients in the bottle and add all volume of ddH20.  Without waiting for dissolution sterilize by autoclaving (132°C, 20') and store at 4°C.
 
 0.2. **2x Transformation and Storage Solution (TSS) stock**
-|Chemical|ID         |MW (g/mol)|Stock state   |Concentration|10 ml    |50 ml|
-|--------|-----------|----------|--------------|-------------|---------|-|
-|PEG 8000| Sigma 89510 | -        |solid         | 20% (w/v)   |2 g|10 g|
-|DMSO    | -         | 73.13    |liquid        | 10% (v/v)   |1 ml|5 ml|
-|MgCl2   | -         | 95.21    |solid         | 100 mM      |0.095 g|0.475 g|
-|LB broth | - | - |autoclaved broth | - |to 10 ml|to 50 ml|
+|Chemical|ID         |MW (g/mol)|Stock state   |Concentration|5 ml|10 ml    |50 ml|
+|--------|-----------|----------|--------------|-------------|---------|-|-|
+|PEG 4000| ? | -        |solid         | 20% (v/v)  | 1 ml |2 ml|10 ml|
+|DMSO    | ?        | 73.13    |liquid        | 10% (v/v)   | 0.5 ml |1 ml|5 ml|
+|MgCl2   | Sigma M8266 | 95.21    |solid         | 100 mM      | 0.0475 g |0.095 g|0.475 g|
+|LB broth | - | - |autoclaved broth | - | to 5 ml |to 10 ml|to 50 ml|
 
 Dissolve salt in \~ 1/2 of LB broth volume, next, dissolve PEG (warm-up solution up to 50-60°C if necessary) and add DMSO (final pH ~6.5). Sterilize by filtering with 0.22 um pore size filter and store at 4°C.
 
-0.3. **2M Glucose Stock Solution**
-|Chemical|ID         |MW (g/mol)|Stock state|Concentration|10 ml   |
-|--------|-----------|----------|-----------|-------------|--------|
-|Glucose |-          |180.156   |solid      |2 M          |3.6 g   |
-|ddH2O   | -         | -        | -         | -           |to 10 ml|
+0.3. **1M Glucose Stock Solution**
+| Chemical | ID           | MW (g/mol) | Stock state | Concentration | 10 ml    | 20 ml    |
+| -------- | ------------ | ---------- | ----------- | ------------- | -------- | -------- |
+| Glucose  | Sigma G-7528 | 180.156    | solid       | 1 M           | 1.8 g    | 3.6 g    |
+| ddH2O    | -            | -          | -           | -             | to 10 ml | to 20 ml |
 
 Sterilize by filtering with 0.22 um pore size filter and store at 4°C.
 
@@ -101,7 +101,7 @@ _Note: for long-term storage, cells aliquot are frozen immediately in a dry ice/
 2.6. Incubate 4°C 15-60'
 _Note: length of incubation is not critical_
 
-2.7. Add 890 ul of LB broth and 10 ul of 2M Glucose solution to cells suspension
+2.7. Add 880 ul of LB broth and 20 ul of 1M Glucose solution to cells suspension
 
 2.8. Incubate 37°C 200 RPM 1 h
 
