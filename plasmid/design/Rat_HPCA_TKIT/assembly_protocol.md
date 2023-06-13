@@ -9,16 +9,12 @@ Hpca TKIT vectors assembly protocol
 
 ### Transormation
 
-### Cilonies screening
+### Colonies screenings
 
 ## Cas9
-### gRNA ss oligos burning
+### gRNA ss oligos burning & phosphorylation
 
-### gRNA ds oligos 5' phosphorylation
-
-### pX333 double-digestion
-
-### Ligation
+### pX333 double-digestion & Ligation
 
 ### Separation with agarose eplectrophoresis & transformation
 
