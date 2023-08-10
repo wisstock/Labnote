@@ -1,7 +1,7 @@
 Heat-shock transformation of E. coli
 ======================================
 
-### Optimized for benchtop mini centrifuge and simultaneous transformation by 2 plasmids
+### Optimized for bench-top mini centrifuge and simultaneous transformation by 2 plasmids
 
 *Borys Olifirov, 15.04.2023*
 
