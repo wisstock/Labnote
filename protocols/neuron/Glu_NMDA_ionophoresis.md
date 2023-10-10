@@ -28,7 +28,7 @@ Add glucose to 10 mM final concentration before work (18 mg per 10 ml).
 
 I = 160 mM, osmolarity ~310-320 mosmol.
 
-### Mg2+-free HEPES buffered saline (HBS-Mg) 
+### Mg2+-free HEPES buffered saline (HBS -Mg) 
 | Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 100 ml | 500 ml  |
 | --------------------- | ------------------ | ---------- | ----------- | ------------- | --------- | --------- |
 | NaCl           | Sigma S9625 | 58.44     | solid       | 150 mM       | 876.6 mg | 4383 mg |
@@ -81,13 +81,23 @@ Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.
 
 Dissolve salt in full volume of H20 and HEPES solution. Aliquot, and store at <-10°C. 
 
+### Glycine 100 mM pH 7.3
+
+| Chemical      | ID          | MW (g/mol) | Solubility (20°C) | Stock state | Concentration | 2 ml  |
+| ------------- | ----------- | ---------- | ----------------- | ----------- | ------------- | ----- |
+| Glycine       | Sigma G7126 | 75.07      | 249 g/l           | solid       | 100 mM        | 15 mg |
+| HEPES pH 7.3  | Sigma H3375 | 238.3      | 400 g/l           | 0.5M stock  | 10 mM         | 40 ul |
+| deionized H2O | -           | -          | -                 | -           | -             |       |
+
+Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.  
+
 ### Strychnine 10 mM pH 7.3
 
-| Chemical      | ID          | MW (g/mol) | Solubility (20°C)  | Stock state | Concentration | 5 ml     | 10 ml    |
-| ------------- | ----------- | ---------- | ------------------ | ----------- | ------------- | -------- | -------- |
-| Strychnine    | Sigma M3262 | 334.42     | 0.2 g/l (66.88 mM) | solid       | 10 mM         | 16.72 mg | 33.44 mg |
-| HEPES pH 7.3  | Sigma H3375 | 238.3      |                    | 0.5M stock  | 10 mM         | 100 ul   | 200 ul   |
-| deionized H2O | -           | -          |                    | -           | -             | to 5 ml  | to 10 ml |
+| Chemical                 | ID          | MW (g/mol) | Solubility (20°C) | Stock state | Concentration | 2 ml    |
+| ------------------------ | ----------- | ---------- | ----------------- | ----------- | ------------- | ------- |
+| Strychnine hydrochloride | Sigma S8753 | 370.87     | 25 g/l            | solid       | 10 mM         | 7.42 mg |
+| HEPES pH 7.3             | Sigma H3375 | 238.3      | 400 g/l           | 0.5M stock  | 10 mM         | 40 ul   |
+| deionized H2O            | -           | -          | -                 | -           | -             |         |
 
 Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.  
 
