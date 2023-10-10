@@ -1,7 +1,7 @@
 Glutamate/NMDA ionophoresis
 ===========================
 
-*Borys Olifirov, 8.10.2023*
+*Borys Olifirov, 10.10.2023*
 
 L-glutamic acid/NMDA ionophoretic application to hippocampal neurons primary culture.
 
