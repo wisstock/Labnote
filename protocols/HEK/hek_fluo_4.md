@@ -1,6 +1,6 @@
 Fluo-4 loading to HEK 293 cells
 ===============================
-*Borys Olifirov, 23.07.2020*
+*Borys Olifirov, 26.10.2023*
 
 Calcium imaging dye **Fluo-4 AM** loading to the HEK 293 cells.
 
@@ -61,7 +61,7 @@ heat the solution to RT
 
 ### 2. Loading solution preparation
 
-2.1. Add 0.15 ul Fluo-4 AM solution (final concentration of 2 uM) to 1.5 ml eppendorf
+2.1. Add 0.3 ul Fluo-4 AM solution (final concentration of 2 uM) to 1.5 ml eppendorf
 **Warning: preheat the tube 10-15 min at RT and vortex before use. DMSO melting temperature is 18.5oC**
 
 2.2. Add 500 ul Outside Solution and pippete around 20 times
