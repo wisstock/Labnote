@@ -36,6 +36,17 @@ Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10
 
 I = 157 mM, osmolarity ~300-310 mOsmol.
 
+### Phosphate Buffered Saline (PBS)
+| Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 50 ml | 500 ml  |
+| --------------------- | ------------------ | ---------- | ----------- | ------------- | --------- | --------- |
+| NaCl           | Sigma S9625 | 58.44     | solid       | 137 mM     | 400.3 mg | 4003.14 mg |
+| KCl      | Sigma P5405 | 74.55  | solid       | 2.7 mM  | 10.06 mg | 100.64 mg |
+| Na2HPO4       | Sigma S7907 | 141.96 | solid       | 10 mM      | 71.0 mg | 709.8 mg |
+| KH2PO4 | Sigma P5379 | 136.09 | solid | 1.8 mM | 12.25 mg | 122.48 mg |
+| dH2O                 | -                  | -          | -           | -             | to 50 ml   | to 500 ml |
+
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3-7.4 with 2-3M NaOH. Filter and store at 4°C. 
+
 ### HEPES 0.5 M pH 7.0
 
 | Chemical | ID          | MW (g/mol) | Stock state | Concentration | 10 ml    | 25 ml    |
@@ -53,6 +64,7 @@ Dissolve all components in ~3/4 of the final volume, adjust pH to 7.0 with 2-3M 
 | ddH2O    | -           | -          | -           | -             | to 10 ml | to 25 ml |
 
 Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C.
+
 
 ## Activators and Blockers Stock Solutions
 ### L-Glutamic Acid 150 mM pH 7.0
@@ -94,3 +106,19 @@ Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.
 | deionized H2O            | -           | -          | -                 | -           | -             | 980 ul  |
 
 Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.  
+
+
+## Special Solutions
+### CHO vesiculation buffer with TAPS
+Based on [Piccolo et al., 2012](https://pubmed.ncbi.nlm.nih.gov/22985263/)
+
+| Chemical      | ID                                  | MW (g/mol) | Stock state | Concentration | 50 ml     |
+| ------------- | ----------------------------------- | ---------- | ----------- | ------------- | --------- |
+| NaCl          | Sigma S9625                         | 58.44      | solid       | 200 mM        | 584.4 mg  |
+| KCl           | Sigma P5405                         | 74.55      | solid       | 5 mM          | 18.64 mg  |
+| CaCl2         | Sigma C3881                         | 147        | solid       | 0.75 mM       | 5.51 mg   |
+| MgCl2         | Sigma M2670                         | 203.3      | solid       | 0.5 mM        | 5.08 mg   |
+| TAPS          | Sigma T9659 (tested on Serva 37194) | 243.28     | solid       | 10 mM         | 121.65 mg |
+| deionized H2O | -                                   | -          | -           | -             | to 50 ml  |
+
+Dissolve all components in ~3/4 of the final volume, adjust pH to 8.5 with 2-3M NaOH. Sterilize by filtering 0.22 um and store at 4°C.
