@@ -18,7 +18,7 @@ require(ggplot2)
 require(ggpubr)
 require(ggsci)
 
-setwd('/home/astria/bio/note/projects/PhD/6_2021_PIP2_HPCA_HEK/exp/10_4_2021_test_uncaging')
+setwd('/home/wisstock/bio/note/projects/PhD/4_2021_Ca_vs_HPCA_HEK/exp/2021_10_4_test_uncaging')
 
 
 ##### DATA PROCESSING #####
