@@ -150,30 +150,52 @@ ggplot(data = df.full %>% filter(index < 15)) +
   facet_grid(rows = vars(hpca))
 
 ##### FULL REPRESENTATIVE PROFILE #####
-df.rep <- bind_rows(df.0, df.1) %>%
-  ungroup() %>%
-  select(roi, df, hpca, index, time) %>%
+df.rep.0 <- read.csv('00_435_dF.csv') %>%
+  select(-X) %>%
+  mutate(id = '00') %>%
+  mutate(hpca = 'WT') %>%
+  mutate(fp = 'CFP') %>%
+  mutate(roi = as.factor(roi)) %>%
+  group_by(roi) %>%
+  mutate(index = row_number(roi))
+df.rep.1 <- read.csv('00_505_dF.csv') %>%
+  select(-X) %>%
+  mutate(id = '00') %>%
+  mutate(hpca = 'N75K') %>%
+  mutate(fp = 'EYFP') %>%
+  mutate(roi = as.factor(roi)) %>%
+  group_by(roi) %>%
+  mutate(index = row_number(roi))
+
+df.rep <- bind_rows(df.rep.0, df.rep.1) %>%
+  select(roi, int, hpca, index, time) %>%
   group_by(hpca, index) %>%
-  mutate(int_mean = mean(df), int_se = sd(df)/sqrt(n())) %>%
+  mutate(int_mean = mean(int), int_se = sd(int)/sqrt(n())) %>%
   mutate(hpca = factor(hpca, levels = c('WT', 'N75K'))) %>%
   mutate(time = time - 15.0)
 
-ggplot(data = df.rep) +
+prof.rep <- ggplot(data = df.rep) +
   geom_line(aes(x = time, y = int_mean, color = hpca)) +
-  geom_errorbar(aes(x = time,
-                    ymax = int_mean + int_se,
-                    ymin = int_mean - int_se,
-                    color = hpca),
-                width = 0) +
-  geom_segment(aes(x = 20, xend = 320, y = 0.15, yend = 0.15), size = 0.5) +
-  geom_vline(xintercept = 20, linetype='dashed', size = 0.4) +
-  geom_vline(xintercept = 320, linetype='dashed', size = 0.4) +
+  geom_point(aes(x = time, y = int_mean, color = hpca)) +
+  geom_ribbon(aes(x = time,
+                  ymax = int_mean + int_se,
+                  ymin = int_mean - int_se,
+                  color = hpca,
+                  fill = hpca),
+              alpha=.15,
+              size=0.25) +
+  geom_segment(aes(x = 15, xend = 315, y = 0.21, yend = 0.21), size = 1) +
+  #geom_vline(xintercept = 20, linetype='dashed', size = 0.4) +
+  #geom_vline(xintercept = 320, linetype='dashed', size = 0.4) +
   scale_colour_manual(name = NULL,
                       values = c('black', 'red')) +
+  scale_fill_manual(name = NULL,
+                      values = c('black', 'red')) +
   scale_x_continuous(name = 'Time, s',
+                     limits = c(0, 450),
                      breaks = seq(0, 1000, 50)) +
   scale_y_continuous(name = 'ΔF/F0',
-                     limits = c(-0.3, 0.17),
+                     limits = c(-0.02, 0.22),
                      breaks = seq(-1, 1, 0.05),
                      expand = c(0,0)) +
   theme_classic() +
@@ -183,7 +205,10 @@ ggplot(data = df.rep) +
         legend.position = c(.9, .9),
         text = element_text(family='arial', face="bold", size=9))
 
-S##### AVERAGE PROFILES #####
+ggsave('prof_rep.png', prof.rep, 
+       width = 20, height = 7, units = 'cm', dpi = 300)
+
+##### AVERAGE PROFILES #####
 magenta.index <- 3
 green.index <- 5
 blue.index <- 6
@@ -204,7 +229,7 @@ prof.avg <- ggplot(data = df.avg) +
                     color = hpca),
                 width = 0.2) +
   scale_colour_manual(name = NULL,
-                    values = c('black', 'red')) +
+                      values = c('black', 'red')) +
   geom_segment(aes(x = magenta.index, xend = magenta.index,
                    y = -0.016, yend = -0.006),
                color = 'magenta',
@@ -217,7 +242,7 @@ prof.avg <- ggplot(data = df.avg) +
                    y = 0.06, yend = 0.07),
                color = 'blue',
                arrow = arrow(length = unit(0.2, "cm"))) +
-  geom_vline(xintercept = 5, linetype='dashed', size = 0.4) +
+  geom_vline(xintercept = 4.95, linetype='dashed', size = 0.4) +
   scale_x_continuous(name = 'Time, s',
                      limits = c(1, 7),
                      breaks = seq(1, 15, 1),
@@ -234,7 +259,7 @@ prof.avg <- ggplot(data = df.avg) +
         text = element_text(family='arial', face="bold", size=9))
 
 ggsave('prof_avg.png', prof.avg, 
-       width = 12, height = 8.5, units = 'cm', dpi = 300)
+       width = 13, height = 7, units = 'cm', dpi = 300)
 
 ##### MAGENTA BOXPLOT #####
 df.magenta <- df.full %>%
@@ -281,7 +306,7 @@ box.magenta <- ggplot() +
                                     size = 2))
 
 ggsave('box_magenta.png', box.magenta, 
-       width = 5, height = 10, units = 'cm', dpi = 300)
+       width = 4, height = 7, units = 'cm', dpi = 300)
 
 ##### GREEN BOXPLOT #####
 df.green <- df.full %>%
@@ -327,7 +352,7 @@ box.green <- ggplot() +
                                     fill = NA, 
                                     size = 2))
 ggsave('box_green.png', box.green, 
-       width = 5, height = 10, units = 'cm', dpi = 300)
+       width = 4, height = 7, units = 'cm', dpi = 300)
 
 ##### BLUE BOXPLOT #####
 df.blue <- df.full %>%
@@ -373,4 +398,37 @@ box.blue <- ggplot() +
                                     fill = NA, 
                                     size = 2))
 ggsave('box_blue.png', box.blue, 
-       width = 5, height = 10, units = 'cm', dpi = 300)
+       width = 4, height = 7, units = 'cm', dpi = 300)
+
+##### AREA BOXPLOT #####
+df.area <- data.frame(id = c('00', '02', '03', '04', '05'),
+                      hpca = c('N75K', 'N75K','N75K','N75K','N75K'),
+                      wt = c(4903, 1087, 1133, 1075, 538),
+                      mut = c(2909, 202, 199, 115, 64),
+                      rel = c(0.5933, 0.1858, 0.1756, 0.107, 0.119))
+
+df.area.stat <- df.area %>%
+  wilcox_test(rel ~ 1, mu = 1, alternative = 'less') %>%
+  add_significance()
+  
+box.area <- ggplot() +
+  geom_boxplot(data = df.area,
+               aes(x = hpca, y = rel),
+               fill = 'red', alpha = .6) +
+  geom_point(data = df.area,
+             aes(x = hpca, y = rel)) +
+  geom_text(data = df.area,
+            aes(x = hpca, y = 0.75), label = '*', size = 5) +
+  scale_x_discrete(name = NULL) +
+  scale_y_continuous(name = 'N75K relative trans. area',
+                     limits = c(0, 1),
+                     breaks = seq(-2, 2, 0.1)) +
+  theme_classic() +
+  theme(panel.grid.major = element_line(linetype = 'dotted',
+                                        size = 0.1,
+                                        colour = "black"),
+        legend.position = 'none',
+        text = element_text(family='arial', face="bold", size=8))
+
+ggsave('box_area.png', box.area, 
+       width = 3, height = 6, units = 'cm', dpi = 300)
