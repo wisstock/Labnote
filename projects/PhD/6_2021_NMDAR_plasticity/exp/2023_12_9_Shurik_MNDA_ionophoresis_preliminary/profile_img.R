@@ -9,6 +9,7 @@ require(ggplot2)
 require(ggpubr)
 require(cowplot)
 require(ggsci)
+require(ggbreak)
 
 setwd('/home/wisstock/bio/note/projects/PhD/6_2021_NMDAR_plasticity/exp/2023_12_9_Shurik_MNDA_ionophoresis_preliminary')
 
@@ -172,43 +173,93 @@ df.rep <- bind_rows(df.rep.0, df.rep.1) %>%
   group_by(hpca, index) %>%
   mutate(int_mean = mean(int), int_se = sd(int)/sqrt(n())) %>%
   mutate(hpca = factor(hpca, levels = c('WT', 'N75K'))) %>%
-  mutate(time = time - 15.0)
+  mutate(time = time - 15.0) %>%
+  mutate(`ΔF/F0` = int_mean)
 
 prof.rep <- ggplot(data = df.rep) +
-  geom_line(aes(x = time, y = int_mean, color = hpca)) +
-  geom_point(aes(x = time, y = int_mean, color = hpca)) +
+  geom_line(aes(x = time, y = `ΔF/F0`, color = hpca)) +
+  geom_point(aes(x = time, y = `ΔF/F0`, color = hpca)) +
   geom_ribbon(aes(x = time,
-                  ymax = int_mean + int_se,
-                  ymin = int_mean - int_se,
+                  ymax = `ΔF/F0` + int_se,
+                  ymin = `ΔF/F0` - int_se,
                   color = hpca,
                   fill = hpca),
               alpha=.15,
               size=0.25) +
   geom_segment(aes(x = 15, xend = 315, y = 0.21, yend = 0.21), size = 1) +
-  #geom_vline(xintercept = 20, linetype='dashed', size = 0.4) +
-  #geom_vline(xintercept = 320, linetype='dashed', size = 0.4) +
   scale_colour_manual(name = NULL,
                       values = c('black', 'red')) +
   scale_fill_manual(name = NULL,
                       values = c('black', 'red')) +
   scale_x_continuous(name = 'Time, s',
-                     limits = c(0, 450),
+                     limits = c(0, 400),
                      breaks = seq(0, 1000, 50)) +
-  scale_y_continuous(name = 'ΔF/F0',
-                     limits = c(-0.02, 0.22),
+  scale_y_continuous(limits = c(-0.02, 0.22),
                      breaks = seq(-1, 1, 0.05),
                      expand = c(0,0)) +
+#  scale_x_break(c(75, 270)) +
   theme_classic() +
   theme(panel.grid.major = element_line(linetype = 'dotted',
                                         size = 0.1,
                                         colour = "black"),
-        legend.position = c(.9, .9),
+        legend.position = 'none',
+        axis.title.x = element_text(margin = margin(t = -0.1)),
         text = element_text(family='arial', face="bold", size=9))
 
 ggsave('prof_rep.png', prof.rep, 
-       width = 20, height = 7, units = 'cm', dpi = 300)
+       width = 10.5, height = 6, units = 'cm', dpi = 300)
 
-##### AVERAGE PROFILES #####
+##### RISE AVERAGE BOX #####
+df.full.stat <- df.full %>%
+  group_by(index) %>%
+  pairwise_wilcox_test(df ~ hpca) %>%  # adjust_pvalue(method = "bonferroni")
+  add_significance("p.adj") %>%
+  add_y_position(fun = "mean_sd")  
+
+box.avg <- ggplot() +
+  geom_boxplot(data = df.full,
+               aes(y = df, x = as.factor(index), fill = hpca,
+                   group = interaction(index, hpca)),
+               alpha = .5,
+               width = 8) +
+  stat_summary(data = df.full,
+               fun = median,
+               geom = 'line',
+               aes(y = df, x = index, color = hpca,
+                   group = hpca),
+               position = position_dodge(width = 1)) +
+  stat_summary(data = df.full,
+               fun = median,
+               geom = 'point',
+               aes(y = df, x = index, color = hpca,
+                   group = hpca),
+               position = position_dodge(width = 1)) +
+  geom_text(data = df.full.stat,
+            aes(x = index, y = y.position, label = p.adj.signif),
+            size = 3) +
+  scale_colour_manual(name = NULL,
+                      values = c('black', 'red')) +
+  scale_fill_manual(name = NULL,
+                      values = c('black', 'red')) +
+  geom_vline(xintercept = 4.52, linetype='dashed', size = 0.4) +
+  scale_x_discrete(name = 'Time, s',
+                     breaks = seq(1, 15, 1),
+                     labels = seq(0, 74, 5)) +
+  scale_y_continuous(name = 'ΔF/F0',
+                     limits = c(-0.1, 0.17),
+                     breaks = seq(-1, 1, 0.05),
+                     expand = c(0,0)) +
+  theme_classic() +
+  theme(panel.grid.major = element_line(linetype = 'dotted',
+                                        size = 0.05,
+                                        colour = "black"),
+        legend.position = c(.3, .9),
+        text = element_text(family='arial', face="bold", size=9))
+
+ggsave('box_avg.png', box.avg, 
+       width = 15, height = 7, units = 'cm', dpi = 300)
+
+##### RISE AVERAGE PROFILES #####
 magenta.index <- 3
 green.index <- 5
 blue.index <- 6
@@ -255,11 +306,11 @@ prof.avg <- ggplot(data = df.avg) +
   theme(panel.grid.major = element_line(linetype = 'dotted',
                                         size = 0.1,
                                         colour = "black"),
-        legend.position = c(.9, .18),
+        legend.position = c(.3, .9),
         text = element_text(family='arial', face="bold", size=9))
 
 ggsave('prof_avg.png', prof.avg, 
-       width = 13, height = 7, units = 'cm', dpi = 300)
+       width = 4, height = 6, units = 'cm', dpi = 300)
 
 ##### MAGENTA BOXPLOT #####
 df.magenta <- df.full %>%
@@ -288,7 +339,7 @@ box.magenta <- ggplot() +
             aes(x = hpca, y = int_mean, group = id),
             linetype = 'dashed') +
   stat_pvalue_manual(df.magenta.stat, label = 'p.signif',
-                     hide.ns = FALSE, size = 5, family='arial') +
+                     hide.ns = FALSE, size = 3, family='arial') +
   scale_fill_manual(name = NULL,
                     values = c('black', 'red')) +
   scale_x_discrete(name = NULL) +
@@ -300,13 +351,13 @@ box.magenta <- ggplot() +
                                         size = 0.1,
                                         colour = "black"),
         legend.position = 'none',
-        text = element_text(family='arial', face="bold", size=8),
+        text = element_text(family='arial', face="bold", size=9),
         panel.border = element_rect(color = "magenta", 
                                     fill = NA, 
                                     size = 2))
 
 ggsave('box_magenta.png', box.magenta, 
-       width = 4, height = 7, units = 'cm', dpi = 300)
+       width = 3, height = 6, units = 'cm', dpi = 300)
 
 ##### GREEN BOXPLOT #####
 df.green <- df.full %>%
@@ -335,7 +386,7 @@ box.green <- ggplot() +
             aes(x = hpca, y = int_mean, group = id),
             linetype = 'dashed') +
   stat_pvalue_manual(df.green.stat, label = 'p.signif',
-                     hide.ns = FALSE, size = 5, family='arial') +
+                     hide.ns = FALSE, size = 3, family='arial') +
   scale_fill_manual(name = NULL,
                       values = c('black', 'red')) +
   scale_x_discrete(name = NULL) +
@@ -347,12 +398,12 @@ box.green <- ggplot() +
                                         size = 0.1,
                                         colour = "black"),
         legend.position = 'none',
-        text = element_text(family='arial', face="bold", size=8),
+        text = element_text(family='arial', face="bold", size=9),
         panel.border = element_rect(color = "green", 
                                     fill = NA, 
                                     size = 2))
 ggsave('box_green.png', box.green, 
-       width = 4, height = 7, units = 'cm', dpi = 300)
+       width = 3, height = 6, units = 'cm', dpi = 300)
 
 ##### BLUE BOXPLOT #####
 df.blue <- df.full %>%
@@ -381,7 +432,7 @@ box.blue <- ggplot() +
             aes(x = hpca, y = int_mean, group = id),
             linetype = 'dashed') +
   stat_pvalue_manual(df.blue.stat, label = 'p.signif',
-                     hide.ns = FALSE, size = 5, family='arial') +
+                     hide.ns = FALSE, size = 3, family='arial') +
   scale_fill_manual(name = NULL,
                     values = c('black', 'red')) +
   scale_x_discrete(name = NULL) +
@@ -393,12 +444,12 @@ box.blue <- ggplot() +
                                         size = 0.1,
                                         colour = "black"),
         legend.position = 'none',
-        text = element_text(family='arial', face="bold", size=8),
+        text = element_text(family='arial', face="bold", size=9),
         panel.border = element_rect(color = "blue", 
                                     fill = NA, 
                                     size = 2))
 ggsave('box_blue.png', box.blue, 
-       width = 4, height = 7, units = 'cm', dpi = 300)
+       width = 3, height = 6, units = 'cm', dpi = 300)
 
 ##### AREA BOXPLOT #####
 df.area <- data.frame(id = c('00', '02', '03', '04', '05'),
@@ -420,15 +471,15 @@ box.area <- ggplot() +
   geom_text(data = df.area,
             aes(x = hpca, y = 0.75), label = '*', size = 5) +
   scale_x_discrete(name = NULL) +
-  scale_y_continuous(name = 'N75K relative trans. area',
+  scale_y_continuous(name = 'N75K area / WT area',
                      limits = c(0, 1),
-                     breaks = seq(-2, 2, 0.1)) +
+                     breaks = seq(-2, 2, 0.25)) +
   theme_classic() +
   theme(panel.grid.major = element_line(linetype = 'dotted',
                                         size = 0.1,
                                         colour = "black"),
         legend.position = 'none',
-        text = element_text(family='arial', face="bold", size=8))
+        text = element_text(family='arial', face="bold", size=9))
 
 ggsave('box_area.png', box.area, 
        width = 3, height = 6, units = 'cm', dpi = 300)
