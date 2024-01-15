@@ -1,0 +1,21 @@
+AAV2-L-BC-loop_WT	cgctcactgaggccgcccgggcaaagcccgggcgtcgggcgacctttggtcgcccggcctcagtg
+AAV2-R-BC-loop_WT	gctcactgaggccgggcgaccaaaggtcgcccgacgcccgggctttgcccgggcggcctcagt
+Amp-R	ATAATACCGCGCCACATAGC	Ampicillin resistance gene, reverse primer
+AmpR_PCRout_F	ATGAGTATTCAACATTTCCGTGTCGC
+AmpR_PCRout_R	TTACCAATGCTTAATCAGTGAGGCAC
+AmpR_prom_R	CAAATAGGGGTTCCGCG
+BGH-rev	TAGAAGGCACAGTCGAGG	Bovine growth hormone terminator, reverse primer. Also called BGH reverse
+CMV_rev	GGGCGTACTTGGCATATGAT
+F1ori-F	GTGGACTCTTGTTCCAAACTGG	F1 origin, forward primer
+F1ori-R	AGGGAAGAAAGCGAAAGGAG	F1 origin, reverse primer
+gRNA_1rev_FOR_oligo	caccagtcggtgtctcggcgttgc
+gRNA_152rev_REV_oligo	aaacagttggaatcctgggagatc
+MAD7_DRt_5_R	GGTGTTTCGTCCTTTCCAC
+pBR322ori-F	GGGAAACGCCTGGTATCTTT	pBR322 origin, forward primer
+pBRforEco	AATAGGCGTATCACGAGGC	pBR322 vectors, upsteam of EcoRI site, forward primer
+pGEX 3'	CCGGGAGCTGCATGTGTCAGAGG	pGEX vectors, reverse primer
+pGexBB_qPCR_F	CACCTCTGACTTGAGCGTCG
+pRS-marker	CGGCATCAGAGCAGATTGTA	pRS vectors, use to sequence yeast selectable marker
+RPs_frw	CCCCGAAAAGTGCCACCTG
+RPs_frw (1)	CCCCGAAAAGTGCCACCTG
+RPs_frw (2)	CCCCGAAAAGTGCCACCTG
