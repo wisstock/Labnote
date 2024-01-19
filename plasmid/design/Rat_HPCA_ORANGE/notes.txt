@@ -1,0 +1,38 @@
+XbaI TCTAGA
+KpnI GGTACC
+
+
+C-tag primers
+FOR 48rev 
+ata TCTAGA tcagaactgggaagcgctgctgg GT atggtgagcaagggcga
+REV 48rev with 3' tail
+gcatggacgagctgtacaag GG tcagaactgggaagcgctgctgg GGTACC tat
+REV 48rev with stop in tag
+catggacgagctgtacaagtaa tcagaactgggaagcgctgctgg GGTACC tat
+
+FOR 61rev 
+ata TCTAGA ggctcctctcagctcagaactgg A atggtgagcaagggcga
+REV 61rev
+catggacgagctgtacaagtaa ggctcctctcagctcagaactgg GGTACC tat
+
+
+EF1 LOF primers
+FOR 8rev
+ata TCTAGA gaagacatgctcggcgaacttgg GTTAA gccaccatggtgagcaag
+REV 8rev
+catggacgagctgtacaagtaa gaagacatgctcggcgaacttgg GGTACC tat
+
+
+N-tag primers
+FOR 20rev
+ata TCTAGA cttgctattctgcttgcccatgg gccaccatggtgagcaag
+
+REV 20rev
+gcatggacgagctgtacaag AT cttgctattctgcttgcccatgg GGTACC tat
+
+
+N-term KO primers (SLIC for pX333)
+FOR 20rev
+tggcTCTAGA cttgctattctgcttgcccatgg gccaccatggtgagcaag
+REV 20rev
+catggacgagctgtacaagtaa cttgctattctgcttgcccatgg GGTACCcgtt
