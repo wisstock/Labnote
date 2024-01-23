@@ -1,5 +1,5 @@
-XbaI TCTAGA
-KpnI GGTACC
+5' XbaI TCTAGA
+3' KpnI GGTACC
 
 
 C-tag primers
@@ -26,13 +26,32 @@ catggacgagctgtacaagtaa gaagacatgctcggcgaacttgg GGTACC tat
 N-tag primers
 FOR 20rev
 ata TCTAGA cttgctattctgcttgcccatgg gccaccatggtgagcaag
-
 REV 20rev
 gcatggacgagctgtacaag AT cttgctattctgcttgcccatgg GGTACC tat
 
 
+
 N-term KO primers (SLIC for pX333)
+
 FOR 20rev
-tggcTCTAGA cttgctattctgcttgcccatgg gccaccatggtgagcaag
+tggcTCTAGA cttgctattctgcttgcccatgg A gccaccatggtgagcaag
 REV 20rev
-catggacgagctgtacaagtaa cttgctattctgcttgcccatgg GGTACCcgtt
+catggacgagctgtacaagtaa TA cttgctattctgcttgcccatgg GGTACCcgtt
+
+FOR 46forv
+tggcTCTAGA ccgcagcttgctattctgcttgc ATA gccaccatggtgagcaag
+REV 46forv
+catggacgagctgtacaagtaa TA ccgcagcttgctattctgcttgc GGTACCcgtt
+
+FOR 62forv
+tggcTCTAGA cctgcagcatctctggccgcagc A gccaccatggtgagcaag
+REV 62forv
+catggacgagctgtacaagtaa TA cctgcagcatctctggccgcagc GGTACCcgtt
+
+
+
+Clta positive control, N-tag (SLIC for pX333)
+FOR
+tggcTCTAGA ggatccaactcagccatgaggg CAGGTAGCGGA gtgagcaagggcgaggag
+REV
+gcggcatggacgagctgtacaag GGTAGCGGA ggatccaactcagccatgaggg GGTACCcgtt

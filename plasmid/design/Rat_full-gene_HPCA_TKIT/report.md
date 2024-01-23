@@ -43,9 +43,9 @@ __Alignment__
 __PROSITE profiles__
 | Name                     | Position | Raw-score | Seq.   | Profile |
 | ------------------------ | -------- | --------- | ------ | ------- |
-| EF_HAND_2 EF-hand domain | 60-95    | 280       | DASKFAEHVFRTFDTNSDGTIDFREFIIALSVTSRG | <img src="report_pic/ef1_prof.png" width="100%"> |
-| EF_HAND_2 EF-hand domain | 96-131   | 331       | RLEQKLMWAFSMYDLDGNGYISREEMLEIVQAIYKM | <img src="report_pic/ef2_prof.png" width="100%"> |
-| EF_HAND_2 EF-hand domain | 144-179  | 287       | TPEKRTEKIFRQMDTNNDGKLSLEEFIRGAKSDPSI | <img src="report_pic/ef3_prof.png" width="100%"> |
+| EF_HAND_2 EF-hand domain | 60-95    | 280       | DASKFAEHVFRTFDTNSDGTIDFREFIIALSVTSRG | <img src="pic/ef1_prof.png" width="100%"> |
+| EF_HAND_2 EF-hand domain | 96-131   | 331       | RLEQKLMWAFSMYDLDGNGYISREEMLEIVQAIYKM | <img src="pic/ef2_prof.png" width="100%"> |
+| EF_HAND_2 EF-hand domain | 144-179  | 287       | TPEKRTEKIFRQMDTNNDGKLSLEEFIRGAKSDPSI | <img src="pic/ef3_prof.png" width="100%"> |
 
 <img src="pic/HPCA_prot.png" width="100%">
 
