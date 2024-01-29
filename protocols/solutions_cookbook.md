@@ -1,6 +1,6 @@
 Solutions Cookbook
 =================
-*Department of Molecular Biophysics & Borys Olifirov, 16.10.2023*
+*Department of Molecular Biophysics & Borys Olifirov, 29.01.2024*
 
 Composition and instructions for preparation and storage of work/stock solutions.
 
@@ -33,6 +33,41 @@ I = 160 mM, osmolarity ~300-310 mOsmol.
 Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C. 
 
 Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
+
+I = 157 mM, osmolarity ~300-310 mOsmol.
+
+### MES Buffered Saline (MBS) 
+| Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 100 ml | 250 ml | 500 ml  |
+| --------------------- | ------------------ | ---------- | ----------- | ------------- | --------- | --------- | --------- |
+| NaCl           | Sigma S9625 | 58.44     | solid       | 150 mM       | 876.6 mg | 2193.7 mg | 4383 mg |
+| KCl      | Sigma P5405 | 74.55  | solid       | 2.5 mM   | 18.5 mg | 46.6 mg | 92.5 mg |
+| CaCl2             | Sigma C3881 | 147.0  | solid       | 2 mM        | 29.4 mg | 73.5 mg | 147 mg |
+| MgCl2 | Sigma M2670 | 203.3 | solid | 1 mM | 20.4 mg | 50.8 mg | 101.7 mg |
+| MES | SERVA 29834 | 195.2 | solid | 10 mM | 195.2 mg | 488 mg | 976 mg |
+| dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 250 ml | to 500 ml |
+
+Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with HCl. Filter and store at 4°C. 
+
+Low pH solution for SEP imaging.
+
+Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml) if needed.
+
+I = 160 mM, osmolarity ~300-310 mOsmol.
+
+### Mg2+-free MES Buffered Saline (MBS -Mg) 
+| Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 100 ml | 250 ml | 500 ml  |
+| --------------------- | ------------------ | ---------- | ----------- | ------------- | --------- | --------- | --------- |
+| NaCl           | Sigma S9625 | 58.44     | solid       | 150 mM       | 876.6 mg | 2193.7 mg | 4383 mg |
+| KCl      | Sigma P5405 | 74.55  | solid       | 2.5 mM   | 18.5 mg | 46.6 mg | 92.5 mg |
+| CaCl2             | Sigma C3881 | 147.0  | solid       | 2 mM        | 29.4 mg | 73.5 mg | 147 mg |
+| MES | SERVA 29834 | 195.2 | solid | 10 mM | 195.2 mg | 488 mg | 976 mg |
+| dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 250 ml | to 500 ml |
+
+Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with HCl. Filter and store at 4°C. 
+
+Low pH solution for SEP imaging in ChemLTD protocol.
+
+Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml) if needed.
 
 I = 157 mM, osmolarity ~300-310 mOsmol.
 
@@ -118,7 +153,7 @@ Based on [Piccolo et al., 2012](https://pubmed.ncbi.nlm.nih.gov/22985263/)
 | KCl           | Sigma P5405                         | 74.55      | solid       | 5 mM          | 18.64 mg  |
 | CaCl2         | Sigma C3881                         | 147        | solid       | 0.75 mM       | 5.51 mg   |
 | MgCl2         | Sigma M2670                         | 203.3      | solid       | 0.5 mM        | 5.08 mg   |
-| TAPS          | Sigma T9659 (tested on Serva 37194) | 243.28     | solid       | 10 mM         | 121.65 mg |
+| TAPS          | Sigma T9659 (tested on SERVA 37194) | 243.28     | solid       | 10 mM         | 121.65 mg |
 | deionized H2O | -                                   | -          | -           | -             | to 50 ml  |
 
 Dissolve all components in ~3/4 of the final volume, adjust pH to 8.5 with 2-3M NaOH. Sterilize by filtering 0.22 um and store at 4°C.

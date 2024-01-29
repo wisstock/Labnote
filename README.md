@@ -1,32 +1,26 @@
 Lab Notes
 =========
 
-Lab 404 laboratory notebook, Department of Molecular biophysics, Bogomoletz Institute of Physiology.
+Lab 404 Laboratory Notebook.
+Department of Molecular Biophysics, Bogomoletz Institute of Physiology, NAS of Ukraine.
 
 
 ## Diary
-Contains daily notes files with everyday lab activity description.
+Daily log files detailing laboratory activities.
+
+## Plasmids
+Notes on plasmid design and cloning procedures.
 
 ## Projects
-Contain individual directories for each project.
-Each project folders must have unique tag and year in name and contain head file (**rational.md**), experiments plan file with detail description of reserach design and individual folder for experiments results.
+Directories for various projects.
+Each project directory should have a unique tag and year in its name, including a head file (__rational.md__), an experiment plan file with a detailed description of the research design, and an individual folder for experiment results.
 
 ## Protocols
-Descriptions of standard protocols for laboratory manipulations.
-
-## Reagents
-Composition of solutions and reagents.
-Data storing in CSV table format and have next columns:
- - Chemical - name of chemical
- - ID - manufacturer and serial number
- - MW (g/mol) - molecular weight
- - Stock Solution - concentration of srock solution (if you don't use SS just mark as "solid")
- - Concentration - final concentration
- - volume - mass or volume of stock solution for the specified solution volume (there may be several "volume" columns for different final solution volumes)
+Documentation of standard protocols and a __Solutions Cookbook__ file with compositions of solutions.
 
 ---
 
-#### GitHub cheatsheet
+#### GitHub cheat-sheet
 
 **git** commands that you may needed for work are present below, enjoy. But first you should create fork of Labnote repo on your GitHub account.
 
