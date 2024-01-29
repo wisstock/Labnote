@@ -46,7 +46,7 @@ I = 157 mM, osmolarity ~300-310 mOsmol.
 | MES | SERVA 29834 | 195.2 | solid | 10 mM | 195.2 mg | 488 mg | 976 mg |
 | dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 250 ml | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with HCl. Filter and store at 4°C. 
+Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with 2-3M NaOH. Filter and store at 4°C. 
 
 Low pH solution for SEP imaging.
 
@@ -63,7 +63,7 @@ I = 160 mM, osmolarity ~300-310 mOsmol.
 | MES | SERVA 29834 | 195.2 | solid | 10 mM | 195.2 mg | 488 mg | 976 mg |
 | dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 250 ml | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with HCl. Filter and store at 4°C. 
+Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with 2-3M NaOH. Filter and store at 4°C. 
 
 Low pH solution for SEP imaging in ChemLTD protocol.
 
