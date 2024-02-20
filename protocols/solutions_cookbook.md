@@ -19,7 +19,23 @@ Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M 
 
 Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
 
-I = 160 mM, osmolarity ~300-310 mOsmol.
+I = 160 mM, osmolarity ~290-300 mOsmol.
+
+### Low Mg2+ HEPES Buffered Saline (HBS low Mg)
+| Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 250 ml | 500 ml  |
+| --------------------- | ------------------ | ---------- | ------------- | --------- | --------- | --------- |
+| NaCl           | Sigma S9625 | 58.44     | solid       | 150 mM       |  | 4383 mg |
+| KCl      | Sigma P5405 | 74.55  | solid       | 2.5 mM   |  | 92.5 mg |
+| CaCl2             | Sigma C3881 | 147.0  | solid       | 2 mM        |  | 147 mg |
+| MgCl2 | Sigma M2670       | 203.3      | solid       | 0.3 mM    |  | mg |
+| HEPES | Sigma H3375 | 238.3 | solid | 10 mM |  | 1192 mg |
+| dH2O                 | -                  | -          | -           | -             | to 250 ml | to 500 ml |
+
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C.
+
+Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
+
+I = 159 mM, osmolarity ~290-300 mOsmol.
 
 ### Mg2+-free HEPES Buffered Saline (HBS -Mg) 
 | Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 100 ml | 500 ml  |
@@ -34,7 +50,7 @@ Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M 
 
 Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
 
-I = 157 mM, osmolarity ~300-310 mOsmol.
+I = 157 mM, osmolarity ~290-300 mOsmol.
 
 ### MES Buffered Saline (MBS) 
 | Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 100 ml | 250 ml | 500 ml  |
