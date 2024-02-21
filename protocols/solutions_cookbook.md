@@ -1,6 +1,6 @@
 Solutions Cookbook
 =================
-*Department of Molecular Biophysics & Borys Olifirov, 29.01.2024*
+*Department of Molecular Biophysics & Borys Olifirov, 21.02.2024*
 
 Composition and instructions for preparation and storage of work/stock solutions.
 
@@ -24,11 +24,11 @@ I = 160 mM, osmolarity ~290-300 mOsmol.
 ### Low Mg2+ HEPES Buffered Saline (HBS low Mg)
 | Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 250 ml | 500 ml  |
 | --------------------- | ------------------ | ---------- | ------------- | --------- | --------- | --------- |
-| NaCl           | Sigma S9625 | 58.44     | solid       | 150 mM       |  | 4383 mg |
-| KCl      | Sigma P5405 | 74.55  | solid       | 2.5 mM   |  | 92.5 mg |
-| CaCl2             | Sigma C3881 | 147.0  | solid       | 2 mM        |  | 147 mg |
-| MgCl2 | Sigma M2670       | 203.3      | solid       | 0.3 mM    |  | mg |
-| HEPES | Sigma H3375 | 238.3 | solid | 10 mM |  | 1192 mg |
+| NaCl           | Sigma S9625 | 58.44     | solid       | 150 mM       | 2191.5 mg | 4383 mg |
+| KCl      | Sigma P5405 | 74.55  | solid       | 2.5 mM   | 46.59 mg | 92.5 mg |
+| CaCl2             | Sigma C3881 | 147.0  | solid       | 2 mM        | 73.5 mg | 147 mg |
+| MgCl2 | Sigma M2670       | 203.3      | solid       | 0.3 mM    | 15.25 mg | 30.5 mg |
+| HEPES | Sigma H3375 | 238.3 | solid | 10 mM | 595.75 mg | 1192 mg |
 | dH2O                 | -                  | -          | -           | -             | to 250 ml | to 500 ml |
 
 Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C.
