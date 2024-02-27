@@ -22,7 +22,8 @@ ggplot(data = df.speed,
   annotate('rect', xmin = 0.5, xmax = 1.5, ymin = -Inf, ymax = Inf,
            alpha = 0.15, fill = 'red') +
   geom_line() +
-  geom_point()
+  geom_point() +
+  scale_y_continuous(name = 'ΔF/F0')
 
 ##### 02.16 #####
 df.01 <- read.csv('24_02_16_01_ch0_lab_prof_dF.csv') %>%
@@ -72,16 +73,22 @@ ggplot(data = df.full %>% filter(time <= 10, exp != '1', ch == 'SEP') %>% group_
            alpha = 0.15, fill = 'red') +
   annotate('segment', x = -2, xend = -2, y = -Inf, yend = Inf,
            colour = 'black') +
-  geom_hline(yintercept = 0) +
+  geom_hline(yintercept = 0, linetype = 2) +
   geom_line() +
   geom_point() +
-  facet_wrap(facets = vars(roi), nrow = 5, strip.position = 'right')
+  facet_wrap(facets = vars(roi), nrow = 5, strip.position = 'right') +
+  scale_y_continuous(name = 'ΔF/F0')
 
 
-ggplot(data = df.full %>% filter(time <= 10, exp == '2') %>% group_by(id) %>% mutate(time = time - 4.0),
+ggplot(data = df.full %>% filter(exp == '2'),
        aes(x = time, y = int, color = roi)) +
-  annotate('rect', xmin = 0, xmax = 1, ymin = -Inf, ymax = Inf,
+  annotate('rect', xmin = 2, xmax = 22, ymin = -Inf, ymax = Inf,
+           alpha = 0.075, fill = 'blue') +
+  annotate('rect', xmin = 4, xmax = 5, ymin = -Inf, ymax = Inf,
+           alpha = 0.15, fill = 'red') +
+  annotate('rect', xmin = 19, xmax = 20, ymin = -Inf, ymax = Inf,
            alpha = 0.15, fill = 'red') +
   geom_line() +
   geom_point() +
-  facet_wrap(facets = vars(ch), scales = 'free_y')
+  facet_wrap(facets = vars(ch), scales = 'free_y', nrow = 2) +
+  scale_y_continuous(name = 'ΔF/F0')
