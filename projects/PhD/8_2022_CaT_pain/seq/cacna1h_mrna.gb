@@ -1,0 +1,609 @@
+LOCUS       NM_153814               7871 bp    mRNA    linear   ROD 12-JAN-2022
+DEFINITION  Rattus norvegicus calcium voltage-gated channel subunit alpha1 H
+            (Cacna1h), mRNA.
+ACCESSION   NM_153814 XM_573058
+VERSION     NM_153814.2
+KEYWORDS    RefSeq.
+SOURCE      Rattus norvegicus (Norway rat)
+  ORGANISM  Rattus norvegicus
+            Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+            Mammalia; Eutheria; Euarchontoglires; Glires; Rodentia; Myomorpha;
+            Muroidea; Muridae; Murinae; Rattus.
+REFERENCE   1  (bases 1 to 7871)
+  AUTHORS   Tomita S, Sekiguchi F, Kasanami Y, Naoe K, Tsubota M, Wake H,
+            Nishibori M and Kawabata A.
+  TITLE     Cav3.2 overexpression in L4 dorsal root ganglion neurons after L5
+            spinal nerve cutting involves Egr-1, USP5 and HMGB1 in rats: An
+            emerging signaling pathway for neuropathic pain
+  JOURNAL   Eur J Pharmacol 888, 173587 (2020)
+   PUBMED   32971090
+  REMARK    GeneRIF: Cav3.2 overexpression in L4 dorsal root ganglion neurons
+            after L5 spinal nerve cutting involves Egr-1, USP5 and HMGB1 in
+            rats: An emerging signaling pathway for neuropathic pain.
+REFERENCE   2  (bases 1 to 7871)
+  AUTHORS   Gomez K, Calderon-Rivera A, Sandoval A, Gonzalez-Ramirez R,
+            Vargas-Parada A, Ojeda-Alonso J, Granados-Soto V, Delgado-Lezama R
+            and Felix R.
+  TITLE     Cdk5-Dependent Phosphorylation of CaV3.2 T-Type Channels: Possible
+            Role in Nerve Ligation-Induced Neuropathic Allodynia and the
+            Compound Action Potential in Primary Afferent C Fibers
+  JOURNAL   J Neurosci 40 (2), 283-296 (2020)
+   PUBMED   31744861
+  REMARK    GeneRIF: The present work shows that the exacerbated expression of
+            Cdk5 in a preclinical model of neuropathic pain increases the
+            functional expression of CaV3.2 channels
+REFERENCE   3  (bases 1 to 7871)
+  AUTHORS   Liu QY, Chen W, Cui S, Liao FF, Yi M, Liu FY and Wan Y.
+  TITLE     Upregulation of Cav3.2 T-type calcium channels in adjacent intact
+            L4 dorsal root ganglion neurons in neuropathic pain rats with L5
+            spinal nerve ligation
+  JOURNAL   Neurosci Res 142, 30-37 (2019)
+   PUBMED   29684385
+  REMARK    GeneRIF: Study shows that the membrane expression and the function
+            of Cav3.2 T-type calcium channels are increased in the intact L4
+            dorsal root ganglion neurons in neuropathic pain rats with
+            peripheral nerve injury like spinal nerve ligation.
+REFERENCE   4  (bases 1 to 7871)
+  AUTHORS   Cain SM, Tyson JR, Choi HB, Ko R, Lin PJC, LeDue JM, Powell KL,
+            Bernier LP, Rungta RL, Yang Y, Cullis PR, O'Brien TJ, MacVicar BA
+            and Snutch TP.
+  TITLE     CaV 3.2 drives sustained burst-firing, which is critical for
+            absence seizure propagation in reticular thalamic neurons
+  JOURNAL   Epilepsia 59 (4), 778-791 (2018)
+   PUBMED   29468672
+  REMARK    GeneRIF: There is a role for CaV3.2 channels in propagating
+            thalamocortical network seizures and in setting the pacemaking
+            frequency of spike-wave discharges.
+REFERENCE   5  (bases 1 to 7871)
+  AUTHORS   Kang XJ, Chi YN, Chen W, Liu FY, Cui S, Liao FF, Cai J and Wan Y.
+  TITLE     Increased expression of CaV3.2 T-type calcium channels in damaged
+            DRG neurons contributes to neuropathic pain in rats with spared
+            nerve injury
+  JOURNAL   Mol Pain 14, 1744806918765808 (2018)
+   PUBMED   29592785
+  REMARK    GeneRIF: CaV3.2 T-type calcium channels in damaged medium-sized
+            dorsal root ganglion neurons might contribute to neuropathic pain
+            after peripheral nerve injury.
+REFERENCE   6  (bases 1 to 7871)
+  AUTHORS   Bourinet E, Alloui A, Monteil A, Barrere C, Couette B, Poirot O,
+            Pages A, McRory J, Snutch TP, Eschalier A and Nargeot J.
+  TITLE     Silencing of the Cav3.2 T-type calcium channel gene in sensory
+            neurons demonstrates its major role in nociception
+  JOURNAL   EMBO J 24 (2), 315-324 (2005)
+   PUBMED   15616581
+  REMARK    GeneRIF: results provide direct evidence linking CaV3.2 T-type
+            channels to pain perception and suggest that CaV3.2 may offer a
+            specific molecular target for the treatment of pain.
+REFERENCE   7  (bases 1 to 7871)
+  AUTHORS   Khosravani H, Altier C, Simms B, Hamming KS, Snutch TP, Mezeyova J,
+            McRory JE and Zamponi GW.
+  TITLE     Gating effects of mutations in the Cav3.2 T-type calcium channel
+            associated with childhood absence epilepsy
+  JOURNAL   J Biol Chem 279 (11), 9681-9684 (2004)
+   PUBMED   14729682
+  REMARK    GeneRIF: Ca(v)3.2 has a role in calcium influx during physiological
+            activation and mutations may be causative in the propensity for
+            seizures in patients with childhood absence epilepsy
+REFERENCE   8  (bases 1 to 7871)
+  AUTHORS   Chen Y, Lu J, Pan H, Zhang Y, Wu H, Xu K, Liu X, Jiang Y, Bao X,
+            Yao Z, Ding K, Lo WH, Qiang B, Chan P, Shen Y and Wu X.
+  TITLE     Association between genetic variation of CACNA1H and childhood
+            absence epilepsy
+  JOURNAL   Ann Neurol 54 (2), 239-243 (2003)
+   PUBMED   12891677
+REFERENCE   9  (bases 1 to 7871)
+  AUTHORS   Lenglet S, Louiset E, Delarue C, Vaudry H and Contesse V.
+  TITLE     Involvement of T-type calcium channels in the mechanism of action
+            of 5-HT in rat glomerulosa cells: a novel signaling pathway for the
+            5-HT7 receptor
+  JOURNAL   Endocr Res 28 (4), 651-655 (2002)
+   PUBMED   12530678
+  REMARK    GeneRIF: Activation of native 5-HT7 receptors stimulates cAMP
+            formation, which in turn provokes calcium influx through T-type
+            calcium channels. Both activation of AC/PKA pathway and calcium
+            influx are involved in 5-HT-induced aldosterone secretion.
+REFERENCE   10 (bases 1 to 7871)
+  AUTHORS   McRory JE, Santi CM, Hamming KS, Mezeyova J, Sutton KG, Baillie DL,
+            Stea A and Snutch TP.
+  TITLE     Molecular and functional characterization of a family of rat brain
+            T-type calcium channels
+  JOURNAL   J Biol Chem 276 (6), 3999-4011 (2001)
+   PUBMED   11073957
+  REMARK    Erratum:[J Biol Chem 2001 Aug 10;276(32):30571-4]
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. The reference sequence was derived from AF290213.2.
+            On Aug 31, 2012 this sequence version replaced NM_153814.1.
+            
+            Publication Note:  This RefSeq record includes a subset of the
+            publications that are available for this gene. Please see the Gene
+            record to access additional publications.
+            
+            ##Evidence-Data-START##
+            Transcript exon combination :: AF290213.2 [ECO:0000332]
+            ##Evidence-Data-END##
+PRIMARY     REFSEQ_SPAN         PRIMARY_IDENTIFIER PRIMARY_SPAN        COMP
+            1-7871              AF290213.2         4-7874
+FEATURES             Location/Qualifiers
+     source          1..7871
+                     /organism="Rattus norvegicus"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:10116"
+                     /chromosome="10"
+                     /map="10q12"
+     gene            1..7871
+                     /gene="Cacna1h"
+                     /note="calcium voltage-gated channel subunit alpha1 H"
+                     /db_xref="GeneID:114862"
+                     /db_xref="RGD:68943"
+     exon            1..326
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     CDS             28..7107
+                     /gene="Cacna1h"
+                     /note="voltage-gated calcium channel subunit alpha Cav3.2;
+                     calcium channel, voltage-dependent, T type, alpha 1H
+                     subunit"
+                     /codon_start=1
+                     /product="voltage-dependent T-type calcium channel subunit
+                     alpha-1H"
+                     /protein_id="NP_722521.1"
+                     /db_xref="GeneID:114862"
+                     /db_xref="RGD:68943"
+                     /translation="MTEGTLAADEVRVPLGASPPAPAAPVRASPASPGAPGREEQGGS
+                     GSGVLAPESPGTECGADLGADEEQPVPYPALAATVFFCLGQTTRPRSWCLRLVCNPWF
+                     EHISMLVIMLNCVTLGMFRPCEDVECRSERCSILEAFDDFIFAFFAVEMVIKMVALGL
+                     FGQKCYLGDTWNRLDFFIVMAGMMEYSLDGHNVSLSAIRTVRVLRPLRAINRVPSMRI
+                     LVTLLLDTLPMLGNVLLLCFFVFFIFGIVGVQLWAGLLRNRCFLDSAFVRNNNLTFLR
+                     PYYQTEEGEENPFICSSRRDNGMQKCSHIPSRRELRVQCTLGWEAYGQPQAEDGGAGR
+                     NACINWNQYYNVCRSGEFNPHNGAINFDNIGYAWIAIFQVITLEGWVDIMYYVMDAHS
+                     FYNFIYFILLIIMGSFFMINLCLVVIATQFSETKQRENQLMREQRARYLSNDSTLASF
+                     SEPGSCYEELLKYVGHIFRKVKRRSLRLYARWQSRWRKKVDPSSTVHGQGPGRRPRRA
+                     GRRTASVHHLVYHHHHHHHHHYHFSHGGPRRPSPEPGAGDNRLVRACAPPSPPSPGHG
+                     PPDSESVHSIYHADCHVEGPQERARVAHSIATAASLKLASGLGTMNYPTILPSGTVNS
+                     KGGTSSRPKGLRGAGAPGAAVHSPLSLGSPRPYEKIQDVVGEQGLGRASSHLSGLSVP
+                     CPLPSPQAGTLTCELKSCPYCASALEDPEFEFSGSESGDSDAHGVYEFTQDVRHGDCR
+                     DPVQQPHEVGTPGHSNERRRTPLRKASQPGGIGHLWASFSGKLRRIVDSKYFNRGIMA
+                     AILVNTLSMGVEYHEQPEELTNALEISNIVFTSMFALEMLLKLLACGPLGYIRNPYNI
+                     FDGIVVVISVWEIVGQANGGLSVLRTFRLLRVLKLVRFLPALRRQLVVLMRTMDNVAT
+                     FCMLLMLFIFIFSILGMHLFGCKFSLKTDSGDTVPDRKNFDSLLWAIVTVFQILTQED
+                     WNVVLYNGMASTSSWAALYFVALMTFGNYVLFNLLVAILVEGFQAEGDATRSDTDEDK
+                     TSTQLEGDFDKLRDLRATEMKMYSLAVTPNGHLEGRGSLPPPLITHTAATPMPTPKSS
+                     PNLDVAHALLDSRRSSSGSVDPQLGDQKSLASLRSSPCTPWGPNSAGSSRRSSWNSLG
+                     RAPSLKRRNQCGERESLLSGEGKGSTDDEAEDSRPSTGTHPGASPGPRATPLRRAESL
+                     DHRSTLDLCPPRPAALLPTKFHDCNGQMVALPSEFFLRIDSHKEDAAEFDDDIEDSCC
+                     FRLHKVLEPYAPQWCRSRESWALYLFPPQNRLRVSCQKVIAHKMFDHVVLVFIFLNCI
+                     TIALERPDIDPGSTERAFLSVSNYIFTAIFVVEMMVKVVALGLLWGEHAYLQSSWNVL
+                     DGLLVLVSLVDIIVAMASAGGAKILGVLRVLRLLRTLRPLRVISRAPGLKLVVETLIS
+                     SLRPIGNIVLICCAFFIIFGILGVQLFKGKFYYCEGTDTRNITTKAECHAAHYRWVRR
+                     KYNFDNLGQALMSLFVLSSKDGWVNIMYDGLDAVGIDQQPVQNHNPWMLLYFISFLLI
+                     VSFFVLNMFVGVVVENFHKCRQHQEAEEARRREEKRLRRLERRRRKAQRRPYYADYSH
+                     TRRSIHSLCTSHYLDLFITFIICLNVITMSMEHYNQPKSLDEALKYCNYVFTIVFVFE
+                     AALKLVAFGFRRFFKDRWNQLDLAIVLLSIMGIALEEIEMNAALPINPTIIRIMRVLR
+                     IARVLKLLKMATGMRALLDTVVQALPQVGNLGLLFMLLFFIYAALGVELFGRLECSED
+                     NPCEGLSRHATFTNFGMAFLTLFRVSTGDNWNGIMKDTLRECTREDKHCLSYLPALSP
+                     VYFVTFMLVAQFVLVNVVVAVLMKHLEESNKEAREDAEMDAEIELEMAQGSTAQPPPT
+                     AQESQGTQPDTPNLLVVRKVSVSRMLSLPNDSYMFRPVAPAAAPHSHPLQEVEMETYT
+                     GPVTSAHSPPLEPRASFQVPSAASSPARVSDPLCALSPRGTPRSLSLSRILCRQEAMH
+                     SESLEGKVDDVGGDSIPDYTEPAENMSTSQASTGAPRSPPCSPRPASVRTRKHTFGQR
+                     CISSRPPTLGGDEAEAADPADEEVSHITSSAHPWPATEPHSPEASPTASPVKGTMGSG
+                     RDPRRFCSVDAQSFLDKPGRPDAQRWSSVELDNGESHLESGEVRGRASELEPALGSRR
+                     KKKMSPPCISIEPPTKDEGSSRPPAAEGGNTTLRRRTPSCEAALHRDCPEPTEGPGTG
+                     GDPVAKGERWGQASCRAEHLTVPNFAFEPLDMGGPGGDCFLDSDQSVTPEPRVSSLGA
+                     IVPLILETELSMPSGDCPEKEQGLYLTVPQTPLKKPGSTPATPAPDDSGDEPV"
+     misc_feature    28..216
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    286..1293
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: I"
+     misc_feature    328..384
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    451..507
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    535..579
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    601..603
+                     /gene="Cacna1h"
+                     /note="N-linked (GlcNAc...) asparagine.
+                     /evidence=ECO:0000255; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); glycosylation site"
+     misc_feature    607..663
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    724..786
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    838..840
+                     /gene="Cacna1h"
+                     /note="N-linked (GlcNAc...) asparagine.
+                     /evidence=ECO:0000255; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); glycosylation site"
+     misc_feature    1159..1161
+                     /gene="Cacna1h"
+                     /note="Calcium ion selectivity and permeability.
+                     /evidence=ECO:0000250; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); other site"
+     misc_feature    1210..1284
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    1495..1746
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    1885..1995
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    2236..2334
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    2353..3072
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: II"
+     misc_feature    2398..2460
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    2500..2565
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    2584..2640
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    2665..2736
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    2770..2832
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    2938..2940
+                     /gene="Cacna1h"
+                     /note="Calcium ion selectivity and permeability.
+                     /evidence=ECO:0000250; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); other site"
+     misc_feature    2989..3063
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    3208..3618
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    3901..4734
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: III"
+     misc_feature    3931..3999
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4054..4116
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4147..4206
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4249..4314
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4345..4416
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4456..4458
+                     /gene="Cacna1h"
+                     /note="N-linked (GlcNAc...) asparagine.
+                     /evidence=ECO:0000255; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); glycosylation site"
+     misc_feature    4570..4572
+                     /gene="Cacna1h"
+                     /note="Calcium ion selectivity and permeability.
+                     /evidence=ECO:0000250; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); other site"
+     misc_feature    4648..4725
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4846..5631
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: IV"
+     misc_feature    4891..4953
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    4996..5061
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    5083..5139
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    5182..5253
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    5296..5358
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    5464..5466
+                     /gene="Cacna1h"
+                     /note="Calcium ion selectivity and permeability.
+                     /evidence=ECO:0000250; propagated from
+                     UniProtKB/Swiss-Prot (Q9EQ60.2); other site"
+     misc_feature    5548..5631
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     transmembrane region"
+     misc_feature    5698..5766
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    5947..6036
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    6073..6801
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     misc_feature    7030..7104
+                     /gene="Cacna1h"
+                     /note="propagated from UniProtKB/Swiss-Prot (Q9EQ60.2);
+                     Region: Disordered. /evidence=ECO:0000256|SAM:MobiDB-lite"
+     exon            327..438
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            439..572
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            573..670
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            671..830
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            831..1146
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            1147..1239
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            1240..2029
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            2030..2469
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            2470..2621
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            2622..2807
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            2808..2925
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            2926..3081
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            3082..3172
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            3173..3381
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            3382..3804
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            3805..3905
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            3906..4029
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4030..4098
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4099..4283
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4284..4410
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4411..4536
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4537..4626
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4627..4819
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4820..4971
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            4972..5081
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5082..5215
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5216..5286
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5287..5365
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5366..5487
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5488..5733
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5734..5902
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            5903..6063
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+     exon            6064..7871
+                     /gene="Cacna1h"
+                     /inference="alignment:Splign:2.1.0"
+ORIGIN      
+        1 tctccgcagg tgctgccctc cgccaccatg accgagggca cgctggcagc ggacgaagtc
+       61 cgggtgcccc tgggcgcttc gccgccggcc cctgcagcgc cggtgagagc ttccccagcg
+      121 agccctgggg cgccggggcg cgaggagcag ggaggatccg ggtcgggcgt gttggctccc
+      181 gagagcccag ggaccgagtg tggtgcggac ctgggcgccg acgaggaaca gccggtccca
+      241 tacccagctc tggctgccac agtcttcttc tgcctcgggc aaaccacgcg gccgcgcagc
+      301 tggtgcctcc gactggtttg taacccgtgg ttcgagcaca tcagcatgct ggtcatcatg
+      361 ctgaactgcg tgacactggg catgttcagg ccctgtgagg atgttgagtg ccgctccgaa
+      421 cgttgcagca tcttggaggc cttcgacgac ttcatctttg ccttcttcgc cgtggagatg
+      481 gtgatcaaga tggtggcttt ggggctgttt gggcaaaaat gctacctggg tgacacctgg
+      541 aacaggctgg acttcttcat tgtcatggcg ggcatgatgg agtactctct ggacggacac
+      601 aacgtgagcc tctctgccat ccgaaccgtg cgtgtgctgc ggcccctccg cgccatcaac
+      661 cgagtcccca gtatgcggat cctggtcact ctgctgctgg acacgctgcc catgcttggg
+      721 aatgtcctcc tcctctgctt cttcgtcttc ttcatcttcg gcattgttgg ggtccagctc
+      781 tgggctggcc tgcttcggaa ccgatgcttc ctggacagcg ccttcgtcag gaacaacaac
+      841 ctgaccttct tgcggccata ctaccagacg gaggagggtg aggagaaccc tttcatctgc
+      901 tcctcccgcc gtgacaacgg catgcagaag tgctcgcaca tccccagccg ccgtgagctt
+      961 cgagtgcagt gcacactcgg ctgggaggcc tatgggcagc cacaggctga ggatgggggt
+     1021 gctggccgca acgcctgtat caactggaac cagtattaca acgtgtgccg ctcgggggaa
+     1081 ttcaaccctc acaacggtgc catcaacttc gacaacattg gctacgcttg gattgccatc
+     1141 ttccaggtca tcacactgga gggctgggtg gacatcatgt actacgtcat ggatgcccac
+     1201 tcgttctaca acttcatcta cttcatcctc ctcatcatta tgggctcctt cttcatgatc
+     1261 aacctgtgcc tggtggtgat agccacacag ttctcagaga caaagcaaag ggaaaaccag
+     1321 ctgatgcgag aacagcgggc ccgctatctg tccaacgaca gcactctggc cagcttctca
+     1381 gagcccggca gctgctacga ggagctcctc aagtatgtag gccacatctt ccggaaggtt
+     1441 aaacgccgta gcctgcgtct ttatgcccgc tggcagagcc gctggcgtaa gaaggtggat
+     1501 cccagcagta ccgtgcatgg ccaaggccct gggcggcggc cacgacgggc aggcaggcgt
+     1561 acagcttcag tgcaccatct ggtctaccac caccaccacc accatcacca ccattaccac
+     1621 tttagccacg gtggcccacg caggcccagc ccagagccag gtgctggtga caacaggttg
+     1681 gtcagggcct gtgcgccacc ctcgccgcca tccccaggcc atgggccacc agactctgag
+     1741 tctgtgcaca gtatctacca tgctgactgc cacgtggagg ggccgcagga acgagcccga
+     1801 gtggcacact ccatagccac tgctgctagc ctcaagctgg cctcaggttt gggtaccatg
+     1861 aactacccca ccatcctacc ttcaggaaca gtcaacagca aaggtggcac cagctcacga
+     1921 cccaaggggc tacgaggtgc tggcgcccca ggggctgcag tacacagccc tctgagcctg
+     1981 ggaagcccca gaccctatga gaagatccag gatgtggtgg gagaacaagg actaggccga
+     2041 gcctctagcc acctgtcagg cctgagtgtg ccttgccccc tgcccagccc ccaggctggc
+     2101 acgctgacct gtgagctgaa gagctgccca tattgtgcca gcgccctgga ggaccccgag
+     2161 tttgaattca gtggctcaga gagcggggac tcggatgccc acggagtcta tgagtttacc
+     2221 caggatgtac ggcatgggga ttgtcgggac cctgtgcagc agccccatga agtgggcaca
+     2281 ccaggccaca gcaatgagcg gcggcggaca ccactgcgga aggcctcaca accaggaggg
+     2341 ataggccacc tctgggcatc cttcagtggc aagctacgtc gcattgtaga cagcaagtac
+     2401 ttcaaccgag gcatcatggc agccatcctc gtcaatactc tgagcatggg cgttgagtat
+     2461 catgaacagc ctgaggagct gaccaacgcc ctggagataa gcaacatcgt gttcaccagc
+     2521 atgtttgcct tggagatgct actgaagctg ctggcctgcg gcccactggg atacatccgg
+     2581 aacccctaca acatcttcga tggcattgtt gtcgtcataa gtgtctggga gatcgtgggg
+     2641 caggcaaacg gtggcctgtc tgtgctgcgc accttcaggc tgctgcgggt gctgaagctg
+     2701 gtgcgcttcc tgccggccct gcggcgccag ctcgtggtgc tcatgaggac catggacaac
+     2761 gtggccacct tctgcatgct cctcatgctg ttcatcttca tcttcagcat cctgggcatg
+     2821 cacctgttcg gctgtaagtt cagcctgaag acagactctg gagacaccgt ccctgacagg
+     2881 aagaacttcg actccctact gtgggccatc gtcaccgtgt ttcagatctt gacacaggaa
+     2941 gactggaacg tggttctgta caacggcatg gcctccactt cgtcctgggc cgccctttac
+     3001 tttgtggccc tcatgacctt tgggaactat gtgctcttca acctgctggt agccatcctg
+     3061 gtggaaggtt tccaggcaga gggtgacgcc accagatctg acaccgacga ggataagacg
+     3121 tctacccagc tagagggaga tttcgataag ctcagagatc ttcgagccac agagatgaag
+     3181 atgtattcac tggcagtgac ccctaacggg cacctagagg gccgaggcag cctgccgccg
+     3241 cccctcatca ctcacacggc agctacgcct atgcctactc ccaaaagctc cccaaacctg
+     3301 gacgtggccc atgctctcct ggactctcgg cgcagcagca gcggctctgt ggacccccag
+     3361 ctgggggacc agaagtctct ggccagcctc cgcagctccc cttgcacccc atggggcccc
+     3421 aacagcgctg ggagcagcag gcgctccagt tggaacagcc tgggccgcgc acccagcctc
+     3481 aaacgccgca accagtgtgg ggagcgcgag tccctgctct ctggagaggg gaagggcagc
+     3541 accgatgacg aggccgagga cagcagacca agcacgggaa cccacccagg ggcctcgcca
+     3601 gggccccgag ccacgccact gcggcgtgcc gagtcattgg accaccgcag cacgctggac
+     3661 ctgtgtccac cacggcctgc ggccctcctg ccgaccaagt tccatgactg caacgggcag
+     3721 atggtggccc tgcccagcga gttctttctg cgcatcgaca gccacaagga ggatgcagcg
+     3781 gagtttgatg atgacataga ggatagctgc tgcttccgtc tacacaaagt gctggaaccc
+     3841 tatgcacccc agtggtgccg tagccgggag tcctgggccc tgtatctctt cccaccgcag
+     3901 aacaggctac gcgtctcctg ccagaaagtc atcgcacaca agatgtttga ccacgtggtc
+     3961 cttgtcttca tcttcctcaa ctgtatcacc attgctctgg agaggccaga cattgaccca
+     4021 ggcagcactg agcgggcctt cctcagcgtc tccaactaca tcttcacagc catcttcgtg
+     4081 gtggagatga tggtgaaggt ggtagccctg ggactgctgt ggggtgaaca tgcctaccta
+     4141 cagagcagtt ggaatgtgct ggacgggctg cttgtcctgg tatccctggt tgacatcatc
+     4201 gtggccatgg cctcagctgg cggtgccaag atcctaggcg tcctgcgtgt gctgcgcctg
+     4261 ctgcggaccc tgaggcctct gagggtcatc agccgagctc caggcctcaa gctggttgta
+     4321 gagactctga tatcatcgct caggcccatt gggaacatcg tcctcatctg ctgcgccttc
+     4381 ttcatcatct ttggcatcct cggggtgcag cttttcaagg gcaaattcta ctactgcgag
+     4441 ggcacagata ccaggaatat caccaccaag gccgagtgcc atgctgccca ctaccgctgg
+     4501 gtgaggcgca aatacaactt tgacaacctg ggtcaggcgc tgatgtctct gttcgtgctg
+     4561 tcatctaagg atggctgggt aaacatcatg tatgacgggc tggatgccgt gggcatcgac
+     4621 cagcagcccg tgcagaacca caacccctgg atgctgctct acttcatctc cttcctgctc
+     4681 atcgtcagct tcttcgtgct caacatgttt gtgggcgtgg tggtggagaa cttccacaag
+     4741 tgccggcagc accaggaggc tgaggaggct cggcgccggg aggagaaacg gctgcggcgc
+     4801 ctggagagga ggcgcaggaa ggcccagcgc cggccctact acgcagacta ttcacacact
+     4861 cgccgctcca tccattcgct gtgcaccagc cactacctgg acctcttcat caccttcatc
+     4921 atctgcctca atgtcatcac catgtccatg gagcactaca accagcccaa gtccctggat
+     4981 gaggccctca agtactgcaa ctacgtcttt accatcgtct tcgtctttga ggctgcactg
+     5041 aagctggtgg cctttgggtt ccggaggttc ttcaaggaca ggtggaacca gctggacttg
+     5101 gccatcgtcc tcctatccat catgggcatt gcgctggagg agattgagat gaacgccgcc
+     5161 ctgcccatca atcccaccat catccgcatc atgcgtgtgc ttcgaatcgc ccgtgtgctg
+     5221 aagctactga agatggccac aggcatgcgc gccttgctgg atactgtggt tcaagctctg
+     5281 cctcaggtag ggaaccttgg tcttcttttc atgctcctgt tttttatcta tgctgccctg
+     5341 ggagtggagc tgtttgggag gctagagtgc agcgaggata acccctgcga gggcctgagc
+     5401 aggcacgcta ccttcaccaa cttcggcatg gccttcctca cactgttccg agtgtccact
+     5461 ggggacaact ggaatgggat tatgaaggat accctccgtg agtgtacccg tgaggacaag
+     5521 cactgcctca gctacctgcc cgcgctctca cccgtctact tcgtcacctt catgctggtg
+     5581 gctcagttcg tgctggtcaa tgtggtggtg gccgtgctca tgaagcacct ggaggagagc
+     5641 aacaaggagg cccgcgagga tgcagagatg gacgccgaga tcgagctgga gatggcacag
+     5701 gggtccacag cccagccccc acctacagca caggaaagcc aaggtaccca gccagacacc
+     5761 ccgaacctcc tggtcgtgcg aaaagtatct gtgtccagga tgctctcgct gcccaatgac
+     5821 agctacatgt tcaggccggt ggctcccgcg gctgccccac attcccaccc actgcaggaa
+     5881 gtggagatgg agacctacac aggcccggtc acctctgctc actcgccacc cctggagccc
+     5941 cgcgcctctt tccaggtccc atcagccgcg tcctccccag ccagggtcag tgaccccctt
+     6001 tgtgcccttt caccccgggg tacaccccgc tctctgagtc tctcacggat actctgcaga
+     6061 caggaggcca tgcactctga gtccctggaa gggaaggttg atgatgttgg aggagacagc
+     6121 atcccagact acacagagcc tgctgaaaat atgtccacga gccaggcatc aacaggtgcc
+     6181 ccgaggtccc ctccgtgctc cccgcgacct gccagcgtcc gtacccgcaa gcacacgttt
+     6241 gggcaacgct gcatctccag ccgccctccc accctgggag gagatgaggc tgaagcagca
+     6301 gacccagcag atgaggaggt cagccacatc accagctcag cccacccctg gccggctaca
+     6361 gagccccaca gccctgaggc ctccccaaca gcctctcctg tgaaaggcac aatgggcagt
+     6421 gggcgggacc cacgcaggtt ctgcagtgta gatgctcaga gcttcctgga caaaccaggt
+     6481 cggccagatg cacaacggtg gtcctcagtg gaactggata acggagaaag ccacctagag
+     6541 tccggggaag tgaggggccg ggcctcagag ctcgaaccag ctcttgggtc acgaaggaag
+     6601 aagaagatga gccctccctg catctccatt gaacctccca ctaaggatga gggctcttcc
+     6661 cggccccctg cagccgaagg aggcaacact accctgaggc gccgaacccc atcctgtgag
+     6721 gctgccctcc atagggactg cccagagcct acagaaggcc caggcaccgg aggggaccct
+     6781 gtagccaagg gtgagcgctg gggccaggcc tcttgccgag cagagcatct gactgtcccc
+     6841 aactttgcct ttgagcctct ggacatgggc ggacctggtg gagactgttt cttggacagt
+     6901 gaccaaagtg tgaccccaga acccagagtt tcctctttgg gggctatagt gcctctgata
+     6961 ctagaaactg aactttctat gccctctggt gactgcccag agaaggaaca aggactgtac
+     7021 ctcactgtgc cccagacccc cttgaagaaa ccagggtcta ccccagccac tcctgcccca
+     7081 gatgacagtg gagatgagcc tgtgtagatg gggctgcgtg tccacagggc tttggcattg
+     7141 aggttgttgg ctccctgcag ggtggtaggg ccatgagtgg accctggctt aggccccact
+     7201 aaggcagagg gaccgggaga taaccatccc aggagaggca gcagacatcc cgtctctgca
+     7261 ccatgacaca ggagcagcct cgggccccac gagcctccct cgtggtgatt caggtttggg
+     7321 ttttcctgag ttttaaccac caccagaagc tgtaccagga ccaggtcatc agtctcagga
+     7381 ggagaggctg tgtcctggga aggaccagta attcctcaca ggcaggaggg caccacagct
+     7441 ccatccatgt gacacacagg tttccgacag ggagtacagg cttgagcctg tgtacattgg
+     7501 gtcctgcagc caccgcaccc aatatcacct tcgttcacag tcctgtttct gtccaccact
+     7561 cggcatcctt ccctctcaca gtgcccctcc cccattccat ccccttagat ggtctagaac
+     7621 tttgcagtga ccctgggaag tactgaccca tgcaataaga cattgcagtc ccaactgagg
+     7681 tggggcttcc catccattcc aggctgttgg gctcaacatt catttgacat ccatttgctt
+     7741 tatgtcatcc gtttctacaa attcaggtta aatgttgcaa taatctgatg cagaaaactt
+     7801 ggcttcctaa gtcaaagctg aggggagggg aggggagggg caaggcaaat ctgaataaac
+     7861 actaacttat t
+//
+
