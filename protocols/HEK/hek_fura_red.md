@@ -84,7 +84,7 @@ heat the solution to RT
 
 3.5. Put culture medium from the well into waste glass and close the culture plate, back it to the CO2-incubator
 
-3.6. Place petri dish into CO2-incubator, load at 37oC for 37-40 min
+3.6. Place petri dish into CO2-incubator or thermostat, load at 37oC for 37-40 min
 
 3.6. Wash cells after loading to eliminate further loading by 1.5 ml of the Outside Solution
 

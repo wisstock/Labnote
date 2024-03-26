@@ -2,12 +2,13 @@ Production of HEK 293 plasma membrane derived vesicles
 =================================
 *Borys Olifirov, 4.11.2020*
 
-Protocol for production of HEK 293 cells plasma membrane vesicles with chloride salts (*based on Piccolo et. al., 2012, doi:10.1021/ac301776j*).
+Protocol for production of HEK 293 cells plasma membrane vesicles with chloride salts (*based on [Piccolo et. al., 2012](https://pubs.acs.org/doi/10.1021/ac301776j)*).
+
 **Warning: reagents volume for ONE well of the 24-wells plate with 70-90% confluency**
 
 ## Protocol
 ### 0. Solutions preparation
-0.1. Prepare Vesiculation Buffer (*cho_vesiculation_buffer.csv*)
+0.1. Prepare Vesiculation Buffer (*see composition in slutions_cookbook*)
 
 0.2. Prepare 30% Phosphate-buffer Saline/PBS 
 
