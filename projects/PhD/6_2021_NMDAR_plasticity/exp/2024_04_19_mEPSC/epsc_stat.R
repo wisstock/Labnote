@@ -9,8 +9,9 @@ require(ggplot2)
 require(ggpubr)
 require(cowplot)
 require(ggsci)
+require(dunn.test)
 
-setwd('/home/wisstock/bio/note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_04_19_mEPSC')
+setwd('/home/wisstock/bio/note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_04_19_mEPSC/-40_Ca')
 
 df.full <- bind_rows(read.csv('220512_s13.csv'),
                      read.csv('220512_s23.csv')) %>%
@@ -22,6 +23,32 @@ df.full <- bind_rows(read.csv('220512_s13.csv'),
 ##### AMPLITUDE STAT #####
 df.amp <- df.full %>%
   select(Amp, Sample, Group, TimPeak)
+
+
+df.amp.norm <- df.amp %>%
+  group_by(Sample) %>%
+  mutate(Amed = Amp / median(Amp[Group == '-70ctrl'])) %>%
+  ungroup()
+
+ggplot() +
+  geom_boxplot(data = df.amp.norm,
+               aes(x = Group, y = Amed, fill = Sample,
+                   group = interaction(Group, Sample))) +
+  stat_summary(data = df.amp.norm,
+               fun = median,
+               geom = 'line',
+               aes(x = Group, y = Amed, color = Sample,
+                   group = Sample),
+               position = position_dodge(width = 0.75)) +
+  stat_summary(data = df.amp.norm,
+               fun = median,
+               geom = 'point',
+               aes(x = Group, y = Amed, color = Sample,
+                   group = Sample),
+               alpha = 0.75,
+               position = position_dodge(width = 0.75))
+
+
 df.amp.70 <- df.amp %>%
   select(-TimPeak)
   filter((Group == '-70ctrl') | (Group == '-70post')) %>%
@@ -32,14 +59,10 @@ df.amp.40 <- df.amp %>%
   select(Amp, Sample, Group) %>%
   droplevels()
 
-# prof
-start.70ctrl
-fin.70ctrl <- 
-
 ggplot() +
   geom_point(data = df.amp,
              aes(x = TimPeak, y = Amp, color = Group, alpha = .75)) +
-  geom_segment(aes())
+  facet_wrap(facets = vars(Sample), nrow = nlevels(df.full$Sample), strip.position = 'right')
 
 
 # box stat
