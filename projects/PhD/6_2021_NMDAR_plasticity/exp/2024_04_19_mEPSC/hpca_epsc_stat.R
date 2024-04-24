@@ -24,10 +24,13 @@ a <- read.csv('260313_s7.csv') %>%
          Amp = as.numeric(Amp),
          Area = as.numeric(Area))
 
-df.full <- bind_rows(read.csv('180213_s50.csv'), #  # r 
-                     read.csv('110213_s23.csv'),
+df.full <- bind_rows(read.csv('110213_s23.csv'),
+                     read.csv('180213_s50.csv'),
+                     read.csv('180313_s14.csv'),
                      read.csv('180313_s30.csv'),
+                     read.csv('180313_s47.csv'),
                      read.csv('190213_s22.csv'),
+                     read.csv('190313_s12.csv'),
                      read.csv('190313_s49.csv'),
                      read.csv('210213_s22.csv'),
                      a) %>%
@@ -39,7 +42,14 @@ remove(a)
 
 ##### AMPLITUDE ABS #####
 df.amp <- df.full %>%
-  select(Amp, Sample, Group, TimPeak)
+  select(Amp, Sample, Group, TimPeak) %>%
+  filter((Sample == '180313_s14')|
+           (Sample == '180313_s30')|
+           (Sample == '190313_s49')|
+           (Sample == '210213_s22')|
+           
+           (Sample == '190213_s22')) %>%
+  droplevels()
 
 # overview
 ggplot(data = df.amp,
@@ -54,88 +64,31 @@ ggplot() +
   stat_summary(data = df.amp,
                fun = median,
                geom = 'line',
-               aes(x = Group, y = Amp, color = Sample,
+               aes(x = Group, y = Amp,
                    group = Sample),
                position = position_dodge(width = 0.75)) +
   stat_summary(data = df.amp,
                fun = median,
                geom = 'point',
-               aes(x = Group, y = Amp, color = Sample,
+               aes(x = Group, y = Amp,
                    group = Sample),
                alpha = 0.75,
                position = position_dodge(width = 0.75)) +
-facet_wrap(facets = vars(Sample), ncol = nlevels(df.full$Sample), strip.position = 'right')
+  facet_wrap(facets = vars(Sample), ncol = nlevels(df.full$Sample), strip.position = 'right') +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 # stat by group
 df.amp.test <- df.amp %>%
   filter((Group == '-70ctrl')|(Group == '-70mid')|(Group == '-70post'))
+
+
 sample.list <- levels(df.amp.test$Sample)
 for (selected.sample in sample.list) {
   print(selected.sample)
   dunn.test(df.amp.test$Amp[df.amp.test$Sample == selected.sample],
             df.amp.test$Group[df.amp.test$Sample == selected.sample],
-            method = 'bh')
+            method = 'hs')
 }
-
-##### ANPLITUDE NORM #####
-# norm overview
-df.amp.norm <- df.amp %>%
-  filter((Sample == '190313_s49')|  # (Sample == '210213_s22')|
-         (Sample == '180313_s30')|
-         (Sample == '190213_s22')) %>%
-  droplevels() %>%
-  group_by(Sample) %>%
-  mutate(Amed = Amp / median(Amp[Group == '-70ctrl'])) %>%
-  ungroup()
-
-ggplot() +
-  geom_boxplot(data = df.amp.norm,
-               aes(x = Group, y = Amed, fill = Sample,
-                   group = interaction(Group, Sample))) +
-  stat_summary(data = df.amp.norm,
-               fun = median,
-               geom = 'line',
-               aes(x = Group, y = Amed, color = Sample,
-                   group = Sample),
-               position = position_dodge(width = 0.75)) +
-  stat_summary(data = df.amp.norm,
-               fun = median,
-               geom = 'point',
-               aes(x = Group, y = Amed, color = Sample,
-                   group = Sample),
-               alpha = 0.75,
-               position = position_dodge(width = 0.75))
-
-
-df.amp.norm.test <- df.amp.norm %>%
-  group_by(Sample, Group) %>%
-  filter((Group == '-70ctrl')|(Group == '-70mid')|(Group == '-70post')) %>%
-  summarise(med = mean(Amed), iqr = IQR(Amed), .groups="keep") %>%
-  droplevels() %>%
-  ungroup()
-
-dunn.test(df.amp.norm.test$med,
-          df.amp.norm.test$Group,
-          method = 'bh')
-
-df.amp.norm.stat <- df.amp.norm.summ %>%
-  filter((Group == '-70ctrl')|(Group == '-70mid')) %>%
-  droplevels() %>%
-  select(-Sample, -iqr) %>%
-  wilcox_test(med~Group)
-
-
-df.amp.70 <- df.amp %>%
-  select(-TimPeak) %>%
-  filter((Group == '-70ctrl') | (Group == '-70post')) %>%
-  droplevels()
-df.amp.40 <- df.amp %>%
-  select(-TimPeak) %>%
-  filter((Group == '-40mid') | (Group == '-40post')) %>%
-  select(Amp, Sample, Group) %>%
-  droplevels()
-
-
 
 
 # box stat
@@ -160,25 +113,94 @@ df.in.amp.stat <- df.amp %>%
   add_significance() %>%
   add_y_position(fun = 'median_iqr', scales = 'free')
 
-ggplot(data = df.full,
-       aes(x = Group, y = Amp, fill = Group)) +
-  geom_boxplot() +
-  facet_wrap(facets = vars(Sample), ncol = nlevels(df.full$Sample), strip.position = 'right')
-  
+##### ANPLITUDE NORM #####
+# norm overview
+df.amp.norm <- df.amp %>%
+  filter((Sample == '180313_s14')|
+         (Sample == '180313_s30')|
+         (Sample == '190313_s49')|
+         (Sample == '210213_s22')|
+         
+         (Sample == '190213_s22')) %>%
+  droplevels() %>%
+  group_by(Sample) %>%
+  mutate(Amed = Amp / median(Amp[Group == '-70ctrl']),
+         time_bin = cut(TimPeak, )) %>%
+  ungroup()
+
+ggplot() +
+  geom_boxplot(data = df.amp.norm,
+               aes(x = Group, y = Amed, fill = Sample,
+                   group = interaction(Group, Sample))) +
+  stat_summary(data = df.amp.norm,
+               fun = median,
+               geom = 'line',
+               aes(x = Group, y = Amed, color = Sample,
+                   group = Sample),
+               position = position_dodge(width = 0.75)) +
+  stat_summary(data = df.amp.norm,
+               fun = median,
+               geom = 'point',
+               aes(x = Group, y = Amed, color = Sample,
+                   group = Sample),
+               alpha = 0.75,
+               position = position_dodge(width = 0.75))
+
+# sample aggregate
+df.amp.norm.test <- df.amp.norm %>%
+  group_by(Sample, Group) %>%
+  filter((Group == '-70ctrl')|(Group == '-70mid')|(Group == '-70post')) %>%
+  summarise(med = median(Amed), iqr = IQR(Amed), .groups="keep") %>%
+  droplevels() %>%
+  ungroup()
+
+dunn.test(df.amp.norm.test$med,
+          df.amp.norm.test$Group,
+          method = 'bh')
+
+ggplot() +
+  geom_boxplot(data = df.amp.norm.test,
+               aes(y = med, x = Group, fill = Group))
 
 ##### IEI STAT #####
 df.iei <- df.full %>%
   select(IEI, Sample, Group, TimPeak)
 
-
-# prof
 ggplot() +
-  geom_point(data = df.iei,
-             aes(x = TimPeak, y = IEI, color = Group, alpha = .75))
+  geom_boxplot(data = df.iei,
+               aes(x = Group, y = IEI, fill = Sample,
+                   group = interaction(Group, Sample))) +
+  stat_summary(data = df.iei,
+               fun = median,
+               geom = 'line',
+               aes(x = Group, y = IEI, color = Sample,
+                   group = Sample),
+               position = position_dodge(width = 0.75)) +
+  stat_summary(data = df.iei,
+               fun = median,
+               geom = 'point',
+               aes(x = Group, y = IEI, color = Sample,
+                   group = Sample),
+               alpha = 0.75,
+               position = position_dodge(width = 0.75)) +
+  facet_wrap(facets = vars(Sample), ncol = nlevels(df.full$Sample), strip.position = 'right')
 
+df.iei.test <- df.iei %>%
+  filter((Group == '-70ctrl')|(Group == '-70mid')|(Group == '-70post'))
+sample.list <- levels(df.iei.test$Sample)
+for (selected.sample in sample.list) {
+  print(selected.sample)
+  dunn.test(df.iei.test$IEI[df.iei.test$Sample == selected.sample],
+            df.iei.test$Group[df.iei.test$Sample == selected.sample],
+            method = 'bh')
+}
+  
+##### AMP vs IEI STAT #####
+df.selected <- df.full %>%
+  filter((Group == '-70ctrl')|(Group == '-70mid')|(Group == '-70post')) %>%
+  select(Sample, Group, Amp, IEI)
 
-ggplot() +
-  geom_boxplot(data = df.full,
-               aes(x = Group, y = IEI, fill = Group))
-
-##### AREA STAT #####
+ggplot(data = df.selected,
+       aes(x = Amp, y = IEI, color = Group)) +
+  geom_point(alpha = .75) +
+  facet_wrap(facets = vars(Sample), ncol = nlevels(df.selected$Sample), strip.position = 'right')
