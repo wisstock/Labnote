@@ -1,6 +1,6 @@
 Solutions Cookbook
 =================
-*Department of Molecular Biophysics & Borys Olifirov, 21.02.2024*
+*Department of Molecular Biophysics & Borys Olifirov, 9.05.2024*
 
 Composition and instructions for preparation and storage of work/stock solutions.
 
@@ -116,8 +116,23 @@ Dissolve all components in ~3/4 of the final volume, adjust pH to 7.0 with 2-3M 
 
 Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C.
 
+## Intracellular Solutions
+### KCl-methansulfonate Solution for Ca2+ Imaging
+
+| Chemical            | ID          | MW (g/mol) | Stock state | Concentration | 25 ml      |
+| ------------------- | ----------- | ---------- | ----------- | ------------- | ---------- |
+| KCl                 | Sigma P3911 | 74.55      | solid       | 10 mM         | 18.64 mg   |
+| Methansulfonic acid | Sigma 47356 | 96.11      | 1.481 g/ml  | 135 mM        | 219.022 ul |
+| Mg-ATP              | Sigma A9187 | 507        | solid       | 4 mM          | 50.7 mg    |
+| Na-GTP              | Sigma G8877 | 523        | solid       | 0.4 mM        | 5.23 mg    |
+| 2Na-phosphocreatine | Sigma P7936 | 255.1      | solid       | 5 mM          | 31.89 mg   |
+| HEPES               | Sigma H7523 | 238.3      | solid       | 10 mM         | 59.5 mg    |
+| deionized H2O       | -           | -          | -           | -             | to 25 ml   |
+
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 using 2M KOH solution (1.5-2 ml). Aliquot by 0.5 ml solution into epp. 1.5 ml tubes (50 tubes) and store at -20°C.
 
 ## Activators and Blockers Stock Solutions
+
 ### L-Glutamic Acid 150 mM pH 7.0
 
 | Chemical        | ID          | MW (g/mol) | Stock state | Concentration | 1 ml     |
