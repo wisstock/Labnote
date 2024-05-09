@@ -4,7 +4,7 @@ require(ggplot2)
 require(ggpubr)
 require(ggalt)
 
-setwd('/home/astria/bio/lab/code/glt_anal')
+setwd('/home/wisstock/bio/note/projects/PhD/9_2024_GLT_in_TBI/exp/old')
 
 ##### DATA PREPROCESSING #####
 df.exp <- read.csv('results.csv')
@@ -82,10 +82,9 @@ ggsave(sprintf('ctrl_%s.png', sel.group),
 ##### INT vs CLUSTER #####
 df.day_num <- df %>%
               mutate(day_num = recode(day, '1d'=1, '3d'=3, '7d'=7, '14d'=14))
-i_c <- ggplot(df.day_num,
-       aes(y = int, x = cluster, colour = group, fill=group, label = num)) +
+ggplot(df.day_num,
+       aes(y = int, x = cluster, colour = group, fill=group, label = num, shape=day)) +
   geom_point(size = 2) +
-  geom_encircle(data = df.day_num %>% filter(group != "TBI"), alpha = .4) +
   geom_smooth(data = df.day_num %>% filter(group == 'TBI'),
               method = 'lm', alpha=.2, size = 1.5) + # geom_text(hjust = -0.5) +
   labs(fill = 'Група',
