@@ -11,7 +11,7 @@ require(cowplot)
 require(ggsci)
 require(dunn.test)
 
-setwd('/home/wisstock/bio/note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_04_19_mEPSC/-70_-40_HPCA')
+setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_04_19_mEPSC/-70_-40_HPCA')
 
 a <- read.csv('260313_s7.csv') %>%
   mutate(TimRef = as.numeric(TimRef),
