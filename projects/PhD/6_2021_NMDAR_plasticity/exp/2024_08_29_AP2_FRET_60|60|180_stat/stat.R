@@ -1,5 +1,5 @@
-# NMDA ionophoresis preliminary results analysis
-# Copyright © 2023 Borys Olifirov
+# NMDA ionophoresis, FRET between AP2B1-EYFP and HPCA(WT)-ECFP
+# Copyright © 2024 Borys Olifirov
 
 require(dplyr)
 require(tidyr)
@@ -10,144 +10,25 @@ require(ggpubr)
 require(cowplot)
 require(ggsci)
 
-setwd('/home/wisstock/bio/note/projects/PhD/6_2021_NMDAR_plasticity/exp/2023_12_9_Shurik_MNDA_ionophoresis_preliminary')
+setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_08_29_AP2_FRET_60|60|180_stat')
 
 ##### DATA PREPROCESSING #####
-df.start <- 2
-df.end <- 5
 
-index.shift <- 3
+df.ch0_df.up_mask <- bind_rows(read.csv('./24_05_16_09/24_05_16_09_ch0_24_05_16_09_ch0_red-green_up-labels_ΔF.csv'),
+                               read.csv('./24_05_22_06/24_05_22_06_ch0_24_05_22_06_ch0_red-green_up-labels_ΔF.csv'),
+                               read.csv('./24_06_5_01/24_06_5_01_ch0_24_06_5_01_ch0_red-green_up-labels_ΔF.csv'),
+                               read.csv('./24_06_5_02/24_06_5_02_ch0_24_06_5_01_ch0_red-green_up-labels_ΔF.csv'),
+                               read.csv('./24_06_5_04/24_06_5_04_ch0_24_06_5_04_ch0_red-green_up-labels_ΔF.csv'),
+                               read.csv('./24_06_5_06/24_06_5_06_ch0_24_06_5_06_ch0_red-green_up-labels_ΔF.csv')) %>%
+                     mutate(id = as.factor(id))
 
-df.0 <- read.csv('00_435_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '00') %>%
-  mutate(hpca = 'WT') %>%
-  mutate(fp = 'CFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  mutate(index = index - index.shift) %>%
-  filter(index > 0) %>%
-  select(-f0)
-df.1 <- read.csv('00_505_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '00') %>%
-  mutate(hpca = 'N75K') %>%
-  mutate(fp = 'EYFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  mutate(index = index - index.shift) %>%
-  filter(index > 0) %>%
-  select(-f0)
-
-df.2 <- read.csv('02_435_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '02') %>%
-  mutate(hpca = 'WT') %>%
-  mutate(fp = 'CFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-df.3 <- read.csv('02_505_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '02') %>%
-  mutate(hpca = 'N75K') %>%
-  mutate(fp = 'EYFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-
-df.4 <- read.csv('03_435_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '03') %>%
-  mutate(hpca = 'WT') %>%
-  mutate(fp = 'CFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-df.5 <- read.csv('03_505_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '03') %>%
-  mutate(hpca = 'N75K') %>%
-  mutate(fp = 'EYFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-
-df.6 <- read.csv('04_435_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '04') %>%
-  mutate(hpca = 'WT') %>%
-  mutate(fp = 'CFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-df.7 <- read.csv('04_505_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '04') %>%
-  mutate(hpca = 'N75K') %>%
-  mutate(fp = 'EYFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-
-df.8 <- read.csv('05_435_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '05') %>%
-  mutate(hpca = 'WT') %>%
-  mutate(fp = 'CFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-df.9 <- read.csv('05_505_raw.csv') %>%
-  select(-X) %>%
-  mutate(id = '05') %>%
-  mutate(hpca = 'N75K') %>%
-  mutate(fp = 'EYFP') %>%
-  mutate(roi = as.factor(roi)) %>%
-  group_by(roi) %>%
-  mutate(index = row_number(roi)) %>%
-  mutate(f0 = mean(int[index >= df.start & index < df.end])) %>%
-  mutate(df = (int-f0)/ f0) %>%
-  select(-f0)
-
-df.full <- bind_rows(df.0, df.1, df.2, df.3, df.4, df.5, df.6, df.7, df.8, df.9)
-
-df.full <- df.full %>%
-  filter(index <= 8) %>%
-  mutate(hpca = factor(hpca, levels = c('WT', 'N75K'))) %>%
-  ungroup()
-
-ggplot(data = df.full %>% filter(index < 15)) +
-  geom_line(aes(x = index, y = df, color = roi, linetype = id)) +
-  geom_point(aes(x = index, y = df, color = roi, linetype = id)) +
-  facet_grid(rows = vars(hpca))
+df.ch0_df.up_mask.id_avg <- df.ch0_df.up_mask %>%
+                            select(-X) %>%
+                            group_by(index, id) %>%
+                            mutate(avg_int = mean(int))
+  
+  
+df.ch0.fret.mask
 
 ##### FULL REPRESENTATIVE PROFILE #####
 df.rep.0 <- read.csv('00_435_dF.csv') %>%
