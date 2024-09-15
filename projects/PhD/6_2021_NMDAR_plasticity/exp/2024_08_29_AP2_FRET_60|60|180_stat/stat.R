@@ -5,6 +5,7 @@ require(stringr)
 require(dplyr)
 require(tidyr)
 require(purrr)
+require(mixtools)
 require(rstatix)
 require(ggplot2)
 require(ggpubr)
@@ -262,46 +263,193 @@ ggplot(data = df.to.stat,
 
 
 ##### LOW vs HIGH FRET #####
-# require(nor1mix)  # https://www.rdocumentation.org/packages/nor1mix/versions/1.3-3
-require(mixtools)  # https://www.r-bloggers.com/2011/08/fitting-mixture-distributions-with-the-r-package-mixtools/ // https://stackoverflow.com/questions/52082543/curl-package-not-available-for-several-r-packages
+# https://www.statisticalaid.com/independent-component-analysis-ica-using-r/
+# https://www.r-bloggers.com/2011/08/fitting-mixture-distributions-with-the-r-package-mixtools/ // https://stackoverflow.com/questions/52082543/curl-package-not-available-for-several-r-packages
+calc.mixmdl <- function(input_vector) {
+  mixmdl <- normalmixEM(input_vector)
+  input_dens <- density(input_vector)
+  comp1 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[1],
+                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
+  comp2 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[2],
+                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
+  return(data.frame(val = input_dens$x,
+                    raw = input_dens$y,
+                    comp1 = comp1,
+                    comp2 = comp2,
+                    comp_comb = comp1+comp2))
+}
 
-df.to.cluster <- df.mask %>%
-  filter(index %in% c(2, 13),
-         channel == 'Eapp',
-         dist_group != 'min',
-         id != '24_05_16_04') %>%
+calc.mixmdl3 <- function(input_vector) {
+  mixmdl <- normalmixEM(input_vector, k = 3)
+  input_dens <- density(input_vector)
+  comp1 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[1],
+                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
+  comp2 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[2],
+                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
+  comp3 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[3],
+                 sd = mixmdl$sigma[3]) * mixmdl$lambda[3]
+  return(data.frame(val = input_dens$x,
+                    raw = input_dens$y,
+                    comp1 = comp1,
+                    comp2 = comp2,
+                    comp3 = comp3,
+                    comp_comb = comp1+comp2+comp3))
+}
+
+selected.mask <- 'fret'
+comp.scale.factor <- 50
+b.width <- 0.003
+pre.indexes <- c(0,1,2,3,4,5,6)
+post.indexes <- c(12,13,14,15)
+
+# selected frames
+df.fret.plot <- df.mask %>%
+  filter(channel == 'Eapp',
+         int_val == 'abs',
+         mask == selected.mask) %>%
+  mutate(roi = as.factor(roi),
+         cell_id = id) %>%
   droplevels() %>%
-  mutate(idx = as.factor(index)) %>%
-  select(-int_val, -dist_group, -channel, -time, -index) %>%
-  pivot_wider(names_from = idx, values_from = int) %>%
-  rename(pre = '2', post = '13') %>%
-  distinct()
-  
-pre_val = df.to.cluster$pre
-pre_mixmdl = normalmixEM(pre_val)
+  unite('roi_id', id:roi, sep = '-')
 
-df.pre_comp <- data.frame(pre_mixmdl$posterior) %>%
-  mutate(comp.1 = comp.1 * pre_mixmdl$x,
-         comp.2 = comp.2 * pre_mixmdl$x) %>%
-  pivot_longer(cols = c('comp.1', 'comp.2'),
-               names_to = 'comp',
-               values_to = 'dens') %>%
-  mutate(comp = as.factor(comp))
-# plot(pre_mixmdl,which=2)
-# lines(density(pre_val), lty=2, lwd=2)
+p1 <- ggplot(data = df.fret.plot,
+       aes(x = index, y = int, color = roi_id, group = roi_id)) +
+  stat_summary(fun = median,
+               geom = 'line', size = .5) +
+  stat_summary(fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(data = df.fret.plot,
+               aes(x = index, y = int, group = channel),
+               color = 'black',
+               fun = median,
+               geom = 'point', size = 0.75) +
+  stat_summary(data = df.fret.plot,
+               aes(x = index, y = int, group = channel),
+               color = 'black',
+               fun = median,
+               geom = 'line', size = 0.3) +
+  stat_summary(data = df.fret.plot,
+               aes(x = index, y = int, group = channel),
+               color = 'black',
+               fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'errorbar', size = 0.15, width = 0.75) +
+  annotate('rect', xmin = 6, xmax = 12, ymin = -Inf, ymax = Inf,
+           alpha = 0.2, fill = 'red') +
+  annotate('rect',
+           xmin = pre.indexes[1], xmax = rev(pre.indexes)[1],
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.075, color = 'black') +
+  annotate('rect',
+           xmin = post.indexes[1], xmax = rev(post.indexes)[1],
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.075, color = 'black') +
+  labs(title = 'FRET profiles in individual ROIs',
+       caption = 'Red rect - NMDA app., black rect - pre and post app. frames',
+       y = expression(E[app]),
+       x = 'Frame idx') +
+  scale_fill_manual(values = rainbow(length(df.fret.plot$roi_id))) +
+  theme_classic() +
+  theme(legend.position="none") +
+  facet_wrap(~id)
 
-ggplot() +  # https://stackoverflow.com/questions/47248636/plot-gaussian-mixture-in-r-using-ggplot2
-  geom_density(data = df.to.cluster, aes(x = pre)) +
-  stat_function(fun = dnorm, n = length(df.to.cluster$pre),
-                args = list(mean = pre_mixmdl$mu[1], sd = pre_mixmdl$sigma[1]),
-                color = 'blue') +
-  stat_function(fun = dnorm, n = length(df.to.cluster$pre),
-                args = list(mean = pre_mixmdl$mu[2], sd = pre_mixmdl$sigma[2]),
-                color = 'red')
+ggsave('fret_prof.png', p1, dpi = 300)
 
-post_val = df.to.cluster$post
-post_mixmdl = normalmixEM(post_val)
 
+# pre
+df.fret.pre <- df.mask %>%
+  filter(channel == 'Eapp',
+         index %in% pre.indexes) %>%
+  select(id, roi, int, mask) %>%
+  droplevels() %>%
+  group_by(id, roi, mask) %>%
+  mutate(int = mean(int),
+         roi = as.factor(roi),
+         cell_id = id) %>%
+  ungroup() %>%
+  distinct() %>%
+  unite('roi_id', id:roi, sep = '-')
+
+df.pre_mixmdl <- calc.mixmdl(df.fret.pre$int[df.fret.pre$mask == selected.mask]) 
+# ggplot(data = df.pre_mixmdl, aes(x = val)) +
+#   geom_line(aes(y = comp1), color = 'red', alpha = .5) +
+#   geom_line(aes(y = comp2), color = 'blue', alpha = .5) +
+#   geom_line(aes(y = comp_comb), lty = 2) +
+#   geom_line(aes(y = raw))
+
+p2 <- ggplot() +
+  geom_dotplot(data = df.fret.pre %>% filter(mask == selected.mask),
+               aes(x = int, fill = roi_id),
+               stackgroups = TRUE, binwidth = b.width,
+               binpositions = "all", method = "histodot") +
+  geom_line(data = df.pre_mixmdl,
+            aes(x = val, y = comp1 / comp.scale.factor),
+            color = 'red') +
+  geom_line(data = df.pre_mixmdl,
+            aes(x = val, y = comp2 / comp.scale.factor),
+            color = 'blue') +
+  geom_line(data = df.pre_mixmdl,
+            aes(x = val, y = comp_comb / comp.scale.factor),
+            lty = 2) +
+  scale_fill_manual(values = rainbow(length(df.fret.post$roi_id[df.fret.post$mask == selected.mask]))) +
+  theme_classic() +
+  theme(legend.position="none",
+        axis.text.y=element_blank(), 
+        axis.ticks.y=element_blank(),
+        axis.title.y = element_blank()) +
+  labs(title = 'Pre app. average FRET in individual ROIs',
+       x = expression(E[app])) +
+  xlim(-0.005,0.13)
+
+ggsave('fret_pre.png', p2, dpi = 300)
+
+# post
+df.fret.post <- df.mask %>%
+  filter(channel == 'Eapp',
+         index %in% post.indexes) %>%
+  select(id, roi, int, mask) %>%
+  droplevels() %>%
+  group_by(id, roi, mask) %>%
+  mutate(int = mean(int),
+         roi = as.factor(roi),
+         cell_id = id) %>%
+  ungroup() %>%
+  distinct() %>%
+  unite('roi_id', id:roi, sep = '-')
+
+df.post_mixmdl <- calc.mixmdl(df.fret.post$int[df.fret.post$mask == selected.mask]) 
+
+p3 <- ggplot() +
+  geom_dotplot(data = df.fret.post %>% filter(mask == selected.mask),
+               aes(x = int, fill = roi_id),
+               stackgroups = TRUE, binwidth = b.width,
+               binpositions = "all", method = "histodot") +
+  geom_line(data = df.post_mixmdl,
+            aes(x = val, y = comp1 / comp.scale.factor),
+            color = 'red') +
+  geom_line(data = df.post_mixmdl,
+            aes(x = val, y = comp2 / comp.scale.factor),
+            color = 'blue') +
+  geom_line(data = df.post_mixmdl,
+            aes(x = val, y = comp_comb / comp.scale.factor),
+            lty = 2) +
+  scale_fill_manual(values = rainbow(length(df.fret.post$roi_id[df.fret.post$mask == selected.mask]))) +
+  theme_classic() +
+  theme(legend.position="none",
+        axis.text.y=element_blank(), 
+        axis.ticks.y=element_blank(),
+        axis.title.y = element_blank()) +
+  labs(title = 'Post app. average FRET in individual ROIs',
+       x = expression(E[app])) +
+  xlim(-0.005,0.13)
+
+ggsave('fret_post.png', p3, dpi = 300)
 
 
 ##### TIMEPOINTS BOX #####
