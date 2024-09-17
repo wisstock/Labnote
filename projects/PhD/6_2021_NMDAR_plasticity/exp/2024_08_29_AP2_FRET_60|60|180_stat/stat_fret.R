@@ -282,6 +282,17 @@ calc.mixmdl <- function(input_vector) {
               mixmdl))
 }
 
+
+calc.mixmdl.optim <- function(input_vector) {
+  comp.vals <- seq(2,10)
+  loglik.vector <- c()
+  for (comp in comp.vals) {
+    mixmdl <- normalmixEM(input_vector, k = comp)
+    loglik.vector <- append(loglik.vector, mixmdl$loglik)
+  }
+  return(loglik.vector)
+}
+
 calc.mixmdl3 <- function(input_vector) {
   mixmdl <- normalmixEM(input_vector, k = 3)
   input_dens <- density(input_vector)
@@ -303,8 +314,6 @@ calc.mixmdl3 <- function(input_vector) {
 }
 
 selected.mask <- 'fret'
-comp.scale.factor <- 50
-b.width <- 0.003
 base.indexes <- c(0,1,2,3,4,5,6)
 mid.indexes <- c(12,13,14,15)
 end.indexes <- c(26,27,28)
@@ -383,6 +392,11 @@ df.fret.base <- df.mask %>%
   distinct() %>%
   unite('roi_id', id:roi, sep = '-')
 
+
+comp.scale.factor <- 3
+b.width <- 0.003
+
+# calc.mixmdl.optim(df.fret.base$int[df.fret.base$mask == selected.mask])
 bm <- calc.mixmdl(df.fret.base$int[df.fret.base$mask == selected.mask]) 
 df.base_mixmdl <- bm[[1]]
 base_mixmgl <- bm[[2]]
@@ -394,7 +408,7 @@ remove(bm)
 #   geom_line(aes(y = raw))
 
 plot.base <- ggplot() +
-  geom_dotplot(data = df.fret.base %>% filter(mask == selected.mask),
+  geom_histogram(data = df.fret.base %>% filter(mask == selected.mask),
                aes(x = int, fill = roi_id),
                stackgroups = TRUE, binwidth = b.width,
                binpositions = "all", method = "histodot") +
@@ -440,7 +454,7 @@ mid_mixmgl <- mm[[2]]
 remove(mm)
 
 plot.mid <- ggplot() +
-  geom_dotplot(data = df.fret.mid %>% filter(mask == selected.mask),
+  geom_histogram(data = df.fret.mid %>% filter(mask == selected.mask),
                aes(x = int, fill = roi_id),
                stackgroups = TRUE, binwidth = b.width,
                binpositions = "all", method = "histodot") +
@@ -487,7 +501,7 @@ end_mixmgl <- em[[2]]
 remove(em)
 
 plot.end <- ggplot() +
-  geom_dotplot(data = df.fret.end %>% filter(mask == selected.mask),
+  geom_histogram(data = df.fret.end %>% filter(mask == selected.mask),
                aes(x = int, fill = roi_id),
                stackgroups = TRUE, binwidth = b.width,
                binpositions = "all", method = "histodot") +
@@ -517,7 +531,6 @@ plot_grid(plot.base, plot.mid, plot.end,
           ncol = 1)  # labels = "AUTO",
 
 
-##### TIMEPOINTS BOX #####
 sites.threshold <- 0.03
 
 df.fret.sites <- df.mask %>%
@@ -532,9 +545,144 @@ df.fret.sites <- df.mask %>%
   mutate(wash_tail_int = mean(int[index %in% seq(16,28)]),
          site_type = as.factor(ifelse(wash_tail_int > sites.threshold, 'spine', 'shaft'))) %>%
   ungroup() %>%
-  select(-time, -dist, -dist_group, -int_val, -channel, -mask)
+  select(-dist, -dist_group, -int_val, -channel, -mask)
 
 
+##### TIME INTERVALS BOX #####
+index.1 <- seq(1,5)
+index.2 <- seq(12,16)
+index.3 <- seq(24,28)
+
+df.fret.sites.avg <- df.fret.sites %>%
+  select(-wash_tail_int, -time) %>%
+  group_by(roi_id, site_type) %>%
+  mutate(time_interval = case_when(index %in% index.1 ~ 'base',
+                                   index %in% index.2 ~ 'mid',
+                                   index %in% index.3 ~ 'end',
+                                   .default = 'out')) %>%
+  filter(time_interval != 'out') %>%
+  ungroup() %>%
+  group_by(roi_id, site_type, time_interval) %>%
+  mutate(int_interval = median(int)) %>%
+  select(-index, -int) %>%
+  ungroup() %>%
+  distinct()
+
+# base vs zero
+df.base.zero.stat <- df.fret.sites.avg %>%
+  filter(time_interval == 'base') %>%
+  select(-time_interval) %>%
+  group_by(site_type) %>%
+  wilcox_test(int_interval ~ 1, mu = 0) %>%
+  add_significance() %>%
+  mutate(y.position = c(0.082,0.035), group2 = c(1,1))
+
+ggplot() +
+  geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
+               aes(x = time_interval,
+                   y = int_interval)) +
+  stat_pvalue_manual(df.base.zero.stat, label = 'p.signif',
+                     hide.ns = TRUE, remove.bracket = TRUE, label.size = 5) +
+  geom_hline(yintercept = 0, lty = 2) +
+  facet_wrap(~site_type)
+
+# time vs int
+df.time.interval.stat <- df.fret.sites.avg %>%
+  group_by(site_type) %>%
+  pairwise_wilcox_test(int_interval ~ time_interval, p.adjust.method = 'BH') %>%
+  add_significance() %>%
+  add_xy_position(fun = "max") 
+
+ggplot() +
+  geom_boxplot(data = df.fret.sites.avg,
+               aes(x = time_interval,
+                   y = int_interval)) +
+  geom_point(data = df.fret.sites.avg,
+             aes(x = time_interval,
+                 y = int_interval,
+                 fill = cell_id),
+             size=2, shape=21) +
+  geom_line(data = df.fret.sites.avg,
+            aes(x = time_interval,
+                y = int_interval,
+                group = roi_id),
+            size = .25, lty = 2, alpha = .5) +
+  stat_pvalue_manual(df.time.interval.stat, label = 'p.adj.signif',
+                     hide.ns = TRUE) +
+  facet_wrap(~site_type)
+  
+# site vs int
+df.site.type.stat <- df.fret.sites.avg %>%
+  group_by(time_interval) %>%
+  pairwise_wilcox_test(int_interval ~ site_type, p.adjust.method = 'BH') %>%
+  add_significance() %>%
+  add_xy_position(fun = "max") 
+
+ggplot() +
+  geom_boxplot(data = df.fret.sites.avg,
+               aes(x = site_type,
+                   y = int_interval)) +
+  geom_point(data = df.fret.sites.avg,
+             aes(x = site_type,
+                 y = int_interval,
+                 fill = cell_id),
+             size=2, shape=21) +
+  stat_pvalue_manual(df.site.type.stat, label = 'p.adj.signif',
+                     hide.ns = TRUE) +
+  facet_wrap(~time_interval)
+
+
+##### TIME POINTS BOX #####
+time.points <- c(2,13,28)
+
+# sites profiles
+ggplot() +
+  geom_line(data = df.fret.sites,
+            aes(x = index, y = int, color = roi_id)) +
+  stat_summary(data = df.fret.sites,
+               aes(x = index, y = int, group = site_type),
+               color = 'black',
+               fun = median,
+               geom = 'line', size = 0.75) +
+  stat_summary(data = df.fret.sites,
+               aes(x = index, y = int, group = site_type),
+               color = 'black',
+               fun = median,
+               geom = 'point', size = 0.3) +
+  stat_summary(data = df.fret.sites,
+               aes(x = index, y = int, group = site_type),
+               color = 'black',
+               fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'errorbar', size = 0.15, width = 0.75) +
+  scale_color_manual(values = rainbow(87)) +
+  theme(legend.position='none') +
+  facet_wrap(~site_type, nrow = 2)
+  
+ggplot() +
+  stat_summary(data = df.fret.sites,
+               aes(x = time, y = int, color=site_type, group = site_type),
+               fun = median,
+               geom = 'line', size = 0.5) +
+  stat_summary(data = df.fret.sites,
+               aes(x = time, y = int, color = site_type, group = site_type),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(data = df.fret.sites,
+               aes(x = time, y = int, color = site_type, group = site_type),
+               fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'errorbar', size = 0.3, width = 0.75) +
+  annotate('rect', xmin = 60, xmax = 120, ymin = -Inf, ymax = Inf,
+           alpha = 0.2, fill = 'red') +
+  geom_vline(xintercept = time.points * 10, lty = 2) +
+  labs(title = 'FRET in different ROI types',
+       color = 'ROI type',
+       x = 'Time, s',
+       y = expression(E[app])) +
+  theme_classic()
 
 
 # df.to.box <- df.fret.sites  %>%  # by time points
@@ -549,7 +697,7 @@ df.fret.sites <- df.mask %>%
 #   distinct()
 
 df.to.box <- df.fret.sites  %>%  # by time points
- filter(index %in% c(3, 15, 24)) %>%
+ filter(index %in% time.points) %>%
  droplevels() %>%
  select(-roi_id, -wash_tail_int) %>%
  mutate(index = as.factor(index)) %>%
@@ -565,13 +713,13 @@ wilcox.test(df.to.box$int_med[df.to.box$index == 3 & df.to.box$site_type == 'spi
 wilcox.test(df.to.box$int_med[df.to.box$index == 3 & df.to.box$site_type == 'shaft'], mu = 0)
 
 df.base.zero.stat <- df.to.box %>%
-  filter(index == 3) %>%
+  filter(index == 5) %>%
   group_by(site_type) %>%
   wilcox_test(int_med~1, mu = 0) %>%
   add_significance() %>%
-  mutate(y.position = c(0.045,0.02), group2 = c(0,0))
+  mutate(y.position = c(0.05,0.022), group2 = c(0,0))
 
-ggplot(df.to.box %>% filter(index == 3),
+ggplot(df.to.box %>% filter(index == 5),
        aes(y = int_med)) +
   geom_boxplot() +
   stat_pvalue_manual(df.base.zero.stat, label = 'p.signif',
@@ -583,8 +731,6 @@ ggplot(df.to.box %>% filter(index == 3),
         axis.title.x = element_blank()) +
   labs(y = expression(E[app])) +
   facet_wrap(~site_type)
-  
-
 
 # I vs T
 df.to.box.stat.it <- df.to.box %>%
