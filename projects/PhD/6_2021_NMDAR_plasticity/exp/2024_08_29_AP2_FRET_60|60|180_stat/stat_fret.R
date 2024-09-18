@@ -243,25 +243,6 @@ ggplot(data = df.to.plot,
              strip.position = 'right', scales = "free_y")
 
 
-##### STAT PLOTS #####
-df.to.stat <- df.mask
-
-ggplot(data = df.to.stat,
-       aes(x = time, y = int, color = mask, group = mask)) +
-  stat_summary(fun = median,
-               geom = 'line', size = .5) +
-  stat_summary(fun = median,
-               geom = 'point', size = 1) +
-  stat_summary(fun.min = function(z) { quantile(z,0.25) },
-               fun.max = function(z) { quantile(z,0.75) },
-               fun = median,
-               geom = 'errorbar', size = .5, width = .3) +
-  annotate('rect', xmin = 60, xmax = 120, ymin = -Inf, ymax = Inf,
-           alpha = 0.1, fill = 'red') +
-  facet_wrap(facets = vars(channel, dist_group), nrow = nlevels(df.to.stat$channel),ncol = nlevels(df.to.stat$dist_group),
-             strip.position = 'right')  # , scales = "free_y"
-
-
 ##### LOW vs HIGH FRET #####
 # https://www.statisticalaid.com/independent-component-analysis-ica-using-r/
 # https://www.r-bloggers.com/2011/08/fitting-mixture-distributions-with-the-r-package-mixtools/ // https://stackoverflow.com/questions/52082543/curl-package-not-available-for-several-r-packages
@@ -396,7 +377,8 @@ df.fret.base <- df.mask %>%
 comp.scale.factor <- 3
 b.width <- 0.003
 
-# calc.mixmdl.optim(df.fret.base$int[df.fret.base$mask == selected.mask])
+plot(calc.mixmdl.optim(df.fret.base$int[df.fret.base$mask == selected.mask]), type = 'line')
+
 bm <- calc.mixmdl(df.fret.base$int[df.fret.base$mask == selected.mask]) 
 df.base_mixmdl <- bm[[1]]
 base_mixmgl <- bm[[2]]
@@ -543,16 +525,121 @@ df.fret.sites <- df.mask %>%
   unite('roi_id', id:roi, sep = '-') %>%
   group_by(roi_id) %>%
   mutate(wash_tail_int = mean(int[index %in% seq(16,28)]),
-         site_type = as.factor(ifelse(wash_tail_int > sites.threshold, 'spine', 'shaft'))) %>%
+         site_type = as.factor(ifelse(wash_tail_int > sites.threshold, 'Spine', 'Shaft'))) %>%
   ungroup() %>%
   select(-dist, -dist_group, -int_val, -channel, -mask)
 
 
 ##### TIME INTERVALS BOX #####
-index.1 <- seq(1,5)
+index.1 <- seq(0,5)
 index.2 <- seq(12,16)
 index.3 <- seq(24,28)
 
+# profiles
+ggplot() +
+  stat_summary(data = df.fret.sites,
+               aes(x = time, y = int, color=site_type, group = site_type),
+               fun = median,
+               geom = 'line', size = 0.5) +
+  stat_summary(data = df.fret.sites,
+               aes(x = time, y = int, color = site_type, group = site_type),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(data = df.fret.sites,
+               aes(x = time, y = int, color = site_type, group = site_type),
+               fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'errorbar', size = 0.5, width = 3) +
+  annotate('text', label = 'NMDA app.', x = 100, y = 0.075, color = 'red') +
+  annotate('rect', xmin = 60, xmax = 120, ymin = -Inf, ymax = Inf,
+           alpha = 0.2, fill = 'red') +
+  annotate('text', label = 'Base.', x = 30, y = 0.0675, color = 'black') +
+  annotate('rect',
+           xmin = index.1[1] * 10, xmax = rev(index.1)[1] * 10,
+           ymin = -Inf, ymax = 0.07,
+           alpha = 0.075, color = 'black', linewidth = 0) +
+  annotate('text', label = 'Mid.', x = 140, y = 0.0675, color = 'black') +
+  annotate('rect',
+           xmin = index.2[1] * 10, xmax = rev(index.2)[1] * 10,
+           ymin = -Inf, ymax = 0.07,
+           alpha = 0.075, color = 'black', linewidth = 0) +
+  annotate('text', label = 'End', x = 260, y = 0.0675, color = 'black') +
+  annotate('rect',
+           xmin = index.3[1] * 10, xmax = rev(index.3)[1] * 10,
+           ymin = -Inf, ymax = 0.07,
+           alpha = 0.075, color = 'black', linewidth = 0) +
+  scale_color_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
+  labs(title = 'FRET in different ROI types',
+       color = 'ROI type',
+       x = 'Time, s',
+       y = expression(E[app])) +
+  theme_classic()
+
+
+# plat det
+require(Rbeast)
+
+df.fret.sites.med <- df.fret.sites %>%
+  group_by(site_type, index) %>%
+  mutate(int_med = median(int)) %>%
+  select(-roi_id, -cell_id, -wash_tail_int, -int) %>%
+  distinct() %>%
+  ungroup()
+
+o1 = beast(df.fret.sites.med$int_med[df.fret.sites.med$site_type == 'Spine'],
+           season = 'none', method='bic')
+df.fret.sites.beast.spine <- data.frame('Time' = seq(0, length(o1$trend$slpSgnPosPr)-1) * 10,
+                                        'Pos.' = o1$trend$slpSgnPosPr,
+                                        'Zero' = o1$trend$slpSgnZeroPr,
+                                        'Neg.' = rep(1, length(o1$trend$slpSgnPosPr)) - (o1$trend$slpSgnPosPr+o1$trend$slpSgnZeroPr)) %>%
+  pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
+  mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
+ggplot() +
+  geom_area(data = df.fret.sites.beast.spine,
+            aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
+  annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
+  annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
+           alpha = 0.2, fill = 'red') +
+  geom_hline(yintercept = 0.795, lty = 2) +
+  scale_fill_manual(values = c('Pos.' = '#ff4747',
+                               'Zero' = '#49cf36',
+                               'Neg.' =  '#3636cf')) +
+  scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+  theme_classic() +
+  labs(title = 'Probability of slope sign for spines sites',
+       fill = 'Slope sing',
+       x = 'Time, s',
+       y = 'Probability')  
+
+o2 = beast(df.fret.sites.med$int_med[df.fret.sites.med$site_type == 'Shaft'],
+           season = 'none', method='bic')
+df.fret.sites.beast.shaft <- data.frame('Time' = seq(0, length(o2$trend$slpSgnPosPr)-1) * 10,
+                                        'Pos.' = o2$trend$slpSgnPosPr,
+                                        'Zero' = o2$trend$slpSgnZeroPr,
+                                        'Neg.' = rep(1, length(o2$trend$slpSgnPosPr)) - (o2$trend$slpSgnPosPr+o2$trend$slpSgnZeroPr)) %>%
+  pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
+  mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
+ggplot() +
+  geom_area(data = df.fret.sites.beast.shaft,
+            aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
+  annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
+  annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
+           alpha = 0.2, fill = 'red') +
+  geom_hline(yintercept = 0.69, lty = 2) +
+  scale_fill_manual(values = c('Pos.' = '#ff4747',
+                               'Zero' = '#49cf36',
+                               'Neg.' =  '#3636cf')) +
+  scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+  theme_classic() +
+  labs(title = 'Probability of slope sign for shaft sites',
+       fill = 'Slope sing',
+       x = 'Time, s',
+       y = 'Probability')  
+
+# time intervals
 df.fret.sites.avg <- df.fret.sites %>%
   select(-wash_tail_int, -time) %>%
   group_by(roi_id, site_type) %>%
@@ -561,7 +648,9 @@ df.fret.sites.avg <- df.fret.sites %>%
                                    index %in% index.3 ~ 'end',
                                    .default = 'out')) %>%
   filter(time_interval != 'out') %>%
+  droplevels() %>%
   ungroup() %>%
+  mutate(time_interval = factor(time_interval, c('base', 'mid', 'end'), ordered = TRUE)) %>%
   group_by(roi_id, site_type, time_interval) %>%
   mutate(int_interval = median(int)) %>%
   select(-index, -int) %>%
@@ -580,10 +669,23 @@ df.base.zero.stat <- df.fret.sites.avg %>%
 ggplot() +
   geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
                aes(x = time_interval,
-                   y = int_interval)) +
+                   y = int_interval,
+                   fill = site_type)) +
+  geom_point(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
+             aes(x = time_interval,
+                 y = int_interval),
+             size=2, shape=21) +
   stat_pvalue_manual(df.base.zero.stat, label = 'p.signif',
                      hide.ns = TRUE, remove.bracket = TRUE, label.size = 5) +
   geom_hline(yintercept = 0, lty = 2) +
+  theme_classic() +
+  theme(legend.position="none",
+        axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank()) +
+  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
+  labs(title = 'Initial FRET in different ROI types',
+       y = expression(E[app])) +
   facet_wrap(~site_type)
 
 # time vs int
@@ -596,11 +698,11 @@ df.time.interval.stat <- df.fret.sites.avg %>%
 ggplot() +
   geom_boxplot(data = df.fret.sites.avg,
                aes(x = time_interval,
-                   y = int_interval)) +
+                   y = int_interval,
+                   fill = site_type)) +
   geom_point(data = df.fret.sites.avg,
              aes(x = time_interval,
-                 y = int_interval,
-                 fill = cell_id),
+                 y = int_interval),
              size=2, shape=21) +
   geom_line(data = df.fret.sites.avg,
             aes(x = time_interval,
@@ -609,30 +711,42 @@ ggplot() +
             size = .25, lty = 2, alpha = .5) +
   stat_pvalue_manual(df.time.interval.stat, label = 'p.adj.signif',
                      hide.ns = TRUE) +
+  theme_classic() +
+  theme(legend.position="none") +
+  labs(title = 'Time courses of FRET in different ROI types',
+       x = 'Time interval',
+       y = expression(E[app])) +
+  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
   facet_wrap(~site_type)
   
 # site vs int
 df.site.type.stat <- df.fret.sites.avg %>%
   group_by(time_interval) %>%
-  pairwise_wilcox_test(int_interval ~ site_type, p.adjust.method = 'BH') %>%
+  wilcox_test(int_interval ~ site_type) %>%
   add_significance() %>%
   add_xy_position(fun = "max") 
 
 ggplot() +
   geom_boxplot(data = df.fret.sites.avg,
                aes(x = site_type,
-                   y = int_interval)) +
+                   y = int_interval,
+                   fill = site_type)) +
   geom_point(data = df.fret.sites.avg,
              aes(x = site_type,
-                 y = int_interval,
-                 fill = cell_id),
+                 y = int_interval),
              size=2, shape=21) +
-  stat_pvalue_manual(df.site.type.stat, label = 'p.adj.signif',
+  stat_pvalue_manual(df.site.type.stat, label = 'p.signif',
                      hide.ns = TRUE) +
+  theme_classic() +
+  theme(legend.position="none") +
+  labs(title = 'FRET between site types in different time intervals',
+       x = 'Site type',
+       y = expression(E[app])) +
+  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
   facet_wrap(~time_interval)
 
 
-##### TIME POINTS BOX #####
+##### TIME POINTS BOX (DEPRICATED) #####
 time.points <- c(2,13,28)
 
 # sites profiles
