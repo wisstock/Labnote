@@ -721,6 +721,7 @@ df.for.gmm <- data.frame('fret_base' = df.fret.base$int[df.fret.base$mask == sel
                          'hpca_end' = df.hpca.end$int[df.hpca.end$mask == selected.mask])
 write.csv(df.for.gmm, file = 'fret_for_gmm.csv')
 
+plot(density(df.hpca.mid$int[df.hpca.mid$mask == selected.mask]))
 
 ##### TIME INTERVALS FRET #####
 sites.threshold <- 0.03
