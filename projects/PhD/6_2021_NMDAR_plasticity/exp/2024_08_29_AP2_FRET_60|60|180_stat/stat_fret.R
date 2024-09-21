@@ -18,6 +18,9 @@ require(ggsci)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_08_29_AP2_FRET_60|60|180_stat')
 
+font.size <- 20
+font.fam <- 'Arial'
+
 ##### DATA PREPROCESSING #####
 # UP MASK
 df.ch0_df.up_mask <- bind_rows(read.csv('./24_05_16_04/24_05_16_04_ch0_24_05_16_04_ch0_red-green_up-labels_ΔF.csv'),
@@ -245,63 +248,14 @@ ggplot(data = df.to.plot,
            alpha = 0.1, fill = 'red') +
   facet_wrap(facets = vars(channel, mask), nrow = nlevels(df.mask$channel), ncol = nlevels(df.mask$mask),
              strip.position = 'right', scales = "free_y")
+remove(df.to.plot)
 
-
-##### LOW vs HIGH FRET #####
-# https://www.statisticalaid.com/independent-component-analysis-ica-using-r/
-# https://www.r-bloggers.com/2011/08/fitting-mixture-distributions-with-the-r-package-mixtools/ // https://stackoverflow.com/questions/52082543/curl-package-not-available-for-several-r-packages
-calc.mixmdl <- function(input_vector) {
-  mixmdl <- normalmixEM(input_vector)
-  input_dens <- density(input_vector)
-  comp1 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[1],
-                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
-  comp2 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[2],
-                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
-  return(list(data.frame(val = input_dens$x,
-                    raw = input_dens$y,
-                    comp1 = comp1,
-                    comp2 = comp2,
-                    comp_comb = comp1+comp2),
-              mixmdl))
-}
-
-
-calc.mixmdl.optim <- function(input_vector) {
-  comp.vals <- seq(2,10)
-  loglik.vector <- c()
-  for (comp in comp.vals) {
-    mixmdl <- normalmixEM(input_vector, k = comp)
-    loglik.vector <- append(loglik.vector, mixmdl$loglik)
-  }
-  return(loglik.vector)
-}
-
-calc.mixmdl3 <- function(input_vector) {
-  mixmdl <- normalmixEM(input_vector, k = 3)
-  input_dens <- density(input_vector)
-  comp1 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[1],
-                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
-  comp2 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[2],
-                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
-  comp3 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[3],
-                 sd = mixmdl$sigma[3]) * mixmdl$lambda[3]
-  return(data.frame(val = input_dens$x,
-                    raw = input_dens$y,
-                    comp1 = comp1,
-                    comp2 = comp2,
-                    comp3 = comp3,
-                    comp_comb = comp1+comp2+comp3))
-}
+##### LOW vs HIGH PROFILES #####
 
 selected.mask <- 'fret'
 base.indexes <- seq(0,5)
 mid.indexes.f <- seq(10,12)
-mid.indexes.h <- seq(7,9)
+mid.indexes.h <- seq(10,12)  # seq(7,9)
 end.indexes <- seq(24,28)
 # base.indexes <- c(0,1,2,3,4,5,6)
 # mid.indexes <- c(12,13,14,15)
@@ -424,11 +378,132 @@ ggplot(data = df.hpca.plot,
 # ggsave('fret_prof.png', p1, dpi = 300)
 
 
+##### L and H GMM #####
+# https://www.statisticalaid.com/independent-component-analysis-ica-using-r/
+# https://www.r-bloggers.com/2011/08/fitting-mixture-distributions-with-the-r-package-mixtools/ // https://stackoverflow.com/questions/52082543/curl-package-not-available-for-several-r-packages
+calc.mixmdl <- function(input_vector) {
+  mixmdl <- normalmixEM(input_vector)
+  input_dens <- density(input_vector)
+  comp1 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[1],
+                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
+  comp2 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[2],
+                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
+  return(list(data.frame(val = input_dens$x,
+                         raw = input_dens$y,
+                         comp1 = comp1,
+                         comp2 = comp2,
+                         comp_comb = comp1+comp2),
+              mixmdl))
+}
+
+
+calc.mixmdl.optim <- function(input_vector) {
+  comp.vals <- seq(2,10)
+  loglik.vector <- c()
+  for (comp in comp.vals) {
+    mixmdl <- normalmixEM(input_vector, k = comp)
+    loglik.vector <- append(loglik.vector, mixmdl$loglik)
+  }
+  return(loglik.vector)
+}
+
+calc.mixmdl3 <- function(input_vector) {
+  mixmdl <- normalmixEM(input_vector, k = 3)
+  input_dens <- density(input_vector)
+  comp1 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[1],
+                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
+  comp2 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[2],
+                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
+  comp3 <- dnorm(x = input_dens$x,
+                 mean = mixmdl$mu[3],
+                 sd = mixmdl$sigma[3]) * mixmdl$lambda[3]
+  return(data.frame(val = input_dens$x,
+                    raw = input_dens$y,
+                    comp1 = comp1,
+                    comp2 = comp2,
+                    comp3 = comp3,
+                    comp_comb = comp1+comp2+comp3))
+}
+
+# bic profiles
+df.gmm.optim <- bind_rows(data.frame('BIC' = c(-562.3872730565264,
+                                               -548.9248686430036,
+                                               -540.2812473660222,
+                                               -534.7881663801178,
+                                               -522.7028024160293,
+                                               -509.6392893366678,
+                                               -496.5527725044958,
+                                               -487.71744383341616,
+                                               -474.55609636508973,
+                                               -461.38142725089693),
+                                     'group' = as.factor('hpca_base')),
+                          data.frame('BIC' = c(-42.44625226621264,
+                                               -30.687724491879592,
+                                               -23.719118172169296,
+                                               -11.866538799947541,
+                                               -2.233073800841808,
+                                               10.072656270319115,
+                                               16.710397718092352,
+                                               26.166101672533898,
+                                               37.26514642918363,
+                                               43.26662210945581),
+                                     'group' = as.factor('hpca_mid')),
+                          data.frame('BIC' = c(-104.31193218627054,
+                                               -98.11314417077497,
+                                               -86.66215271265438,
+                                               -81.75972081419292,
+                                               -69.16733434513318,
+                                               -56.11365325504556,
+                                               -45.10316725844953,
+                                               -37.160264743770625,
+                                               -24.505149596745184,
+                                               -14.171525094894577),
+                                     'group' = as.factor('hpca_end')),
+                          data.frame('BIC' = c(-406.07752028766777,
+                                               -430.1786832145669,
+                                               -430.60262901300746,
+                                               -418.81525205207737,
+                                               -407.563531079979,
+                                               -394.8903970851102,
+                                               -399.4152886875826,
+                                               -386.84349245916104,
+                                               -374.80243542201333,
+                                               -362.60452716617715),
+                                     'group' = as.factor('fret_base')),
+                          data.frame('BIC' = c(-371.79158965917827,
+                                               -384.40132720733305,
+                                               -386.05050342658086,
+                                               -373.4270002009531,
+                                               -374.5023387992349,
+                                               -355.3847141473434,
+                                               -352.20846465988757,
+                                               -340.88784781535423,
+                                               -328.67362615634954,
+                                               -316.0765789697767),
+                                     'group' = as.factor('fret_mid')),
+                          data.frame('BIC' = c(-368.4586826816587,
+                                               -390.8211030869018,
+                                               -383.1737634187368,
+                                               -376.24180469985055,
+                                               -367.8500322192769,
+                                               -359.02616960850384,
+                                               -348.57977152252045,
+                                               -334.3279633084872,
+                                               -326.4165044176185,
+                                               -313.94031562272346),
+                                     'group' = as.factor('fret_end')))
+
+
+##### HIST DATA FRAMES #####
 # base
 df.fret.base <- df.mask %>%
   filter(channel == 'Eapp',
          index %in% base.indexes) %>%
-  select(id, roi, int, mask) %>%
+  select(id, roi, int, mask, channel) %>%
   droplevels() %>%
   group_by(id, roi, mask) %>%
   mutate(int = mean(int),
@@ -436,12 +511,13 @@ df.fret.base <- df.mask %>%
          cell_id = id) %>%
   ungroup() %>%
   distinct() %>%
-  unite('roi_id', id:roi, sep = '-')
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(time_interval = 'base')
 
 df.hpca.base <- df.mask %>%
   filter(channel == 'ch0', int_val == 'df',
          index %in% base.indexes) %>%
-  select(id, roi, int, mask) %>%
+  select(id, roi, int, mask, channel) %>%
   droplevels() %>%
   group_by(id, roi, mask) %>%
   mutate(int = mean(int),
@@ -449,89 +525,26 @@ df.hpca.base <- df.mask %>%
          cell_id = id) %>%
   ungroup() %>%
   distinct() %>%
-  unite('roi_id', id:roi, sep = '-')
-
-
-comp.scale.factor <- 3
-b.width <- 0.003
-
-plot(calc.mixmdl.optim(df.fret.base$int[df.fret.base$mask == selected.mask]), type = 'line')
-plot(calc.mixmdl.optim(df.hpca.base$int[df.hpca.base$mask == selected.mask]), type = 'line')
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(time_interval = 'base')
 
 bm <- calc.mixmdl(df.fret.base$int[df.fret.base$mask == selected.mask]) 
-df.base_mixmdl <- bm[[1]]
+df.base_mixmdl <- bm[[1]] %>%
+  mutate(channel = 'Eapp', time_interval = 'base')
 base_mixmgl <- bm[[2]]
 remove(bm)
 
 bm.h <- calc.mixmdl(df.hpca.base$int[df.hpca.base$mask == selected.mask]) 
-df.base_mixmdl.h <- bm.h[[1]]
+df.base_mixmdl.h <- bm.h[[1]] %>%
+  mutate(channel = 'ch0', time_interval = 'base')
 base_mixmgl_h <- bm.h[[2]]
 remove(bm.h)
-# ggplot(data = df.pre_mixmdl, aes(x = val)) +
-#   geom_line(aes(y = comp1), color = 'red', alpha = .5) +
-#   geom_line(aes(y = comp2), color = 'blue', alpha = .5) +
-#   geom_line(aes(y = comp_comb), lty = 2) +
-#   geom_line(aes(y = raw))
-
-plot.base <- ggplot() +
-  geom_histogram(data = df.fret.base %>% filter(mask == selected.mask),
-               aes(x = int, fill = roi_id),
-               stackgroups = TRUE, binwidth = b.width,
-               binpositions = "all", method = "histodot") +
-  geom_line(data = df.base_mixmdl,
-            aes(x = val, y = comp1 / comp.scale.factor),
-            color = 'red') +
-  geom_line(data = df.base_mixmdl,
-            aes(x = val, y = comp2 / comp.scale.factor),
-            color = 'blue') +
-  geom_line(data = df.base_mixmdl,
-            aes(x = val, y = comp_comb / comp.scale.factor),
-            lty = 2) +
-  geom_vline(xintercept = base_mixmgl$mu, lty = 3) +
-  scale_fill_manual(values = rainbow(length(df.fret.base$roi_id[df.fret.base$mask == selected.mask]))) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank(),
-        axis.title.y = element_blank()) +
-  labs(title = 'Base app. average FRET in individual ROIs',
-       x = expression(E[app])) +
-  xlim(-0.005,0.11)
-
-
-plot.base.h <- ggplot() +
-  geom_histogram(data = df.hpca.base %>% filter(mask == selected.mask),
-                 aes(x = int, fill = roi_id),
-                 stackgroups = TRUE, binwidth = b.width,
-                 binpositions = "all", method = "histodot") +
-  geom_line(data = df.base_mixmdl.h,
-            aes(x = val, y = comp1 / comp.scale.factor),
-            color = 'red') +
-  geom_line(data = df.base_mixmdl.h,
-            aes(x = val, y = comp2 / comp.scale.factor),
-            color = 'blue') +
-  geom_line(data = df.base_mixmdl.h,
-            aes(x = val, y = comp_comb / comp.scale.factor),
-            lty = 2) +
-  geom_vline(xintercept = base_mixmgl_h$mu, lty = 3) +
-  scale_fill_manual(values = rainbow(length(df.hpca.base$roi_id[df.hpca.base$mask == selected.mask]))) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank(),
-        axis.title.y = element_blank()) +
-  labs(title = 'Base app. average HPCA insertions in individual ROIs',
-       x = expression(ΔF/F[0])) +
-  xlim(-0.5,1)
-
-
-# ggsave('fret_pre.png', p2, dpi = 300)
 
 # mid
 df.fret.mid <- df.mask %>%
   filter(channel == 'Eapp',
          index %in% mid.indexes.f) %>%
-  select(id, roi, int, mask) %>%
+  select(id, roi, int, mask, channel) %>%
   droplevels() %>%
   group_by(id, roi, mask) %>%
   mutate(int = mean(int),
@@ -539,12 +552,13 @@ df.fret.mid <- df.mask %>%
          cell_id = id) %>%
   ungroup() %>%
   distinct() %>%
-  unite('roi_id', id:roi, sep = '-')
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(time_interval = 'mid')
 
 df.hpca.mid <- df.mask %>%
   filter(channel == 'ch0', int_val == 'df',
          index %in% mid.indexes.h) %>%
-  select(id, roi, int, mask) %>%
+  select(id, roi, int, mask, channel) %>%
   droplevels() %>%
   group_by(id, roi, mask) %>%
   mutate(int = mean(int),
@@ -552,76 +566,26 @@ df.hpca.mid <- df.mask %>%
          cell_id = id) %>%
   ungroup() %>%
   distinct() %>%
-  unite('roi_id', id:roi, sep = '-')
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(time_interval = 'mid')
 
 mm <- calc.mixmdl(df.fret.mid$int[df.fret.mid$mask == selected.mask]) 
-df.mid_mixmdl <- mm[[1]]
+df.mid_mixmdl <- mm[[1]] %>%
+  mutate(channel = 'Eapp', time_interval = 'mid')
 mid_mixmgl <- mm[[2]]
 remove(mm)
 
 mm.h <- calc.mixmdl(df.hpca.mid$int[df.hpca.mid$mask == selected.mask]) 
-df.mid_mixmdl.h <- mm.h[[1]]
+df.mid_mixmdl.h <- mm.h[[1]] %>%
+  mutate(channel = 'ch0', time_interval = 'mid')
 mid_mixmgl_h <- mm.h[[2]]
 remove(mm.h)
-
-plot.mid <- ggplot() +
-  geom_histogram(data = df.fret.mid %>% filter(mask == selected.mask),
-               aes(x = int, fill = roi_id),
-               stackgroups = TRUE, binwidth = b.width,
-               binpositions = "all", method = "histodot") +
-  geom_line(data = df.mid_mixmdl,
-            aes(x = val, y = comp1 / comp.scale.factor),
-            color = 'red') +
-  geom_line(data = df.mid_mixmdl,
-            aes(x = val, y = comp2 / comp.scale.factor),
-            color = 'blue') +
-  geom_line(data = df.mid_mixmdl,
-            aes(x = val, y = comp_comb / comp.scale.factor),
-            lty = 2) +
-  geom_vline(xintercept = mid_mixmgl$mu, lty = 3) +
-  scale_fill_manual(values = rainbow(length(df.fret.mid$roi_id[df.fret.mid$mask == selected.mask]))) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank(),
-        axis.title.y = element_blank()) +
-  labs(title = 'Mid app. average FRET in individual ROIs',
-       x = expression(E[app])) +
-  xlim(-0.005,0.11)
-
-plot.mid.h <- ggplot() +
-  geom_histogram(data = df.hpca.mid %>% filter(mask == selected.mask),
-                 aes(x = int, fill = roi_id),
-                 stackgroups = TRUE, binwidth = 0.03,
-                 binpositions = "all", method = "histodot") +
-  geom_line(data = df.mid_mixmdl.h,
-            aes(x = val, y = comp1 / 0.3),
-            color = 'red') +
-  geom_line(data = df.mid_mixmdl.h,
-            aes(x = val, y = comp2 / 0.3),
-            color = 'blue') +
-  geom_line(data = df.mid_mixmdl.h,
-            aes(x = val, y = comp_comb / 0.3),
-            lty = 2) +
-  geom_vline(xintercept = mid_mixmgl_h$mu, lty = 3) +
-  scale_fill_manual(values = rainbow(length(df.hpca.mid$roi_id[df.hpca.mid$mask == selected.mask]))) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank(),
-        axis.title.y = element_blank()) +
-  labs(title = 'Mid app. average HPCA insertions in individual ROIs',
-       x = expression(ΔF/F[0])) +
-  xlim(-0.5,1)
-
-# ggsave('fret_post.png', p3, dpi = 300)
-
 
 # end
 df.fret.end <- df.mask %>%
   filter(channel == 'Eapp',
          index %in% end.indexes) %>%
-  select(id, roi, int, mask) %>%
+  select(id, roi, int, mask, channel) %>%
   droplevels() %>%
   group_by(id, roi, mask) %>%
   mutate(int = mean(int),
@@ -629,12 +593,13 @@ df.fret.end <- df.mask %>%
          cell_id = id) %>%
   ungroup() %>%
   distinct() %>%
-  unite('roi_id', id:roi, sep = '-')
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(time_interval = 'end')
 
 df.hpca.end <- df.mask %>%
   filter(channel == 'ch0', int_val == 'df',
          index %in% end.indexes) %>%
-  select(id, roi, int, mask) %>%
+  select(id, roi, int, mask, channel) %>%
   droplevels() %>%
   group_by(id, roi, mask) %>%
   mutate(int = mean(int),
@@ -642,75 +607,160 @@ df.hpca.end <- df.mask %>%
          cell_id = id) %>%
   ungroup() %>%
   distinct() %>%
-  unite('roi_id', id:roi, sep = '-')
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(time_interval = 'end')
 
 em <- calc.mixmdl(df.fret.end$int[df.fret.end$mask == selected.mask]) 
-df.end_mixmdl <- em[[1]]
+df.end_mixmdl <- em[[1]] %>%
+  mutate(channel = 'Eapp', time_interval = 'end')
 end_mixmgl <- em[[2]]
 remove(em)
 
 em.h <- calc.mixmdl(df.hpca.end$int[df.hpca.end$mask == selected.mask]) 
-df.end_mixmdl.h <- em.h[[1]]
+df.end_mixmdl.h <- em.h[[1]] %>%
+  mutate(channel = 'ch0', time_interval = 'end')
 end_mixmgl_h <- em.h[[2]]
 remove(em.h)
 
-plot.end <- ggplot() +
-  geom_histogram(data = df.fret.end %>% filter(mask == selected.mask),
-               aes(x = int, fill = roi_id),
-               stackgroups = TRUE, binwidth = b.width,
-               binpositions = "all", method = "histodot") +
-  geom_line(data = df.end_mixmdl,
-            aes(x = val, y = comp1 / comp.scale.factor),
-            color = 'red') +
-  geom_line(data = df.end_mixmdl,
-            aes(x = val, y = comp2 / comp.scale.factor),
-            color = 'blue') +
-  geom_line(data = df.end_mixmdl,
-            aes(x = val, y = comp_comb / comp.scale.factor),
-            lty = 2) +
-  geom_vline(xintercept = end_mixmgl$mu, lty = 3) +
-  scale_fill_manual(values = rainbow(length(df.fret.end$roi_id[df.fret.end$mask == selected.mask]))) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank(),
-        axis.title.y = element_blank()) +
-  labs(title = 'End app. average FRET in individual ROIs',
-       x = expression(E[app])) +
-  xlim(-0.005,0.11)
+
+df.hist <- bind_rows(df.hpca.base, df.hpca.mid, df.hpca.end,
+                     df.fret.base, df.fret.mid, df.fret.end) %>%
+  mutate_at(c('roi_id', 'cell_id'), as.factor)
+remove(df.hpca.base, df.hpca.mid, df.hpca.end,
+       df.fret.base, df.fret.mid, df.fret.end)
+
+df.gmm <- bind_rows(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
+                    df.base_mixmdl, df.mid_mixmdl, df.end_mixmdl) %>%
+  mutate_at(c('channel', 'time_interval'), as.factor)
+remove(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
+       df.base_mixmdl, df.mid_mixmdl, df.end_mixmdl)
 
 
-plot.end.h <- ggplot() +
-  geom_histogram(data = df.hpca.end %>% filter(mask == selected.mask),
-                 aes(x = int, fill = roi_id),
-                 stackgroups = TRUE, binwidth = 0.03,
-                 binpositions = "all", method = "histodot") +
-  geom_line(data = df.end_mixmdl.h,
-            aes(x = val, y = comp1 / 0.3),
-            color = 'red') +
-  geom_line(data = df.end_mixmdl.h,
-            aes(x = val, y = comp2 / 0.3),
-            color = 'blue') +
-  geom_line(data = df.end_mixmdl.h,
-            aes(x = val, y = comp_comb / 0.3),
-            lty = 2) +
-  geom_vline(xintercept = end_mixmgl_h$mu, lty = 3) +
-  scale_fill_manual(values = rainbow(length(df.hpca.end$roi_id[df.hpca.end$mask == selected.mask]))) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.y=element_blank(), 
-        axis.ticks.y=element_blank(),
-        axis.title.y = element_blank()) +
-  labs(title = 'End app. average HPCA insertions in individual ROIs',
-       x = expression(ΔF/F[0])) +
-  xlim(-0.5,1)
+##### HIST PLOT #####
+plot_hist <- function(df.h, df.g, df.b, mm,
+                      h.col = 'red', scale = 3,
+                      bic.title = 'Ba', lims = c(-0.025, 0.1)) {
+  plot.base <- ggplot() +
+    geom_histogram(data = df.h,
+                   aes(x = int),
+                   color = 'black',
+                   fill = h.col,
+                   alpha = .5) +
+    geom_line(data = df.g,
+              aes(x = val, y = comp1 / scale),
+              lty = 2) +
+    geom_line(data = df.g,
+              aes(x = val, y = comp2 / scale),
+              lty = 2) +
+    geom_line(data = df.g,
+              aes(x = val, y = comp_comb / scale)) +
+    geom_vline(xintercept = mm$mu, lty = 3) +
+    theme_classic() +
+    theme(text=element_text(size=font.size, family=font.fam, face="bold"),
+          legend.position="none") +
+    labs(y = '# ROIs',
+         x = expression(E[app])) +
+    scale_x_continuous(limits = lims)
+  
+  bic.hpca <- ggplot() +
+    geom_line(data = df.b,
+              aes(x = seq(1,10), y = BIC), color = h.col) +
+    geom_point(data = df.b,
+               aes(x = seq(1,10), y = BIC), color = h.col) +
+    scale_x_continuous(breaks = seq(1,10,2)) + 
+    theme_classic() +
+    theme(text=element_text(size=font.size - 5, family = font.fam, face="bold"),
+          axis.text.y = element_blank(), 
+          axis.ticks.y = element_blank()) +
+    labs(x = '# comp.',
+         y = 'BIC')
+  
+  ggdraw(plot.base) +
+    draw_plot(bic.hpca, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
+    draw_plot_label(c(bic.title),
+                    c(0.1),
+                    c(1),
+                    size = font.size + 5)
+}
+
+# fret hist
+f.hist.b <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'base'),
+          df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'base'),
+          df.b = df.gmm.optim  %>% filter(group == 'fret_base'),
+          mm = base_mixmgl,
+          h.col = 'red',
+          bic.title = 'Ba')
+f.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'mid'),
+          df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'mid'),
+          df.b = df.gmm.optim  %>% filter(group == 'fret_mid'),
+          mm = mid_mixmgl,
+          h.col = 'red',
+          bic.title = 'Bb')
+f.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'end'),
+          df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'end'),
+          df.b = df.gmm.optim  %>% filter(group == 'fret_end'),
+          mm = end_mixmgl,
+          h.col = 'red',
+          bic.title = 'Bc')
+
+f.hist <- plot_grid(f.hist.b, f.hist.m, f.hist.e, ncol = 1)
+
+# hpca hist
+h.hist.b <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'base'),
+          df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'base'),
+          df.b = df.gmm.optim  %>% filter(group == 'hpca_base'),
+          mm = base_mixmgl_h,
+          h.col = 'green4',
+          scale = 0.28,
+          lims = c(-0.5,0.5),
+          bic.title = 'Ca')
+h.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'mid'),
+          df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'mid'),
+          df.b = df.gmm.optim  %>% filter(group == 'hpca_mid'),
+          mm = mid_mixmgl_h,
+          h.col = 'green4',
+          scale = 0.28,
+          lims = c(-0.5,0.5),
+          bic.title = 'Cb')
+h.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'end'),
+          df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'end'),
+          df.b = df.gmm.optim  %>% filter(group == 'hpca_end'),
+          mm = end_mixmgl_h,
+          h.col = 'green4',
+          scale = 0.28,
+          lims = c(-0.5,0.5),
+          bic.title = 'Cc')
+
+h.hist <- plot_grid(h.hist.b, h.hist.m, h.hist.e, ncol = 1)
 
 
-# combined plot
-plot_grid(plot.base, plot.base.h,
-          plot.mid, plot.mid.h,
-          plot.end, plot.end.h,
-          ncol = 2)  # labels = "AUTO",
+plot_grid(f.hist, h.hist, nrow = 1)
+
+# # base hpca hist
+# plot.base.h <- ggplot() +
+#   geom_histogram(data = df.hpca.base %>% filter(mask == selected.mask),
+#                  aes(x = int, fill = roi_id),
+#                  stackgroups = TRUE, binwidth = b.width,
+#                  binpositions = "all", method = "histodot") +
+#   geom_line(data = df.base_mixmdl.h,
+#             aes(x = val, y = comp1 / comp.scale.factor),
+#             color = 'red') +
+#   geom_line(data = df.base_mixmdl.h,
+#             aes(x = val, y = comp2 / comp.scale.factor),
+#             color = 'blue') +
+#   geom_line(data = df.base_mixmdl.h,
+#             aes(x = val, y = comp_comb / comp.scale.factor),
+#             lty = 2) +
+#   geom_vline(xintercept = base_mixmgl_h$mu, lty = 3) +
+#   scale_fill_manual(values = rainbow(length(df.hpca.base$roi_id[df.hpca.base$mask == selected.mask]))) +
+#   theme_classic() +
+#   theme(legend.position="none",
+#         axis.text.y=element_blank(), 
+#         axis.ticks.y=element_blank(),
+#         axis.title.y = element_blank()) +
+#   labs(title = 'Base app. average HPCA insertions in individual ROIs',
+#        x = expression(ΔF/F[0])) +
+#   xlim(-0.5,1)
 
 
 df.for.gmm <- data.frame('fret_base' = df.fret.base$int[df.fret.base$mask == selected.mask],
@@ -778,8 +828,8 @@ ggplot() +
            xmin = index.3[1] * 10, xmax = rev(index.3)[1] * 10,
            ymin = -Inf, ymax = 0.07,
            alpha = 0.075, color = 'black', linewidth = 0) +
-  scale_color_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
+  scale_color_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
   labs(title = 'FRET in different ROI types',
        color = 'ROI type',
        fill = 'ROI type',
@@ -811,9 +861,9 @@ ggplot() +
   annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
            alpha = 0.2, fill = 'red') +
   geom_hline(yintercept = 0.82, lty = 2) +
-  scale_fill_manual(values = c('Pos.' = '#ff4747',
-                               'Zero' = '#49cf36',
-                               'Neg.' =  '#3636cf')) +
+  scale_fill_manual(values = c('Pos.' = 'red3',
+                               'Zero' = 'yellow3',
+                               'Neg.' =  'blue3')) +
   scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
   scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
   theme_classic() +
@@ -837,9 +887,9 @@ ggplot() +
   annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
            alpha = 0.2, fill = 'red') +
   geom_hline(yintercept = 1, lty = 2) +
-  scale_fill_manual(values = c('Pos.' = '#ff4747',
-                               'Zero' = '#49cf36',
-                               'Neg.' =  '#3636cf')) +
+  scale_fill_manual(values = c('Pos.' = 'red3',
+                               'Zero' = 'yellow3',
+                               'Neg.' =  'blue3')) +
   scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
   scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
   theme_classic() +
@@ -879,7 +929,8 @@ ggplot() +
   geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
                aes(x = time_interval,
                    y = int_interval,
-                   fill = site_type)) +
+                   fill = site_type),
+               alpha = .5) +
   geom_point(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
              aes(x = time_interval,
                  y = int_interval),
@@ -892,7 +943,7 @@ ggplot() +
         axis.text.x = element_blank(), 
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank()) +
-  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
   labs(title = 'Initial FRET in different ROI types',
        y = expression(E[app])) +
   facet_wrap(~site_type)
@@ -908,7 +959,8 @@ ggplot() +
   geom_boxplot(data = df.fret.sites.avg,
                aes(x = time_interval,
                    y = int_interval,
-                   fill = site_type)) +
+                   fill = site_type),
+               alpha = .6) +
   geom_point(data = df.fret.sites.avg,
              aes(x = time_interval,
                  y = int_interval),
@@ -925,7 +977,7 @@ ggplot() +
   labs(title = 'Time courses of FRET in different ROI types',
        x = 'Time interval',
        y = expression(E[app])) +
-  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
   facet_wrap(~site_type)
   
 # site vs int

@@ -393,13 +393,14 @@ psd.bic <- ggplot() +
   scale_x_continuous(breaks = seq(1,10,2)) + 
   theme_classic() +
   theme(text=element_text(size=font.size - 5, family=font.fam, face="bold"),
+        axis.text.y = element_blank(), 
         axis.ticks.y = element_blank()) +
   labs(x = '# comp.',
        y = 'BIC')
 
 psd.gmm.plot <- ggdraw(psd.hist) +
   draw_plot(psd.bic, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
-  draw_plot_label(c("Da"),
+  draw_plot_label(c("Ba"),
                   c(0.1),
                   c(1),
                   size = font.size + 5)
@@ -434,13 +435,14 @@ oreol.bic <- ggplot() +
   scale_x_continuous(breaks = seq(1,10,2)) + 
   theme_classic() +
   theme(text=element_text(size=font.size - 5, family=font.fam, face="bold"),
+        axis.text.y = element_blank(), 
         axis.ticks.y = element_blank()) +
   labs(x = '# comp.',
        y = 'BIC')
 
 orl.gmm.plot <- ggdraw(oreol.hist) +
   draw_plot(oreol.bic, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
-  draw_plot_label(c("Db"),
+  draw_plot_label(c("Bb"),
                   c(0.1),
                   c(1),
                   size = font.size + 5)
@@ -475,13 +477,14 @@ shaft.bic <- ggplot() +
   scale_x_continuous(breaks = seq(1,10,2)) + 
   theme_classic() +
   theme(text=element_text(size=font.size-5, family=font.fam, face="bold"),
+        axis.text.y = element_blank(), 
         axis.ticks.y = element_blank()) +
   labs(x = '# comp.',
        y = 'BIC')
 
 shf.gmm.plot <- ggdraw(shaft.hist) +
   draw_plot(shaft.bic, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
-  draw_plot_label(c("Dc"),
+  draw_plot_label(c("Bc"),
                   c(0.1),
                   c(1),
                   size = font.size + 5)
@@ -517,7 +520,7 @@ plot.prof <- ggplot(data = df.profile.plot,
        x = 'Time, s',
        y = expression(ΔF/F[0])) +
   theme_classic() +
-  theme(legend.position = c(0.8, 0.8),
+  theme(legend.position = c(0.8, 0.7),
         text=element_text(size=font.size, family=font.fam, face="bold"))
 
 plot.prof.comb <- ggdraw(plot.prof) + draw_plot_label(c("A"),
@@ -567,7 +570,7 @@ plot.site <- ggplot() +
 
 plot.site.comb <- ggdraw(plot.site) +
   draw_plot(plot.zero, x = 0.52, y = 0.635, width = 0.25, height = 0.3) +
-  draw_plot_label(c("B", "Ba"),
+  draw_plot_label(c("C", "Ca"),
                   c(0, 0.53),
                   c(1, 0.94),
                   size = font.size + 5)
@@ -591,13 +594,13 @@ plot.lh <- ggplot() +
         text=element_text(size=font.size, family=font.fam, face="bold")) +
   facet_wrap(~site_type)
 
-plot.lh.comb <- ggdraw(plot.lh) + draw_plot_label(c("C"),
+plot.lh.comb <- ggdraw(plot.lh) + draw_plot_label(c("D"),
                                                   c(0),
                                                   c(1),
                                                   size = font.size + 5)
 
 # PROD
-theme_set(theme_cowplot(font_size=font.size + 5, font_family = font.fam))
+# theme_set(theme_cowplot(font_size=font.size + 5, font_family = font.fam))
 
 b.l <- plot_grid(plot.site.comb, plot.lh.comb, nrow = 1)
 l <- plot_grid(plot.prof.comb, b.l, ncol = 1, rel_heights = c(1,2.5))
