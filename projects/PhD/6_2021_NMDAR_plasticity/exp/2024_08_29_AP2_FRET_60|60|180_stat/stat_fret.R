@@ -211,7 +211,7 @@ df.mask <- df.mask %>%
                           labels = c('max', 'mid', 'min'))) %>%
   filter(index <= 29, id != '24_05_16_08')  # , , id != '24_05_16_09' , id != '24_06_5_04'
 
-# write.csv(df.mask, 'df_full.csv')
+write.csv(df.mask, 'df_full.csv')
 
 
 ##### CTRL PLOTS #####
@@ -309,7 +309,7 @@ ggplot(data = df.fret.plot,
            xmin = end.indexes[1], xmax = rev(end.indexes)[1],
            ymin = -Inf, ymax = Inf,
            alpha = 0.075, color = 'black', size = 0) +
-  labs(title = 'FRET profiles in individual ROIs',
+  labs(title = 'FRET profiles in individual ROIs, spines',
        caption = 'Red rect - NMDA app., black rect - time intervals for analysis',
        y = expression(E[app]),
        x = 'Frame idx') +
@@ -365,7 +365,7 @@ ggplot(data = df.hpca.plot,
            xmin = end.indexes[1], xmax = rev(end.indexes)[1],
            ymin = -Inf, ymax = Inf,
            alpha = 0.075, color = 'black', size = 0) +
-  labs(title = 'HPCA insertions profiles in individual ROIs',
+  labs(title = 'HPCA insertions profiles in individual ROIs, spines',
        caption = 'Red rect - NMDA app., black rect - time intervals for analysis',
        y = expression(ΔF/F[0]),
        x = 'Frame idx') +
