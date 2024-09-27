@@ -18,7 +18,7 @@ require(ggsci)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_08_29_AP2_FRET_60|60|180_stat')
 
-font.size <- 20
+font.size <- 25
 font.fam <- 'Arial'
 
 ##### DATA PREPROCESSING #####
@@ -165,6 +165,8 @@ remove(df.psd, df.oreol, df.shaft)
 write.csv(df.full, file = 'psd_sasha.csv')
 
 df.full <- df.full %>% filter(protocol != '5s')
+
+df.iou <- c(0.10350361059106714, 0.14880048587913758, 0.07160948653004835, 0.04245283018867924, 0.028900642236494144, 0.08751548946716232, 0.23809523809523808)
 
 ###### CTRL PLOTS #####
 time.start <- 2
@@ -360,6 +362,15 @@ df.mid.lh.stat <- df.mid %>%
   add_significance() %>%
   add_xy_position(fun = "max") 
 
+# group length
+df.group.len <- df.mid %>%
+  mutate(LH = as.factor(LH)) %>%
+  group_by(site_type, LH) %>%
+  mutate(len = length(roi_id), site = site_type) %>%
+  ungroup() %>%
+  select(site_type, LH, len, site) %>%
+  unite('group', site_type:LH, sep = '-') %>%
+  distinct()
 
 ##### FINAL PANNEL #####
 
@@ -369,7 +380,7 @@ psd.hist <- ggplot() +
                  aes(x = int),
                  color = 'black',
                  fill = 'magenta',
-                 alpha = .5) +
+                 alpha = .6) +
   geom_line(data = df.psd.mixmdl,
             aes(x = val, y = comp1 * 46),
             lty = 2, size = 0.75) +
@@ -400,7 +411,7 @@ psd.bic <- ggplot() +
 
 psd.gmm.plot <- ggdraw(psd.hist) +
   draw_plot(psd.bic, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
-  draw_plot_label(c("Ba"),
+  draw_plot_label(c("Ea"),
                   c(0.1),
                   c(1),
                   size = font.size + 5)
@@ -411,7 +422,7 @@ oreol.hist <-ggplot() +
                  aes(x = int),
                  color = 'black',
                  fill = 'orange',
-                 alpha = .5) +
+                 alpha = .6) +
   geom_line(data = df.oreol.mixmdl,
             aes(x = val, y = comp1 * 20),
             lty = 2, size = 0.75) +
@@ -442,7 +453,7 @@ oreol.bic <- ggplot() +
 
 orl.gmm.plot <- ggdraw(oreol.hist) +
   draw_plot(oreol.bic, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
-  draw_plot_label(c("Bb"),
+  draw_plot_label(c("Eb"),
                   c(0.1),
                   c(1),
                   size = font.size + 5)
@@ -453,7 +464,7 @@ shaft.hist <- ggplot() +
                  aes(x = int),
                  color = 'black',
                  fill = 'blue3',
-                 alpha = .5) +
+                 alpha = .6) +
   geom_line(data = df.shaft.mixmdl,
             aes(x = val, y = comp1 * 20),
             lty = 2, size = 0.75) +
@@ -484,13 +495,10 @@ shaft.bic <- ggplot() +
 
 shf.gmm.plot <- ggdraw(shaft.hist) +
   draw_plot(shaft.bic, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
-  draw_plot_label(c("Bc"),
+  draw_plot_label(c("Ec"),
                   c(0.1),
                   c(1),
                   size = font.size + 5)
-
-plot.hist.comb <- plot_grid(psd.gmm.plot, orl.gmm.plot, shf.gmm.plot, nrow = 3)
-
 
 
 # REP PROFILE
@@ -504,15 +512,15 @@ plot.prof <- ggplot(data = df.profile.plot,
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'ribbon', size = 0, alpha = .15) +
+               geom = 'ribbon', size = 0, alpha = .2) +
   annotate('rect',
            xmin = 0, xmax = 15,
            ymin = -Inf, ymax = Inf,
            alpha = 0.2, fill = 'red', size = 0) +
-  annotate('rect',
-           xmin = time.start, xmax = time.end,
-           ymin = -Inf, ymax = Inf,
-           alpha = 0.2, fill = 'black', size = 0) +
+  # annotate('rect',
+  #          xmin = time.start, xmax = time.end,
+  #          ymin = -Inf, ymax = Inf,
+  #          alpha = 0.2, fill = 'black', size = 0) +
   scale_color_manual(values = c('PSD' = 'magenta', 'Oreol' = 'orange', 'Shaft' = 'blue3')) +
   scale_fill_manual(values = c('PSD' = 'magenta', 'Oreol' = 'orange', 'Shaft' = 'blue3')) +
   labs(color = 'ROI type',
@@ -523,29 +531,29 @@ plot.prof <- ggplot(data = df.profile.plot,
   theme(legend.position = c(0.8, 0.7),
         text=element_text(size=font.size, family=font.fam, face="bold"))
 
-plot.prof.comb <- ggdraw(plot.prof) + draw_plot_label(c("A"),
+plot.prof.comb <- ggdraw(plot.prof) + draw_plot_label(c("D"),
                                                       c(0),
                                                       c(1),
                                                       size = font.size + 5)
+
 
 # BOX INT vs SITE
 plot.zero <- ggplot() +
   geom_boxplot(data = df.mid %>% filter(LH == 'L'),
                aes(y = int, fill = site_type),
-               alpha = .5) +
+               alpha = .6) +
   geom_hline(yintercept = 0, lty = 2) +
   stat_pvalue_manual(df.mid.low.stat, label = 'p.signif',
                      hide.ns = TRUE, remove.bracket = TRUE, label.size = 5) +
   scale_fill_manual(values = c('PSD' = 'magenta', 'Oreol' = 'orange', 'Shaft' = 'blue3')) +
-  theme_minimal() +
+  labs(y = expression(ΔF/F[0])) +
+  theme_classic() +
   theme(legend.position = 'none',
         axis.text.x = element_blank(), 
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        panel.border = element_blank(),
+        # strip.background = element_blank(),
+        strip.text.x = element_text(angle = 90, hjust = 1),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         text=element_text(size=font.size, family=font.fam, face="bold")) +
@@ -554,7 +562,7 @@ plot.zero <- ggplot() +
 plot.site <- ggplot() +
   geom_boxplot(data = df.mid,
                aes(x = site_type, y = int, fill = site_type),
-               alpha = .5) +
+               alpha = .6) +
   geom_point(data = df.mid,
              aes(x = site_type, y = int),
              size=1, shape=21) +
@@ -575,12 +583,18 @@ plot.site.comb <- ggdraw(plot.site) +
                   c(1, 0.94),
                   size = font.size + 5)
 
+plot.site.comb <- plot_grid(plot.zero, plot.site, nrow = 1,
+                          labels = c('Ga', 'Gb'), label_size = font.size + 3,
+                          label_x = c(0,0), 
+                          rel_widths = c(0.4,1))
+
 
 # BOX INT vs LH
+# plot.lh <- 
 plot.lh <- ggplot() +
   geom_boxplot(data = df.mid,
                aes(x = LH, y = int, fill = site_type),
-               alpha = .5) +
+               alpha = .6) +
   geom_point(data = df.mid,
              aes(x = LH, y = int),
              size=1, shape=21) +
@@ -594,15 +608,81 @@ plot.lh <- ggplot() +
         text=element_text(size=font.size, family=font.fam, face="bold")) +
   facet_wrap(~site_type)
 
-plot.lh.comb <- ggdraw(plot.lh) + draw_plot_label(c("D"),
-                                                  c(0),
-                                                  c(1),
-                                                  size = font.size + 5)
+plot.len <- ggplot() +
+  geom_col(data = df.group.len,
+           aes(x = site, y = len, color = group, fill = group), 
+           position = position_stack(), alpha = .75, size = 0.75, color = 'black') +
+  scale_fill_manual(values =  c('orange2', '#FFCC66', 'magenta3', '#FF9FFF', 'blue3', '#33CCFF')) +
+  theme_classic() +
+  theme(legend.position = 'none',
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.text.y = element_text(angle = 0, hjust = 1),
+        text=element_text(size=font.size-10, family=font.fam, face="bold"))
+
+# plot.lh.comb <- ggdraw(plot.lh) +
+#   draw_plot(plot.len, x = 0.4, y = 0.2, width = 0.15, height = 0.35) +
+#   draw_plot_label(c("F", "Fa"),
+#                   c(0, 0.53),
+#                   c(1, 0.94),
+#                   size = font.size + 5)
+
+plot.lh.comb <- plot_grid(plot.len, plot.lh, nrow = 1,
+          labels = c('Fa', 'Fb'), label_size = font.size + 3,
+          label_x = c(0.6,0), 
+          rel_widths = c(0.25,1))
+
+
+# BOX IOU
+df.iou <- data.frame('iou' = df.iou,
+                     'x' = as.factor('x'))
+df.iou.stat <- df.iou %>%
+  wilcox_test(iou~1, mu = 1, alternative = "less") %>%
+  add_significance() %>%
+  add_y_position(fun = 'max') %>%
+  mutate(group1 = 'x', group2 = 'x', y.position = 0.3)
+
+plot.iou <- ggplot() +
+  geom_boxplot(data = df.iou, aes(x = x, y = iou), size = 1) +
+  geom_point(data = df.iou, aes(x = x, y = iou),
+             size=3, shape=21) +
+  geom_hline(yintercept = 1, lty = 2) +
+  stat_pvalue_manual(df.iou.stat, label = 'p.signif',
+                     hide.ns = TRUE, remove.bracket = TRUE, label.size = 5) +
+  labs(y = 'IoU') +
+  theme_classic() +
+  theme(legend.position = 'none',
+        axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+        text=element_text(size=font.size, family=font.fam, face="bold"))
+
+draw.iou <- ggdraw(plot.iou) + draw_plot_label(c("C"),
+                                               c(0.1),
+                                               c(0.9),
+                                               size = font.size + 5)
+
+save_plot('0_plot_psd_iou.png', draw.iou, base_width = 2, base_height = 4)
+
 
 # PROD
 # theme_set(theme_cowplot(font_size=font.size + 5, font_family = font.fam))
 
-b.l <- plot_grid(plot.site.comb, plot.lh.comb, nrow = 1)
+save_plot('0_plot_psd_prof.png', plot.prof.comb, base_width = 9, base_height = 3.68)
+
+plot.hist.comb <- plot_grid(psd.gmm.plot, orl.gmm.plot, shf.gmm.plot, nrow = 1)
+save_plot('0_plot_psd_hist.png', plot.hist.comb, base_width = 21, base_height = 3)
+
+save_plot('0_plot_psd_lh.png', plot.lh.comb, base_width = 9, base_height = 3)
+save_plot('0_plot_psd_site.png', plot.site.comb, base_width = 9, base_height = 3)
+
+plot_grid(plot.lh.comb, plot.site.comb, nrow = 1)
+
+plot_grid(plot.prof.comb, plot.hist.comb, ncol = 1)
+
+b.l <- plot_grid(plot.site.comb, plot.lh.comb, ncol = 1)
+
 l <- plot_grid(plot.prof.comb, b.l, ncol = 1, rel_heights = c(1,2.5))
 
 plot_grid(l, plot.hist.comb, nrow = 1, rel_widths = c(1,0.5))

@@ -18,7 +18,7 @@ require(ggsci)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_08_29_AP2_FRET_60|60|180_stat')
 
-font.size <- 20
+font.size <- 30
 font.fam <- 'Arial'
 
 ##### DATA PREPROCESSING #####
@@ -211,7 +211,7 @@ df.mask <- df.mask %>%
                           labels = c('max', 'mid', 'min'))) %>%
   filter(index <= 29, id != '24_05_16_08')  # , , id != '24_05_16_09' , id != '24_06_5_04'
 
-write.csv(df.mask, 'df_full.csv')
+# write.csv(df.mask, 'df_full.csv')
 
 
 ##### CTRL PLOTS #####
@@ -379,6 +379,7 @@ ggplot(data = df.hpca.plot,
 
 
 ##### L and H GMM #####
+
 # https://www.statisticalaid.com/independent-component-analysis-ica-using-r/
 # https://www.r-bloggers.com/2011/08/fitting-mixture-distributions-with-the-r-package-mixtools/ // https://stackoverflow.com/questions/52082543/curl-package-not-available-for-several-r-packages
 calc.mixmdl <- function(input_vector) {
@@ -499,6 +500,7 @@ df.gmm.optim <- bind_rows(data.frame('BIC' = c(-562.3872730565264,
 
 
 ##### HIST DATA FRAMES #####
+
 # base
 df.fret.base <- df.mask %>%
   filter(channel == 'Eapp',
@@ -637,26 +639,26 @@ remove(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
 
 
 ##### HIST PLOT #####
-plot_hist <- function(df.h, df.g, df.b, mm,
-                      h.col = 'red', scale = 3,
+
+plot_hist <- function(df.h, df.g, df.b, mm, scale = 3,
                       bic.title = 'Ba', lims = c(-0.025, 0.1)) {
   plot.base <- ggplot() +
     geom_histogram(data = df.h,
                    aes(x = int),
                    color = 'black',
-                   fill = h.col,
-                   alpha = .5) +
+                   fill = 'white',
+                   size = 1) +
+    geom_line(data = df.g,
+              aes(x = val, y = comp_comb / scale), size = 2.5) +
     geom_line(data = df.g,
               aes(x = val, y = comp1 / scale),
-              lty = 2) +
+              color = 'red', size = 2.5) +
     geom_line(data = df.g,
               aes(x = val, y = comp2 / scale),
-              lty = 2) +
-    geom_line(data = df.g,
-              aes(x = val, y = comp_comb / scale)) +
-    geom_vline(xintercept = mm$mu, lty = 3) +
+              color = 'green3', size = 2.5) +
+    geom_vline(xintercept = mm$mu, lty = 2) +
     theme_classic() +
-    theme(text=element_text(size=font.size, family=font.fam, face="bold"),
+    theme(text=element_text(size=font.size+2, family=font.fam, face="bold"),
           legend.position="none") +
     labs(y = '# ROIs',
          x = expression(E[app])) +
@@ -664,12 +666,12 @@ plot_hist <- function(df.h, df.g, df.b, mm,
   
   bic.hpca <- ggplot() +
     geom_line(data = df.b,
-              aes(x = seq(1,10), y = BIC), color = h.col) +
+              aes(x = seq(1,10), y = BIC), color = 'black', size = 1) +
     geom_point(data = df.b,
-               aes(x = seq(1,10), y = BIC), color = h.col) +
+               aes(x = seq(1,10), y = BIC), color = 'black', size = 2.5) +
     scale_x_continuous(breaks = seq(1,10,2)) + 
     theme_classic() +
-    theme(text=element_text(size=font.size - 5, family = font.fam, face="bold"),
+    theme(text=element_text(size=font.size - 3, family = font.fam, face="bold"),
           axis.text.y = element_blank(), 
           axis.ticks.y = element_blank()) +
     labs(x = '# comp.',
@@ -688,53 +690,49 @@ f.hist.b <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel =
           df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'base'),
           df.b = df.gmm.optim  %>% filter(group == 'fret_base'),
           mm = base_mixmgl,
-          h.col = 'red',
-          bic.title = 'Ba')
+          bic.title = 'G')
+
+save_plot('0_plot_fret_hist.png', f.hist.b, base_width = 10, base_height = 12)
+
 f.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'mid'),
           df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'mid'),
           df.b = df.gmm.optim  %>% filter(group == 'fret_mid'),
           mm = mid_mixmgl,
-          h.col = 'red',
           bic.title = 'Bb')
 f.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'end'),
           df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'end'),
           df.b = df.gmm.optim  %>% filter(group == 'fret_end'),
           mm = end_mixmgl,
-          h.col = 'red',
           bic.title = 'Bc')
 
-f.hist <- plot_grid(f.hist.b, f.hist.m, f.hist.e, ncol = 1)
+# f.hist <- plot_grid(f.hist.b, f.hist.m, f.hist.e, ncol = 1)
+# f.hist
+# # hpca hist
+# h.hist.b <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'base'),
+#           df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'base'),
+#           df.b = df.gmm.optim  %>% filter(group == 'hpca_base'),
+#           mm = base_mixmgl_h,
+#           scale = 0.28,
+#           lims = c(-0.5,0.5),
+#           bic.title = 'Ca')
+# h.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'mid'),
+#           df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'mid'),
+#           df.b = df.gmm.optim  %>% filter(group == 'hpca_mid'),
+#           mm = mid_mixmgl_h,scale = 0.28,
+#           lims = c(-0.5,0.5),
+#           bic.title = 'Cb')
+# h.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'end'),
+#           df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'end'),
+#           df.b = df.gmm.optim  %>% filter(group == 'hpca_end'),
+#           mm = end_mixmgl_h,
+#           scale = 0.28,
+#           lims = c(-0.5,0.5),
+#           bic.title = 'Cc')
+# 
+# h.hist <- plot_grid(h.hist.b, h.hist.m, h.hist.e, ncol = 1)
+# h.hist
 
-# hpca hist
-h.hist.b <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'base'),
-          df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'base'),
-          df.b = df.gmm.optim  %>% filter(group == 'hpca_base'),
-          mm = base_mixmgl_h,
-          h.col = 'green4',
-          scale = 0.28,
-          lims = c(-0.5,0.5),
-          bic.title = 'Ca')
-h.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'mid'),
-          df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'mid'),
-          df.b = df.gmm.optim  %>% filter(group == 'hpca_mid'),
-          mm = mid_mixmgl_h,
-          h.col = 'green4',
-          scale = 0.28,
-          lims = c(-0.5,0.5),
-          bic.title = 'Cb')
-h.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'ch0', time_interval == 'end'),
-          df.g = df.gmm %>% filter(channel == 'ch0', time_interval == 'end'),
-          df.b = df.gmm.optim  %>% filter(group == 'hpca_end'),
-          mm = end_mixmgl_h,
-          h.col = 'green4',
-          scale = 0.28,
-          lims = c(-0.5,0.5),
-          bic.title = 'Cc')
-
-h.hist <- plot_grid(h.hist.b, h.hist.m, h.hist.e, ncol = 1)
-
-
-plot_grid(f.hist, h.hist, nrow = 1)
+# plot_grid(f.hist, h.hist, nrow = 1)
 
 # # base hpca hist
 # plot.base.h <- ggplot() +
@@ -763,18 +761,19 @@ plot_grid(f.hist, h.hist, nrow = 1)
 #   xlim(-0.5,1)
 
 
-df.for.gmm <- data.frame('fret_base' = df.fret.base$int[df.fret.base$mask == selected.mask],
-                         'hpca_base' = df.hpca.base$int[df.hpca.base$mask == selected.mask],
-                         'fret_mid' = df.fret.mid$int[df.fret.mid$mask == selected.mask],
-                         'hpca_mid' = df.hpca.mid$int[df.hpca.mid$mask == selected.mask],
-                         'fret_end' = df.fret.end$int[df.fret.end$mask == selected.mask],
-                         'hpca_end' = df.hpca.end$int[df.hpca.end$mask == selected.mask])
-write.csv(df.for.gmm, file = 'fret_for_gmm.csv')
+# df.for.gmm <- data.frame('fret_base' = df.fret.base$int[df.fret.base$mask == selected.mask],
+#                          'hpca_base' = df.hpca.base$int[df.hpca.base$mask == selected.mask],
+#                          'fret_mid' = df.fret.mid$int[df.fret.mid$mask == selected.mask],
+#                          'hpca_mid' = df.hpca.mid$int[df.hpca.mid$mask == selected.mask],
+#                          'fret_end' = df.fret.end$int[df.fret.end$mask == selected.mask],
+#                          'hpca_end' = df.hpca.end$int[df.hpca.end$mask == selected.mask])
+# write.csv(df.for.gmm, file = 'fret_for_gmm.csv')
+# 
+# plot(density(df.hpca.mid$int[df.hpca.mid$mask == selected.mask]))
 
-plot(density(df.hpca.mid$int[df.hpca.mid$mask == selected.mask]))
 
 ##### TIME INTERVALS FRET #####
-sites.threshold <- 0.03
+sites.threshold <- 0.012
 index.1 <- base.indexes #  seq(0,5)
 index.2 <- mid.indexes.f #  seq(10,12) #  seq(12,16)
 index.3 <- end.indexes #  seq(24,28)
@@ -788,10 +787,12 @@ df.fret.sites <- df.mask %>%
   droplevels() %>%
   unite('roi_id', id:roi, sep = '-') %>%
   group_by(roi_id) %>%
-  mutate(wash_tail_int = mean(int[index %in% seq(16,28)]),
+  mutate(wash_tail_int = mean(int[index %in% seq(0,6)]),
          site_type = as.factor(ifelse(wash_tail_int > sites.threshold, 'Spine', 'Shaft'))) %>%
   ungroup() %>%
   select(-dist, -dist_group, -int_val, -channel, -mask)
+
+spine_rois <- unique(df.fret.sites$roi_id[df.fret.sites$site_type == 'Spine'])
 
 # profiles
 ggplot() +
@@ -1232,3 +1233,55 @@ ggplot() +
        y = expression(ΔF/F[0])) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
   facet_wrap(~time_interval)
+
+##### DF vs Eapp #####
+
+# shaft_rois <- unique(df.fret.sites$roi_id[df.fret.sites$site_type == 'Shaft'])
+df.h.vs.f <- df.mask %>%
+  filter() %>%
+  filter(mask == 'fret',
+         index <= 12,
+         (channel == 'ch0' & int_val == 'df') | (channel == 'Eapp' & int_val == 'abs')) %>%
+  mutate(roi = as.factor(roi),
+         cell_id = id) %>%
+  droplevels() %>%
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(roi_id = as.factor(roi_id),
+         site_type = as.factor(if_else(roi_id %in% spine_rois, 'Spine', 'Shaft')),
+         rel_time = time - 60) %>%
+  select(channel, roi_id, int, index, cell_id, site_type, rel_time) %>%
+  group_by(roi_id, index) %>%
+  pivot_wider(names_from = channel, values_from = int) %>%
+  ungroup()
+
+require(ggforce)
+
+plot.hf <- ggplot(data = df.h.vs.f,
+       aes(x = ch0, y = Eapp)) +
+  # stat_ellipse(geom="polygon", aes(fill = site_type),
+  #              type = "norm", alpha = .3, level = 0.95) +
+  geom_vline(xintercept = 0, lty = 2) +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_mark_hull(aes(fill = site_type, label = site_type),
+                    size = 0, expand = 0.012) + 
+  # geom_line(aes(color = rel_time, group = roi_id),
+  #           alpha = .5) +
+  geom_point(aes(color = rel_time, shape = site_type), alpha = .6, size = 3) +
+  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) + 
+  scale_color_gradient2(low="yellow", mid = 'orange', high="red3") +
+  theme_classic() +
+  theme(text=element_text(size=font.size - 5, family = font.fam, face="bold")) +
+  labs(caption = 'n = 3/9/81 (culture/cells/ROIs)',
+       color = 'Time',
+       x = expression(ΔF/F[0]),
+       y = expression(E[app])) +
+  guides(fill = 'none',
+         shape = 'none')
+
+draw.hf <- ggdraw(plot.hf) +
+  draw_plot_label(c("H"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+
+save_plot('0_plot_h_vs_f.png', draw.hf, base_width = 16, base_height = 8)
