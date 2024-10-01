@@ -93,21 +93,22 @@ plot.ch3 <- ggplot(data = df.ch3,
         text=element_text(size=font.size, family=font.fam, face="bold"))
 
 draw.ch0 <- ggdraw(plot.ch0) +
-  draw_plot_label(c("E"),
+  draw_plot_label(c("Da"),
                   c(0),
                   c(1),
                   size = font.size + 5)
 draw.ch3 <- ggdraw(plot.ch3) +
-  draw_plot_label(c("F"),
+  draw_plot_label(c("Db"),
                   c(0),
                   c(1),
                   size = font.size + 5)
 draw.eapp <- ggdraw(plot.eapp) +
-  draw_plot_label(c("G"),
+  draw_plot_label(c("Dc"),
                   c(0),
                   c(1),
                   size = font.size + 5)
 
 draw.fret <- plot_grid(draw.ch0, draw.ch3, draw.eapp, nrow = 1)
+draw.fret
 
 save_plot('0_plot_fret_rep.png', draw.fret, base_width = 20, base_height = 4)

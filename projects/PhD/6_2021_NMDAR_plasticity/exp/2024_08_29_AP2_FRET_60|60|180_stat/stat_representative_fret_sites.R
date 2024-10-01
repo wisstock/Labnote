@@ -18,7 +18,7 @@ require(ggsci)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_08_29_AP2_FRET_60|60|180_stat')
 
-font.size <- 25
+font.size <- 20
 font.fam <- 'Arial'
 
 base.indexes <- seq(-60,-10)
@@ -50,6 +50,7 @@ plot.eapp <- ggplot(data = df.eapp,
            alpha = 0.075, color = 'black', size = 0) +
   geom_line(size = 1.5) +
   geom_point(size = 2.5) +
+  scale_x_continuous(breaks = seq(-60, 230, 20)) +
   scale_color_manual(values = c('1' = 'green2',
                                 '2' = 'green4',
                                 '3' = 'magenta2',
@@ -88,6 +89,7 @@ plot.ch0 <- ggplot(data = df.ch0,
   #          alpha = 0.075, color = 'black', size = 0) +
   geom_line(size = 1.5) +
   geom_point(size = 2.5) +
+  scale_x_continuous(breaks = seq(-60, 230, 20)) +
   scale_color_manual(values = c('1' = 'green2',
                                 '2' = 'green4',
                                 '3' = 'magenta2',
@@ -115,6 +117,7 @@ plot.ch3 <- ggplot(data = df.ch3,
            alpha = 0.075, color = 'black', size = 0) +
   geom_line(size = 1.5) +
   geom_point(size = 2.5) +
+  scale_x_continuous(breaks = seq(-60, 230, 20)) +
   scale_color_manual(values = c('1' = 'green2',
                                 '2' = 'green4',
                                 '3' = 'magenta2',
@@ -129,21 +132,22 @@ plot.ch3 <- ggplot(data = df.ch3,
         text=element_text(size=font.size, family=font.fam, face="bold"))
 
 draw.ch0 <- ggdraw(plot.ch0) +
-  draw_plot_label(c("D"),
-                  c(0),
+  draw_plot_label(c("Da"),
+                  c(0.08),
                   c(1),
                   size = font.size + 3)
 draw.ch3 <- ggdraw(plot.ch3) +
-  draw_plot_label(c("E"),
-                  c(0),
+  draw_plot_label(c("Db"),
+                  c(0.08),
                   c(1),
                   size = font.size + 3)
 draw.eapp <- ggdraw(plot.eapp) +
-  draw_plot_label(c("F"),
-                  c(0),
+  draw_plot_label(c("Dc"),
+                  c(0.08),
                   c(1),
                   size = font.size + 3)
 
 draw.fret <- plot_grid(draw.ch0, draw.ch3, draw.eapp, ncol = 1)
+draw.fret
 
-save_plot('0_plot_fret_sites.png', draw.fret, base_width = 18, base_height = 10)
+save_plot('0_plot_fret_sites.png', draw.fret, base_width = 12, base_height = 8)

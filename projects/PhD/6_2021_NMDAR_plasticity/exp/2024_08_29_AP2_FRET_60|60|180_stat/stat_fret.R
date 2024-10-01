@@ -12,14 +12,22 @@ require(mixtools)
 require(Rbeast)
 
 require(ggplot2)
+require(ggforce)
 require(ggpubr)
 require(cowplot)
 require(ggsci)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2024_08_29_AP2_FRET_60|60|180_stat')
 
-font.size <- 30
+font.size <- 20
 font.fam <- 'Arial'
+box.alpha <- 0.6
+
+selected.mask <- 'fret'
+base.indexes <- seq(0,5)
+mid.indexes.f <- seq(10,12)
+mid.indexes.h <- seq(10,12)  # seq(7,9)
+end.indexes <- seq(24,28)
 
 ##### DATA PREPROCESSING #####
 # UP MASK
@@ -191,6 +199,22 @@ df.eapp_abs.fret_mask <- bind_rows(read.csv('./24_05_16_04/24_05_16_04_Eapp_24_0
                                  int_val = as.factor('abs')) %>%
                           select(-X)
 
+df.eapp_df.fret_mask <- bind_rows(read.csv('./24_05_16_04/24_05_16_04_Eapp_24_05_16_04_FRET_up-labels_ΔF.csv'),
+                                   read.csv('./24_05_16_08/24_05_16_08_Eapp_24_05_16_08_FRET_up-labels_ΔF.csv'),
+                                   read.csv('./24_05_16_09/24_05_16_09_Eapp_24_05_16_09_FRET_up-labels_ΔF.csv'),
+                                   read.csv('./24_05_22_04/24_05_22_04_Eapp_24_05_22_04_Fc_norm_red-green_up-labels_ΔF.csv'),
+                                   read.csv('./24_05_22_06/24_05_22_06_Eapp_24_05_22_06_FRET_spine-labels_abs.csv'),
+                                   read.csv('./24_05_22_07/24_05_22_07_Eapp_24_05_22_07_Fc_norm_red-green_up-labels_ΔF.csv'),
+                                   read.csv('./24_06_5_01/24_06_5_01_Eapp_24_06_5_01_Fc_norm_red-green_up-labels_ΔF.csv'),
+                                   read.csv('./24_06_5_02/24_06_5_02_Eapp_24_06_5_01_Fc_norm_red-green_up-labels_ΔF.csv'),
+                                   read.csv('./24_06_5_04/24_06_5_04_Eapp_24_06_5_04_Fc_norm_red-green_up-labels_ΔF.csv'),
+                                   read.csv('./24_06_5_06/24_06_5_06_Eapp_24_06_5_06_Fc_norm_red-green_up-labels_ΔF.csv')) %>%
+  mutate(id = as.factor(str_remove(id, '_xform_Eapp')),
+         channel = as.factor('Eapp'),
+         mask = as.factor('fret'),
+         int_val = as.factor('df')) %>%
+  select(-X)
+
 df.fret_mask <- bind_rows(df.ch0_df.fret_mask,
                           df.ch0_abs.fret_mask,
                           df.ch3_df.fret_mask,
@@ -252,11 +276,7 @@ remove(df.to.plot)
 
 ##### LOW vs HIGH PROFILES #####
 
-selected.mask <- 'fret'
-base.indexes <- seq(0,5)
-mid.indexes.f <- seq(10,12)
-mid.indexes.h <- seq(10,12)  # seq(7,9)
-end.indexes <- seq(24,28)
+
 # base.indexes <- c(0,1,2,3,4,5,6)
 # mid.indexes <- c(12,13,14,15)
 # end.indexes <- c(26,27,28)
@@ -400,35 +420,35 @@ calc.mixmdl <- function(input_vector) {
 }
 
 
-calc.mixmdl.optim <- function(input_vector) {
-  comp.vals <- seq(2,10)
-  loglik.vector <- c()
-  for (comp in comp.vals) {
-    mixmdl <- normalmixEM(input_vector, k = comp)
-    loglik.vector <- append(loglik.vector, mixmdl$loglik)
-  }
-  return(loglik.vector)
-}
+# calc.mixmdl.optim <- function(input_vector) {
+#   comp.vals <- seq(2,10)
+#   loglik.vector <- c()
+#   for (comp in comp.vals) {
+#     mixmdl <- normalmixEM(input_vector, k = comp)
+#     loglik.vector <- append(loglik.vector, mixmdl$loglik)
+#   }
+#   return(loglik.vector)
+# }
 
-calc.mixmdl3 <- function(input_vector) {
-  mixmdl <- normalmixEM(input_vector, k = 3)
-  input_dens <- density(input_vector)
-  comp1 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[1],
-                 sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
-  comp2 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[2],
-                 sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
-  comp3 <- dnorm(x = input_dens$x,
-                 mean = mixmdl$mu[3],
-                 sd = mixmdl$sigma[3]) * mixmdl$lambda[3]
-  return(data.frame(val = input_dens$x,
-                    raw = input_dens$y,
-                    comp1 = comp1,
-                    comp2 = comp2,
-                    comp3 = comp3,
-                    comp_comb = comp1+comp2+comp3))
-}
+# calc.mixmdl3 <- function(input_vector) {
+#   mixmdl <- normalmixEM(input_vector, k = 3)
+#   input_dens <- density(input_vector)
+#   comp1 <- dnorm(x = input_dens$x,
+#                  mean = mixmdl$mu[1],
+#                  sd = mixmdl$sigma[1]) * mixmdl$lambda[1]
+#   comp2 <- dnorm(x = input_dens$x,
+#                  mean = mixmdl$mu[2],
+#                  sd = mixmdl$sigma[2]) * mixmdl$lambda[2]
+#   comp3 <- dnorm(x = input_dens$x,
+#                  mean = mixmdl$mu[3],
+#                  sd = mixmdl$sigma[3]) * mixmdl$lambda[3]
+#   return(data.frame(val = input_dens$x,
+#                     raw = input_dens$y,
+#                     comp1 = comp1,
+#                     comp2 = comp2,
+#                     comp3 = comp3,
+#                     comp_comb = comp1+comp2+comp3))
+# }
 
 # bic profiles
 df.gmm.optim <- bind_rows(data.frame('BIC' = c(-562.3872730565264,
@@ -536,107 +556,107 @@ df.base_mixmdl <- bm[[1]] %>%
 base_mixmgl <- bm[[2]]
 remove(bm)
 
-bm.h <- calc.mixmdl(df.hpca.base$int[df.hpca.base$mask == selected.mask]) 
-df.base_mixmdl.h <- bm.h[[1]] %>%
-  mutate(channel = 'ch0', time_interval = 'base')
-base_mixmgl_h <- bm.h[[2]]
-remove(bm.h)
+# bm.h <- calc.mixmdl(df.hpca.base$int[df.hpca.base$mask == selected.mask]) 
+# df.base_mixmdl.h <- bm.h[[1]] %>%
+#   mutate(channel = 'ch0', time_interval = 'base')
+# base_mixmgl_h <- bm.h[[2]]
+# remove(bm.h)
+# 
+# # mid
+# df.fret.mid <- df.mask %>%
+#   filter(channel == 'Eapp',
+#          index %in% mid.indexes.f) %>%
+#   select(id, roi, int, mask, channel) %>%
+#   droplevels() %>%
+#   group_by(id, roi, mask) %>%
+#   mutate(int = mean(int),
+#          roi = as.factor(roi),
+#          cell_id = id) %>%
+#   ungroup() %>%
+#   distinct() %>%
+#   unite('roi_id', id:roi, sep = '-') %>%
+#   mutate(time_interval = 'mid')
+# 
+# df.hpca.mid <- df.mask %>%
+#   filter(channel == 'ch0', int_val == 'df',
+#          index %in% mid.indexes.h) %>%
+#   select(id, roi, int, mask, channel) %>%
+#   droplevels() %>%
+#   group_by(id, roi, mask) %>%
+#   mutate(int = mean(int),
+#          roi = as.factor(roi),
+#          cell_id = id) %>%
+#   ungroup() %>%
+#   distinct() %>%
+#   unite('roi_id', id:roi, sep = '-') %>%
+#   mutate(time_interval = 'mid')
+# 
+# mm <- calc.mixmdl(df.fret.mid$int[df.fret.mid$mask == selected.mask]) 
+# df.mid_mixmdl <- mm[[1]] %>%
+#   mutate(channel = 'Eapp', time_interval = 'mid')
+# mid_mixmgl <- mm[[2]]
+# remove(mm)
+# 
+# mm.h <- calc.mixmdl(df.hpca.mid$int[df.hpca.mid$mask == selected.mask]) 
+# df.mid_mixmdl.h <- mm.h[[1]] %>%
+#   mutate(channel = 'ch0', time_interval = 'mid')
+# mid_mixmgl_h <- mm.h[[2]]
+# remove(mm.h)
+# 
+# # end
+# df.fret.end <- df.mask %>%
+#   filter(channel == 'Eapp',
+#          index %in% end.indexes) %>%
+#   select(id, roi, int, mask, channel) %>%
+#   droplevels() %>%
+#   group_by(id, roi, mask) %>%
+#   mutate(int = mean(int),
+#          roi = as.factor(roi),
+#          cell_id = id) %>%
+#   ungroup() %>%
+#   distinct() %>%
+#   unite('roi_id', id:roi, sep = '-') %>%
+#   mutate(time_interval = 'end')
+# 
+# df.hpca.end <- df.mask %>%
+#   filter(channel == 'ch0', int_val == 'df',
+#          index %in% end.indexes) %>%
+#   select(id, roi, int, mask, channel) %>%
+#   droplevels() %>%
+#   group_by(id, roi, mask) %>%
+#   mutate(int = mean(int),
+#          roi = as.factor(roi),
+#          cell_id = id) %>%
+#   ungroup() %>%
+#   distinct() %>%
+#   unite('roi_id', id:roi, sep = '-') %>%
+#   mutate(time_interval = 'end')
+# 
+# em <- calc.mixmdl(df.fret.end$int[df.fret.end$mask == selected.mask]) 
+# df.end_mixmdl <- em[[1]] %>%
+#   mutate(channel = 'Eapp', time_interval = 'end')
+# end_mixmgl <- em[[2]]
+# remove(em)
+# 
+# em.h <- calc.mixmdl(df.hpca.end$int[df.hpca.end$mask == selected.mask]) 
+# df.end_mixmdl.h <- em.h[[1]] %>%
+#   mutate(channel = 'ch0', time_interval = 'end')
+# end_mixmgl_h <- em.h[[2]]
+# remove(em.h)
 
-# mid
-df.fret.mid <- df.mask %>%
-  filter(channel == 'Eapp',
-         index %in% mid.indexes.f) %>%
-  select(id, roi, int, mask, channel) %>%
-  droplevels() %>%
-  group_by(id, roi, mask) %>%
-  mutate(int = mean(int),
-         roi = as.factor(roi),
-         cell_id = id) %>%
-  ungroup() %>%
-  distinct() %>%
-  unite('roi_id', id:roi, sep = '-') %>%
-  mutate(time_interval = 'mid')
-
-df.hpca.mid <- df.mask %>%
-  filter(channel == 'ch0', int_val == 'df',
-         index %in% mid.indexes.h) %>%
-  select(id, roi, int, mask, channel) %>%
-  droplevels() %>%
-  group_by(id, roi, mask) %>%
-  mutate(int = mean(int),
-         roi = as.factor(roi),
-         cell_id = id) %>%
-  ungroup() %>%
-  distinct() %>%
-  unite('roi_id', id:roi, sep = '-') %>%
-  mutate(time_interval = 'mid')
-
-mm <- calc.mixmdl(df.fret.mid$int[df.fret.mid$mask == selected.mask]) 
-df.mid_mixmdl <- mm[[1]] %>%
-  mutate(channel = 'Eapp', time_interval = 'mid')
-mid_mixmgl <- mm[[2]]
-remove(mm)
-
-mm.h <- calc.mixmdl(df.hpca.mid$int[df.hpca.mid$mask == selected.mask]) 
-df.mid_mixmdl.h <- mm.h[[1]] %>%
-  mutate(channel = 'ch0', time_interval = 'mid')
-mid_mixmgl_h <- mm.h[[2]]
-remove(mm.h)
-
-# end
-df.fret.end <- df.mask %>%
-  filter(channel == 'Eapp',
-         index %in% end.indexes) %>%
-  select(id, roi, int, mask, channel) %>%
-  droplevels() %>%
-  group_by(id, roi, mask) %>%
-  mutate(int = mean(int),
-         roi = as.factor(roi),
-         cell_id = id) %>%
-  ungroup() %>%
-  distinct() %>%
-  unite('roi_id', id:roi, sep = '-') %>%
-  mutate(time_interval = 'end')
-
-df.hpca.end <- df.mask %>%
-  filter(channel == 'ch0', int_val == 'df',
-         index %in% end.indexes) %>%
-  select(id, roi, int, mask, channel) %>%
-  droplevels() %>%
-  group_by(id, roi, mask) %>%
-  mutate(int = mean(int),
-         roi = as.factor(roi),
-         cell_id = id) %>%
-  ungroup() %>%
-  distinct() %>%
-  unite('roi_id', id:roi, sep = '-') %>%
-  mutate(time_interval = 'end')
-
-em <- calc.mixmdl(df.fret.end$int[df.fret.end$mask == selected.mask]) 
-df.end_mixmdl <- em[[1]] %>%
-  mutate(channel = 'Eapp', time_interval = 'end')
-end_mixmgl <- em[[2]]
-remove(em)
-
-em.h <- calc.mixmdl(df.hpca.end$int[df.hpca.end$mask == selected.mask]) 
-df.end_mixmdl.h <- em.h[[1]] %>%
-  mutate(channel = 'ch0', time_interval = 'end')
-end_mixmgl_h <- em.h[[2]]
-remove(em.h)
-
-
-df.hist <- bind_rows(df.hpca.base, df.hpca.mid, df.hpca.end,
-                     df.fret.base, df.fret.mid, df.fret.end) %>%
-  mutate_at(c('roi_id', 'cell_id'), as.factor)
-remove(df.hpca.base, df.hpca.mid, df.hpca.end,
-       df.fret.base, df.fret.mid, df.fret.end)
-
-df.gmm <- bind_rows(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
-                    df.base_mixmdl, df.mid_mixmdl, df.end_mixmdl) %>%
-  mutate_at(c('channel', 'time_interval'), as.factor)
-remove(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
-       df.base_mixmdl, df.mid_mixmdl, df.end_mixmdl)
-
+# 
+# df.hist <- bind_rows(df.hpca.base, df.hpca.mid, df.hpca.end,
+#                      df.fret.base, df.fret.mid, df.fret.end) %>%
+#   mutate_at(c('roi_id', 'cell_id'), as.factor)
+# remove(df.hpca.base, df.hpca.mid, df.hpca.end,
+#        df.fret.base, df.fret.mid, df.fret.end)
+# 
+# df.gmm <- bind_rows(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
+#                     df.base_mixmdl, df.mid_mixmdl, df.end_mixmdl) %>%
+#   mutate_at(c('channel', 'time_interval'), as.factor)
+# remove(df.base_mixmdl.h, df.mid_mixmdl.h, df.end_mixmdl.h,
+#        df.base_mixmdl, df.mid_mixmdl, df.end_mixmdl)
+# 
 
 ##### HIST PLOT #####
 
@@ -649,14 +669,14 @@ plot_hist <- function(df.h, df.g, df.b, mm, scale = 3,
                    fill = 'white',
                    size = 1) +
     geom_line(data = df.g,
-              aes(x = val, y = comp_comb / scale), size = 2.5) +
+              aes(x = val, y = comp_comb / scale), size = 1.5) +
     geom_line(data = df.g,
               aes(x = val, y = comp1 / scale),
-              color = 'red', size = 2.5) +
+              color = 'green3', size = 1.5, alpha = .75) +
     geom_line(data = df.g,
               aes(x = val, y = comp2 / scale),
-              color = 'green3', size = 2.5) +
-    geom_vline(xintercept = mm$mu, lty = 2) +
+              color = 'red', size = 1.5, alpha = .75) +
+    geom_vline(xintercept = mm$mu, lty = 2, size = 0.75) +
     theme_classic() +
     theme(text=element_text(size=font.size+2, family=font.fam, face="bold"),
           legend.position="none") +
@@ -680,30 +700,23 @@ plot_hist <- function(df.h, df.g, df.b, mm, scale = 3,
   ggdraw(plot.base) +
     draw_plot(bic.hpca, x = 0.6, y = 0.5, width = 0.3, height = 0.4) +
     draw_plot_label(c(bic.title),
-                    c(0.1),
+                    c(0.12),
                     c(1),
                     size = font.size + 5)
 }
 
-# fret hist
-f.hist.b <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'base'),
-          df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'base'),
-          df.b = df.gmm.optim  %>% filter(group == 'fret_base'),
-          mm = base_mixmgl,
-          bic.title = 'G')
 
-save_plot('0_plot_fret_hist.png', f.hist.b, base_width = 10, base_height = 12)
 
-f.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'mid'),
-          df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'mid'),
-          df.b = df.gmm.optim  %>% filter(group == 'fret_mid'),
-          mm = mid_mixmgl,
-          bic.title = 'Bb')
-f.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'end'),
-          df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'end'),
-          df.b = df.gmm.optim  %>% filter(group == 'fret_end'),
-          mm = end_mixmgl,
-          bic.title = 'Bc')
+# f.hist.m <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'mid'),
+#           df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'mid'),
+#           df.b = df.gmm.optim  %>% filter(group == 'fret_mid'),
+#           mm = mid_mixmgl,
+#           bic.title = 'Bb')
+# f.hist.e <- plot_hist(df.h = df.hist %>% filter(mask == selected.mask, channel == 'Eapp', time_interval == 'end'),
+#           df.g = df.gmm %>% filter(channel == 'Eapp', time_interval == 'end'),
+#           df.b = df.gmm.optim  %>% filter(group == 'fret_end'),
+#           mm = end_mixmgl,
+#           bic.title = 'Bc')
 
 # f.hist <- plot_grid(f.hist.b, f.hist.m, f.hist.e, ncol = 1)
 # f.hist
@@ -794,123 +807,184 @@ df.fret.sites <- df.mask %>%
 
 spine_rois <- unique(df.fret.sites$roi_id[df.fret.sites$site_type == 'Spine'])
 
-# profiles
-ggplot() +
+# profiles for fret, abs
+plot.fret.abs <- ggplot() +
+  geom_hline(yintercept = 0, lty = 2) +
+  annotate('rect', xmin = 0, xmax = 60, ymin = -Inf, ymax = Inf,
+           alpha = 0.15, fill = 'red') +
+  annotate('rect',
+           xmin = (index.1[1]*10)-60, xmax = (rev(index.1)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('rect',
+           xmin = (index.2[1]*10)-60, xmax = (rev(index.2)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('rect',
+           xmin = (index.3[1]*10)-60, xmax = (rev(index.3)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('text', label = 'I', x = -35, y = 0.06, color = 'black', size = font.size-12) +
+  annotate('text', label = 'II', x = 50, y = 0.06, color = 'black', size = font.size-12) +
+  annotate('text', label = 'III', x = 200, y = 0.06, color = 'black', size = font.size-12) +
   stat_summary(data = df.fret.sites,
-               aes(x = time, y = int, color=site_type, group = site_type),
+               aes(x = time - 60, y = int, color=site_type, group = site_type),
                fun = median,
                geom = 'line', size = 0.5) +
   stat_summary(data = df.fret.sites,
-               aes(x = time, y = int, color = site_type, group = site_type),
+               aes(x = time - 60, y = int, color = site_type, group = site_type),
                fun = median,
                geom = 'point', size = 1) +
   stat_summary(data = df.fret.sites,
-               aes(x = time, y = int,
+               aes(x = time - 60, y = int,
                    color = site_type, fill = site_type, group = site_type),
                fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
                geom = 'ribbon', size = 0, alpha = .25) +
-  annotate('text', label = 'NMDA app.', x = 100, y = 0.075, color = 'red') +
-  annotate('rect', xmin = 60, xmax = 120, ymin = -Inf, ymax = Inf,
-           alpha = 0.2, fill = 'red') +
-  annotate('text', label = 'Base.', x = 30, y = 0.0675, color = 'black') +
-  annotate('rect',
-           xmin = index.1[1] * 10, xmax = rev(index.1)[1] * 10,
-           ymin = -Inf, ymax = 0.07,
-           alpha = 0.075, color = 'black', linewidth = 0) +
-  annotate('text', label = 'Mid.', x = 110, y = 0.0675, color = 'black') +
-  annotate('rect',
-           xmin = index.2[1] * 10, xmax = rev(index.2)[1] * 10,
-           ymin = -Inf, ymax = 0.07,
-           alpha = 0.075, color = 'black', linewidth = 0) +
-  annotate('text', label = 'End', x = 260, y = 0.0675, color = 'black') +
-  annotate('rect',
-           xmin = index.3[1] * 10, xmax = rev(index.3)[1] * 10,
-           ymin = -Inf, ymax = 0.07,
-           alpha = 0.075, color = 'black', linewidth = 0) +
   scale_color_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
   scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
-  labs(title = 'FRET in different ROI types',
-       color = 'ROI type',
-       fill = 'ROI type',
-       x = 'Time, s',
-       y = expression(E[app])) +
-  theme_classic()
-
-
-# plat det
-df.fret.sites.med <- df.fret.sites %>%
-  group_by(site_type, index) %>%
-  mutate(int_med = median(int)) %>%
-  select(-roi_id, -cell_id, -wash_tail_int, -int) %>%
-  distinct() %>%
-  ungroup()
-
-o1 = beast(df.fret.sites.med$int_med[df.fret.sites.med$site_type == 'Spine'],
-           season = 'none', method='bic')
-df.fret.sites.beast.spine <- data.frame('Time' = seq(0, length(o1$trend$slpSgnPosPr)-1) * 10,
-                                        'Pos.' = o1$trend$slpSgnPosPr,
-                                        'Zero' = o1$trend$slpSgnZeroPr,
-                                        'Neg.' = rep(1, length(o1$trend$slpSgnPosPr)) - (o1$trend$slpSgnPosPr+o1$trend$slpSgnZeroPr)) %>%
-  pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
-  mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
-ggplot() +
-  geom_area(data = df.fret.sites.beast.spine,
-            aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
-  annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
-  annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
-           alpha = 0.2, fill = 'red') +
-  geom_hline(yintercept = 0.82, lty = 2) +
-  scale_fill_manual(values = c('Pos.' = 'red3',
-                               'Zero' = 'yellow3',
-                               'Neg.' =  'blue3')) +
-  scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
-  scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
   theme_classic() +
-  labs(title = 'Probability of slope sign for spines sites',
-       fill = 'Slope sing',
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold")) +
+  scale_x_continuous(breaks = seq(-60, 230, 20)) +
+  labs(caption = 'n = 3/9/81 (cultures/cells/ROIs)',
        x = 'Time, s',
-       y = 'Probability')  
+       y = expression(E[app]))
 
-o2 = beast(df.fret.sites.med$int_med[df.fret.sites.med$site_type == 'Shaft'],
-           season = 'none', method='bic')
-df.fret.sites.beast.shaft <- data.frame('Time' = seq(0, length(o2$trend$slpSgnPosPr)-1) * 10,
-                                        'Pos.' = o2$trend$slpSgnPosPr,
-                                        'Zero' = o2$trend$slpSgnZeroPr,
-                                        'Neg.' = rep(1, length(o2$trend$slpSgnPosPr)) - (o2$trend$slpSgnPosPr+o2$trend$slpSgnZeroPr)) %>%
-  pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
-  mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
-ggplot() +
-  geom_area(data = df.fret.sites.beast.shaft,
-            aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
-  annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
-  annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
-           alpha = 0.2, fill = 'red') +
-  geom_hline(yintercept = 1, lty = 2) +
-  scale_fill_manual(values = c('Pos.' = 'red3',
-                               'Zero' = 'yellow3',
-                               'Neg.' =  'blue3')) +
-  scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
-  scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+# profiles for fret, df
+df.eapp_df.prof <- df.eapp_df.fret_mask %>%
+  mutate(roi = as.factor(roi),
+         cell_id = id) %>%
+  droplevels() %>%
+  unite('roi_id', id:roi, sep = '-') %>%
+  mutate(roi_id = as.factor(roi_id),
+         site_type = as.factor(if_else(roi_id %in% spine_rois, 'Spine', 'Shaft'))) %>%
+  select(roi_id, int, index, cell_id, site_type, time) %>%
+  group_by(roi_id, site_type) %>%
+  mutate(time_interval = case_when(index %in% base.indexes ~ 'I',
+                                   index %in% mid.indexes.f ~ 'II',
+                                   index %in% end.indexes ~ 'III',
+                                   .default = 'out')) %>%
+  droplevels() %>%
+  ungroup() %>%
+  mutate(time_interval = factor(time_interval, c('I', 'II', 'III'), ordered = TRUE))
+
+plot.fret.df <- ggplot() + geom_hline(yintercept = 0, lty = 2) +
+  annotate('rect', xmin = 0, xmax = 60, ymin = -Inf, ymax = Inf,
+           alpha = 0.15, fill = 'red') +
+  annotate('rect',
+           xmin = (index.1[1]*10)-60, xmax = (rev(index.1)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('rect',
+           xmin = (index.2[1]*10)-60, xmax = (rev(index.2)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('rect',
+           xmin = (index.3[1]*10)-60, xmax = (rev(index.3)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('text', label = 'I', x = -35, y = 7, color = 'black', size = font.size-12) +
+  annotate('text', label = 'II', x = 50, y = 7, color = 'black', size = font.size-12) +
+  annotate('text', label = 'III', x = 200, y = 7, color = 'black', size = font.size-12) +
+  stat_summary(data = df.eapp_df.prof,
+               aes(x = time - 60, y = int, color=site_type, group = site_type),
+               fun = median,
+               geom = 'line', size = 0.5) +
+  stat_summary(data = df.eapp_df.prof,
+               aes(x = time - 60, y = int, color = site_type, group = site_type),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(data = df.eapp_df.prof,
+               aes(x = time - 60, y = int,
+                   color = site_type, fill = site_type, group = site_type),
+               fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'ribbon', size = 0, alpha = .25) +
+  scale_color_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
   theme_classic() +
-  labs(title = 'Probability of slope sign for shaft sites',
-       fill = 'Slope sing',
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold")) +
+  scale_x_continuous(breaks = seq(-60, 230, 20)) +
+  labs(caption = 'n = 3/9/81 (cultures/cells/ROIs)',
        x = 'Time, s',
-       y = 'Probability')  
+       y = expression(ΔE[app]/E[app[0]]))
+
+# # plat det
+# df.fret.sites.med <- df.fret.sites %>%
+#   group_by(site_type, index) %>%
+#   mutate(int_med = median(int)) %>%
+#   select(-roi_id, -cell_id, -wash_tail_int, -int) %>%
+#   distinct() %>%
+#   ungroup()
+# 
+# o1 = beast(df.fret.sites.med$int_med[df.fret.sites.med$site_type == 'Spine'],
+#            season = 'none', method='bic')
+# df.fret.sites.beast.spine <- data.frame('Time' = seq(0, length(o1$trend$slpSgnPosPr)-1) * 10,
+#                                         'Pos.' = o1$trend$slpSgnPosPr,
+#                                         'Zero' = o1$trend$slpSgnZeroPr,
+#                                         'Neg.' = rep(1, length(o1$trend$slpSgnPosPr)) - (o1$trend$slpSgnPosPr+o1$trend$slpSgnZeroPr)) %>%
+#   pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
+#   mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
+# ggplot() +
+#   geom_area(data = df.fret.sites.beast.spine,
+#             aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
+#   annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
+#   annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
+#            alpha = 0.2, fill = 'red') +
+#   geom_hline(yintercept = 0.82, lty = 2) +
+#   scale_fill_manual(values = c('Pos.' = 'red3',
+#                                'Zero' = 'yellow3',
+#                                'Neg.' =  'blue3')) +
+#   scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
+#   scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+#   theme_classic() +
+#   labs(title = 'Probability of slope sign for spines sites',
+#        fill = 'Slope sing',
+#        x = 'Time, s',
+#        y = 'Probability')  
+# 
+# o2 = beast(df.fret.sites.med$int_med[df.fret.sites.med$site_type == 'Shaft'],
+#            season = 'none', method='bic')
+# df.fret.sites.beast.shaft <- data.frame('Time' = seq(0, length(o2$trend$slpSgnPosPr)-1) * 10,
+#                                         'Pos.' = o2$trend$slpSgnPosPr,
+#                                         'Zero' = o2$trend$slpSgnZeroPr,
+#                                         'Neg.' = rep(1, length(o2$trend$slpSgnPosPr)) - (o2$trend$slpSgnPosPr+o2$trend$slpSgnZeroPr)) %>%
+#   pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
+#   mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
+# ggplot() +
+#   geom_area(data = df.fret.sites.beast.shaft,
+#             aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
+#   annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
+#   annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
+#            alpha = 0.2, fill = 'red') +
+#   geom_hline(yintercept = 1, lty = 2) +
+#   scale_fill_manual(values = c('Pos.' = 'red3',
+#                                'Zero' = 'yellow3',
+#                                'Neg.' =  'blue3')) +
+#   scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
+#   scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+#   theme_classic() +
+#   labs(title = 'Probability of slope sign for shaft sites',
+#        fill = 'Slope sing',
+#        x = 'Time, s',
+#        y = 'Probability')  
 
 # time intervals
 df.fret.sites.avg <- df.fret.sites %>%
   select(-wash_tail_int, -time) %>%
   group_by(roi_id, site_type) %>%
-  mutate(time_interval = case_when(index %in% index.1 ~ 'base',
-                                   index %in% index.2 ~ 'mid',
-                                   index %in% index.3 ~ 'end',
+  mutate(time_interval = case_when(index %in% base.indexes ~ 'I',
+                                   index %in% mid.indexes.f ~ 'II',
+                                   index %in% end.indexes ~ 'III',
                                    .default = 'out')) %>%
   filter(time_interval != 'out') %>%
   droplevels() %>%
   ungroup() %>%
-  mutate(time_interval = factor(time_interval, c('base', 'mid', 'end'), ordered = TRUE)) %>%
+  mutate(time_interval = factor(time_interval, c('I', 'II', 'III'), ordered = TRUE)) %>%
   group_by(roi_id, site_type, time_interval) %>%
   mutate(int_interval = median(int)) %>%
   select(-index, -int) %>%
@@ -919,25 +993,24 @@ df.fret.sites.avg <- df.fret.sites %>%
 
 # base vs zero
 df.base.zero.stat <- df.fret.sites.avg %>%
-  filter(time_interval == 'base') %>%
+  filter(time_interval == 'I') %>%
   select(-time_interval) %>%
   group_by(site_type) %>%
   wilcox_test(int_interval ~ 1, mu = 0) %>%
   add_significance() %>%
   mutate(y.position = c(0.082,0.035), group2 = c(1,1))
 
-ggplot() +
-  geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
+plot.box.zero.abs <- ggplot() + geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'I'),
                aes(x = time_interval,
                    y = int_interval,
                    fill = site_type),
-               alpha = .5) +
-  geom_point(data = df.fret.sites.avg %>% filter(time_interval == 'base'),
+               alpha = box.alpha) +
+  geom_point(data = df.fret.sites.avg %>% filter(time_interval == 'I'),
              aes(x = time_interval,
                  y = int_interval),
              size=2, shape=21) +
   stat_pvalue_manual(df.base.zero.stat, label = 'p.signif',
-                     hide.ns = TRUE, remove.bracket = TRUE, label.size = 5) +
+                     hide.ns = TRUE, remove.bracket = TRUE, size = font.size - 12) +
   geom_hline(yintercept = 0, lty = 2) +
   theme_classic() +
   theme(legend.position="none",
@@ -945,9 +1018,23 @@ ggplot() +
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank()) +
   scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
-  labs(title = 'Initial FRET in different ROI types',
-       y = expression(E[app])) +
-  facet_wrap(~site_type)
+  scale_y_continuous(limits = c(0, 0.085), breaks = seq(-1,1,0.025)) +
+  facet_wrap(~site_type) +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face = 'bold'),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.title.y = element_blank(),
+        strip.background = element_blank(), strip.text.x = element_blank(),
+        panel.background = element_rect(fill='transparent'),
+        plot.background = element_rect(fill='transparent', color=NA),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.background = element_rect(fill='transparent'),
+        legend.box.background = element_rect(fill='transparent')) +
+  labs(x = 'Time interval',
+       y = expression(E[app]))
 
 # time vs int
 df.time.interval.stat <- df.fret.sites.avg %>%
@@ -956,12 +1043,12 @@ df.time.interval.stat <- df.fret.sites.avg %>%
   add_significance() %>%
   add_xy_position(fun = "max") 
 
-ggplot() +
+plot.box.ti.abs <- ggplot() +
   geom_boxplot(data = df.fret.sites.avg,
                aes(x = time_interval,
                    y = int_interval,
                    fill = site_type),
-               alpha = .6) +
+               alpha = box.alpha) +
   geom_point(data = df.fret.sites.avg,
              aes(x = time_interval,
                  y = int_interval),
@@ -972,15 +1059,16 @@ ggplot() +
                 group = roi_id),
             size = .25, lty = 2, alpha = .5) +
   stat_pvalue_manual(df.time.interval.stat, label = 'p.adj.signif',
-                     hide.ns = TRUE) +
-  theme_classic() +
-  theme(legend.position="none") +
-  labs(title = 'Time courses of FRET in different ROI types',
-       x = 'Time interval',
-       y = expression(E[app])) +
+                     hide.ns = TRUE, size = font.size - 12) +
   scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
-  facet_wrap(~site_type)
-  
+  facet_wrap(~site_type) +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold")) +
+  labs(x = 'Time interval',
+       y = expression(E[app]))
+
+
 # site vs int
 df.site.type.stat <- df.fret.sites.avg %>%
   group_by(time_interval) %>%
@@ -988,24 +1076,98 @@ df.site.type.stat <- df.fret.sites.avg %>%
   add_significance() %>%
   add_xy_position(fun = "max") 
 
-ggplot() +
+plot.box.si.abs <-ggplot() +
   geom_boxplot(data = df.fret.sites.avg,
                aes(x = site_type,
                    y = int_interval,
-                   fill = site_type)) +
+                   fill = site_type),
+               alpha = box.alpha) +
   geom_point(data = df.fret.sites.avg,
              aes(x = site_type,
                  y = int_interval),
              size=2, shape=21) +
   stat_pvalue_manual(df.site.type.stat, label = 'p.signif',
-                     hide.ns = TRUE) +
+                     hide.ns = TRUE, size = font.size - 12) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
+  facet_wrap(~time_interval) +
   theme_classic() +
-  theme(legend.position="none") +
-  labs(title = 'FRET between site types in different time intervals',
-       x = 'Site type',
-       y = expression(E[app])) +
-  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  facet_wrap(~time_interval)
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold"),
+        axis.text.x = element_text(angle = -90, hjust = 1)) +
+  labs(x = 'Site type',
+       y = expression(E[app]))
+
+
+
+# time vs int df
+df.time.interval.df <- df.eapp_df.prof %>%
+  filter(time_interval != 'out') %>%
+  group_by(roi_id, site_type, time_interval) %>%
+  mutate(int_interval = median(int)) %>%
+  ungroup() %>%
+  filter(int_interval < 200) %>%
+  mutate(site_type = factor(site_type, c('Spine', 'Shaft'), ordered = TRUE))
+
+df.time.interval.df.stat <- df.time.interval.df %>%
+  group_by(site_type) %>%
+  pairwise_wilcox_test(int_interval ~ time_interval, p.adjust.method = 'BH') %>%
+  add_significance() %>%
+  add_xy_position(fun = "max") 
+
+
+plot.box.ti.df <- ggplot() +
+  geom_boxplot(data = df.time.interval.df,
+               aes(x = time_interval,
+                   y = int_interval,
+                   fill = site_type),
+               alpha = box.alpha) +
+  geom_point(data = df.time.interval.df,
+             aes(x = time_interval,
+                 y = int_interval),
+             size=2, shape=21) +
+  geom_line(data = df.time.interval.df,
+            aes(x = time_interval,
+                y = int_interval,
+                group = roi_id),
+            size = .25, lty = 2, alpha = .5) +
+  stat_pvalue_manual(df.time.interval.df.stat, label = 'p.adj.signif',
+                     hide.ns = TRUE, size = font.size - 12) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
+  facet_wrap(~site_type, scales = "free") +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold")) +
+  labs(x = 'Time interval',
+       y = expression(ΔE[app]/E[app[0]]))
+
+
+# site vs int df
+df.site.type.df.stat <- df.time.interval.df %>%
+  group_by(time_interval) %>%
+  wilcox_test(int_interval ~ site_type) %>%
+  add_significance() %>%
+  add_xy_position(fun = "max") 
+
+plot.box.si.df <- ggplot() +
+  geom_boxplot(data = df.time.interval.df ,
+               aes(x = site_type,
+                   y = int_interval,
+                   fill = site_type),
+               alpha = box.alpha) +
+  geom_point(data = df.time.interval.df ,
+             aes(x = site_type,
+                 y = int_interval),
+             size=2, shape=21) +
+  stat_pvalue_manual(df.site.type.df.stat, label = 'p.signif',
+                     hide.ns = TRUE, size = font.size - 12) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
+  facet_wrap(~time_interval, scales = "free") +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold"),
+        axis.text.x = element_text(angle = -90, hjust = 1)) +
+  labs(x = 'Site type',
+       y = expression(ΔE[app]/E[app[0]]))
 
 
 ##### TIME INTERVALS HPCA #####
@@ -1022,123 +1184,123 @@ df.hpca.sites <- df.mask %>%
   select(-dist, -dist_group, -int_val, -channel, -mask)
 
 # profiles
-ggplot() +
+plot.hpca.df <- ggplot() +
+  annotate('rect', xmin = 0, xmax = 60, ymin = -Inf, ymax = Inf,
+         alpha = 0.15, fill = 'red') +
+  annotate('rect',
+           xmin = (index.1[1]*10)-60, xmax = (rev(index.1)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('rect',
+           xmin = (index.2[1]*10)-60, xmax = (rev(index.2)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('rect',
+           xmin = (index.3[1]*10)-60, xmax = (rev(index.3)[1]*10)-60,
+           ymin = -Inf, ymax = Inf,
+           alpha = 0.1, color = 'black', linewidth = 0) +
+  annotate('text', label = 'I', x = -35, y = 0.2, color = 'black', size = font.size-12) +
+  annotate('text', label = 'II', x = 50, y = 0.2, color = 'black', size = font.size-12) +
+  annotate('text', label = 'III', x = 200, y = 0.2, color = 'black', size = font.size-12) +
   stat_summary(data = df.hpca.sites,
-               aes(x = time, y = int, color=site_type, group = site_type),
+               aes(x = time - 60, y = int, color=site_type, group = site_type),
                fun = median,
                geom = 'line', size = 0.5) +
   stat_summary(data = df.hpca.sites,
-               aes(x = time, y = int, color = site_type, group = site_type),
+               aes(x = time - 60, y = int, color = site_type, group = site_type),
                fun = median,
                geom = 'point', size = 1) +
   stat_summary(data = df.hpca.sites,
-               aes(x = time, y = int,
+               aes(x = time - 60, y = int,
                    color = site_type, fill = site_type, group = site_type),
                fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
                geom = 'ribbon', size = 0, alpha = .25) +
-  annotate('text', label = 'NMDA app.', x = 92, y = 0.22, color = 'red') +
-  annotate('rect', xmin = 60, xmax = 120, ymin = -Inf, ymax = Inf,
-           alpha = 0.2, fill = 'red') +
-  annotate('text', label = 'Base.', x = 25, y = 0.16, color = 'black') +
-  annotate('rect',
-           xmin = base.indexes[1] * 10, xmax = rev(base.indexes)[1] * 10,
-           ymin = -Inf, ymax = 0.18,
-           alpha = 0.075, color = 'black', linewidth = 0) +
-  annotate('text', label = 'Mid.', x = 80, y = 0.16, color = 'black') +
-  annotate('rect',
-           xmin = mid.indexes.h[1] * 10, xmax = rev(mid.indexes.h)[1] * 10,
-           ymin = -Inf, ymax = 0.18,
-           alpha = 0.075, color = 'black', linewidth = 0) +
-  annotate('text', label = 'End', x = 260, y = 0.16, color = 'black') +
-  annotate('rect',
-           xmin = end.indexes[1] * 10, xmax = rev(end.indexes)[1] * 10,
-           ymin = -Inf, ymax = 0.18,
-           alpha = 0.075, color = 'black', linewidth = 0) +
-  scale_color_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  labs(title = 'HPCA insertions in different ROI types',
-       color = 'ROI type',
-       fill = 'ROI type',
-       x = 'Time, s',
-       y = expression(ΔF/F[0])) +
-  theme_classic()
-
-
-# slope
-df.hpca.sites.med <- df.hpca.sites %>%
-  group_by(site_type, index) %>%
-  mutate(int_med = median(int)) %>%
-  select(-roi_id, -cell_id, -int) %>%
-  distinct() %>%
-  ungroup()
-
-o1.h = beast(df.hpca.sites.med$int_med[df.hpca.sites.med$site_type == 'Spine'],
-           season = 'none', method='bic')
-df.hpca.sites.beast.spine <- data.frame('Time' = seq(0, length(o1.h$trend$slpSgnPosPr)-1) * 10,
-                                        'Pos.' = o1.h$trend$slpSgnPosPr,
-                                        'Zero' = o1.h$trend$slpSgnZeroPr,
-                                        'Neg.' = rep(1, length(o1.h$trend$slpSgnPosPr)) - (o1.h$trend$slpSgnPosPr+o1.h$trend$slpSgnZeroPr)) %>%
-  pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
-  mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
-ggplot() +
-  geom_area(data = df.hpca.sites.beast.spine,
-            aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
-  annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
-  annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
-           alpha = 0.2, fill = 'red') +
-  geom_hline(yintercept = 0.59, lty = 2) +
-  scale_fill_manual(values = c('Pos.' = '#ff4747',
-                               'Zero' = '#49cf36',
-                               'Neg.' =  '#3636cf')) +
-  scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
-  scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+  scale_color_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
+  scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
   theme_classic() +
-  labs(title = 'Probability of slope sign for HPCA insertions, spines sites',
-       fill = 'Slope sing',
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold")) +
+  scale_x_continuous(breaks = seq(-60, 230, 20)) +
+  labs(caption = 'n = 3/9/81 (cultures/cells/ROIs)',
        x = 'Time, s',
-       y = 'Probability')  
+       y = expression(ΔF/F[0]))
 
-o2.h = beast(df.hpca.sites.med$int_med[df.hpca.sites.med$site_type == 'Shaft'],
-             season = 'none', method='bic')
-df.hpca.sites.beast.shaft <- data.frame('Time' = seq(0, length(o2.h$trend$slpSgnPosPr)-1) * 10,
-                                        'Pos.' = o2.h$trend$slpSgnPosPr,
-                                        'Zero' = o2.h$trend$slpSgnZeroPr,
-                                        'Neg.' = rep(1, length(o2.h$trend$slpSgnPosPr)) - (o2.h$trend$slpSgnPosPr+o2.h$trend$slpSgnZeroPr)) %>%
-  pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
-  mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
-ggplot() +
-  geom_area(data = df.hpca.sites.beast.shaft,
-            aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
-  annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
-  annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
-           alpha = 0.2, fill = 'red') +
-  geom_hline(yintercept = 0.0, lty = 2) +
-  scale_fill_manual(values = c('Pos.' = '#ff4747',
-                               'Zero' = '#49cf36',
-                               'Neg.' =  '#3636cf')) +
-  scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
-  scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
-  theme_classic() +
-  labs(title = 'Probability of slope sign for HPCA insertions, shaft sites',
-       fill = 'Slope sing',
-       x = 'Time, s',
-       y = 'Probability')  
+
+# # slope
+# df.hpca.sites.med <- df.hpca.sites %>%
+#   group_by(site_type, index) %>%
+#   mutate(int_med = median(int)) %>%
+#   select(-roi_id, -cell_id, -int) %>%
+#   distinct() %>%
+#   ungroup()
+# 
+# o1.h = beast(df.hpca.sites.med$int_med[df.hpca.sites.med$site_type == 'Spine'],
+#            season = 'none', method='bic')
+# df.hpca.sites.beast.spine <- data.frame('Time' = seq(0, length(o1.h$trend$slpSgnPosPr)-1) * 10,
+#                                         'Pos.' = o1.h$trend$slpSgnPosPr,
+#                                         'Zero' = o1.h$trend$slpSgnZeroPr,
+#                                         'Neg.' = rep(1, length(o1.h$trend$slpSgnPosPr)) - (o1.h$trend$slpSgnPosPr+o1.h$trend$slpSgnZeroPr)) %>%
+#   pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
+#   mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
+# ggplot() +
+#   geom_area(data = df.hpca.sites.beast.spine,
+#             aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
+#   annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
+#   annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
+#            alpha = 0.2, fill = 'red') +
+#   geom_hline(yintercept = 0.59, lty = 2) +
+#   scale_fill_manual(values = c('Pos.' = '#ff4747',
+#                                'Zero' = '#49cf36',
+#                                'Neg.' =  '#3636cf')) +
+#   scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
+#   scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+#   theme_classic() +
+#   labs(title = 'Probability of slope sign for HPCA insertions, spines sites',
+#        fill = 'Slope sing',
+#        x = 'Time, s',
+#        y = 'Probability')  
+# 
+# o2.h = beast(df.hpca.sites.med$int_med[df.hpca.sites.med$site_type == 'Shaft'],
+#              season = 'none', method='bic')
+# df.hpca.sites.beast.shaft <- data.frame('Time' = seq(0, length(o2.h$trend$slpSgnPosPr)-1) * 10,
+#                                         'Pos.' = o2.h$trend$slpSgnPosPr,
+#                                         'Zero' = o2.h$trend$slpSgnZeroPr,
+#                                         'Neg.' = rep(1, length(o2.h$trend$slpSgnPosPr)) - (o2.h$trend$slpSgnPosPr+o2.h$trend$slpSgnZeroPr)) %>%
+#   pivot_longer(cols = 'Pos.':'Neg.', names_to = 'SlopeSign', values_to = 'p') %>%
+#   mutate(SlopeSign = factor(SlopeSign, c('Pos.', 'Zero', 'Neg.'), ordered = TRUE))
+# ggplot() +
+#   geom_area(data = df.hpca.sites.beast.shaft,
+#             aes(x = Time, y = p, fill = SlopeSign), alpha = .6) +
+#   annotate('text', label = 'NMDA app.', x = 90, y = 1.03, color = 'red') +
+#   annotate('rect', xmin = 60, xmax = 120, ymin = 0, ymax = 1.06,
+#            alpha = 0.2, fill = 'red') +
+#   geom_hline(yintercept = 0.0, lty = 2) +
+#   scale_fill_manual(values = c('Pos.' = '#ff4747',
+#                                'Zero' = '#49cf36',
+#                                'Neg.' =  '#3636cf')) +
+#   scale_x_continuous(limits = c(0,280), expand = c(0, 0)) +
+#   scale_y_continuous(limits = c(-0.002,1.06), expand = c(0, 0)) +
+#   theme_classic() +
+#   labs(title = 'Probability of slope sign for HPCA insertions, shaft sites',
+#        fill = 'Slope sing',
+#        x = 'Time, s',
+#        y = 'Probability')  
 
 
 # time intervals
 df.hpca.sites.avg <- df.hpca.sites %>%
   select(-time) %>%
   group_by(roi_id, site_type) %>%
-  mutate(time_interval = case_when(index %in% base.indexes ~ 'base',
-                                   index %in% mid.indexes.h ~ 'mid',
-                                   index %in% end.indexes ~ 'end',
+  mutate(time_interval = case_when(index %in% base.indexes ~ 'I',
+                                   index %in% mid.indexes.h ~ 'II',
+                                   index %in% end.indexes ~ 'III',
                                    .default = 'out')) %>%
   filter(time_interval != 'out') %>%
   droplevels() %>%
   ungroup() %>%
-  mutate(time_interval = factor(time_interval, c('base', 'mid', 'end'), ordered = TRUE)) %>%
+  mutate(time_interval = factor(time_interval, c('I', 'II', 'III'), ordered = TRUE)) %>%
   group_by(roi_id, site_type, time_interval) %>%
   mutate(int_interval = median(int)) %>%
   select(-index, -int) %>%
@@ -1147,35 +1309,45 @@ df.hpca.sites.avg <- df.hpca.sites %>%
 
 # base vs end
 df.base.hpca.zero.stat <- df.hpca.sites.avg %>%
-  filter(time_interval == 'end') %>%
+  filter(time_interval == 'III') %>%
   select(-time_interval) %>%
   group_by(site_type) %>%
   wilcox_test(int_interval ~ 1, mu = 0) %>%
   add_significance() %>%
-  mutate(y.position = c(0.03,0.02), group2 = c(1,1))
+  mutate(y.position = c(0.01,0.01), group2 = c(1,1))
 
-ggplot() +
-  geom_boxplot(data = df.hpca.sites.avg %>% filter(time_interval == 'base'),
+plot.box.zero.hpca <- ggplot() +
+  geom_hline(yintercept = 0, lty = 2) +
+  geom_boxplot(data = df.hpca.sites.avg %>% filter(time_interval == 'I'),
                aes(x = time_interval,
                    y = int_interval,
-                   fill = site_type)) +
-  geom_point(data = df.hpca.sites.avg %>% filter(time_interval == 'base'),
+                   fill = site_type),
+               alpha = box.alpha) +
+  geom_point(data = df.hpca.sites.avg %>% filter(time_interval == 'I'),
              aes(x = time_interval,
                  y = int_interval),
              size=2, shape=21) +
   stat_pvalue_manual(df.base.hpca.zero.stat, label = 'p.signif',
-                     hide.ns = TRUE, remove.bracket = TRUE, label.size = 5) +
+                     hide.ns = TRUE, remove.bracket = TRUE, size = font.size - 12) +
   geom_hline(yintercept = 0, lty = 2) +
-  theme_classic() +
-  theme(legend.position="none",
-        axis.text.x = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.title.x = element_blank()) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  scale_y_continuous(limits = c(-0.04, 0.03)) +
-  labs(title = 'HPCA amount at the end of observations in different ROI types',
-       y = expression(ΔF/F[0])) +
-  facet_wrap(~site_type)
+  scale_y_continuous(limits = c(-0.045, 0.015), breaks = seq(-2, 2, 0.02)) + 
+  facet_wrap(~site_type) +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face = 'bold'),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.title.y = element_blank(),
+        strip.background = element_blank(), strip.text.x = element_blank(),
+        panel.background = element_rect(fill='transparent'),
+        plot.background = element_rect(fill='transparent', color=NA),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.background = element_rect(fill='transparent'),
+        legend.box.background = element_rect(fill='transparent')) +
+  labs(x = 'Time interval',
+       y = expression(ΔF/F[0]))
 
 # time vs int
 df.time.interval.hpca.stat <- df.hpca.sites.avg %>%
@@ -1184,11 +1356,13 @@ df.time.interval.hpca.stat <- df.hpca.sites.avg %>%
   add_significance() %>%
   add_xy_position(fun = "max") 
 
-ggplot() +
+plot.box.ti.hpca <- ggplot() +
+  geom_hline(yintercept = 0, lty = 2) +
   geom_boxplot(data = df.hpca.sites.avg,
                aes(x = time_interval,
                    y = int_interval,
-                   fill = site_type)) +
+                   fill = site_type), 
+               alpha = box.alpha) +
   geom_point(data = df.hpca.sites.avg,
              aes(x = time_interval,
                  y = int_interval),
@@ -1199,14 +1373,14 @@ ggplot() +
                 group = roi_id),
             size = .25, lty = 2, alpha = .5) +
   stat_pvalue_manual(df.time.interval.hpca.stat, label = 'p.adj.signif',
-                     hide.ns = TRUE) +
-  theme_classic() +
-  theme(legend.position="none") +
-  labs(title = 'Time courses of HPCA insertions in different ROI types',
-       x = 'Time interval',
-       y = expression(ΔF/F[0])) +
+                     hide.ns = TRUE, size = font.size - 12) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  facet_wrap(~site_type)
+  facet_wrap(~site_type) +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold")) +
+  labs(x = 'Time interval',
+       y = expression(ΔF/F[0]))
 
 # site vs int
 df.site.type.hpca.stat <- df.hpca.sites.avg %>%
@@ -1215,24 +1389,27 @@ df.site.type.hpca.stat <- df.hpca.sites.avg %>%
   add_significance() %>%
   add_xy_position(fun = "max") 
 
-ggplot() +
+plot.box.si.hpca <- ggplot() +
+  geom_hline(yintercept = 0, lty = 2) +
   geom_boxplot(data = df.hpca.sites.avg,
                aes(x = site_type,
                    y = int_interval,
-                   fill = site_type)) +
+                   fill = site_type),
+               alpha = box.alpha) +
   geom_point(data = df.hpca.sites.avg,
              aes(x = site_type,
                  y = int_interval),
              size=2, shape=21) +
   stat_pvalue_manual(df.site.type.hpca.stat, label = 'p.signif',
-                     hide.ns = TRUE) +
-  theme_classic() +
-  theme(legend.position="none") +
-  labs(title = 'FRET between site types in different time intervals',
-       x = 'Site type',
-       y = expression(ΔF/F[0])) +
+                     hide.ns = TRUE, size = font.size - 12) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  facet_wrap(~time_interval)
+  facet_wrap(~time_interval) +
+  theme_classic() +
+  theme(legend.position = "none",
+        text=element_text(size = font.size, family = font.fam, face="bold"),
+        axis.text.x = element_text(angle = -90, hjust = 1)) +
+  labs(x = 'Site type',
+       y = expression(ΔF/F[0]))
 
 ##### DF vs Eapp #####
 
@@ -1240,7 +1417,7 @@ ggplot() +
 df.h.vs.f <- df.mask %>%
   filter() %>%
   filter(mask == 'fret',
-         index <= 12,
+         index <= 12 & index >= 5,
          (channel == 'ch0' & int_val == 'df') | (channel == 'Eapp' & int_val == 'abs')) %>%
   mutate(roi = as.factor(roi),
          cell_id = id) %>%
@@ -1254,7 +1431,6 @@ df.h.vs.f <- df.mask %>%
   pivot_wider(names_from = channel, values_from = int) %>%
   ungroup()
 
-require(ggforce)
 
 plot.hf <- ggplot(data = df.h.vs.f,
        aes(x = ch0, y = Eapp)) +
@@ -1263,25 +1439,107 @@ plot.hf <- ggplot(data = df.h.vs.f,
   geom_vline(xintercept = 0, lty = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_mark_hull(aes(fill = site_type, label = site_type),
-                    size = 0, expand = 0.012) + 
+                    size = 0, expand = 0.0075) + 
   # geom_line(aes(color = rel_time, group = roi_id),
   #           alpha = .5) +
   geom_point(aes(color = rel_time, shape = site_type), alpha = .6, size = 3) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) + 
-  scale_color_gradient2(low="yellow", mid = 'orange', high="red3") +
+  scale_color_gradient2(low = "green2", mid = 'yellow', high = "red4") +
   theme_classic() +
-  theme(text=element_text(size=font.size - 5, family = font.fam, face="bold")) +
-  labs(caption = 'n = 3/9/81 (culture/cells/ROIs)',
-       color = 'Time',
+  theme(text=element_text(size = font.size - 3, family = font.fam, face="bold")) +
+  labs(color = 'Time',
        x = expression(ΔF/F[0]),
        y = expression(E[app])) +
   guides(fill = 'none',
          shape = 'none')
+plot.hf
 
 draw.hf <- ggdraw(plot.hf) +
-  draw_plot_label(c("H"),
+  draw_plot_label(c("F"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+draw.hf
+save_plot('0_plot_h_vs_f.png', draw.hf, base_width = 12, base_height = 4)
+
+
+
+##### PLOTS #####
+# fret hist
+f.hist.b <- plot_hist(df.h = df.fret.base,
+                      scale = 0.5,
+                      df.g = df.base_mixmdl,
+                      df.b = df.gmm.optim  %>% filter(group == 'fret_base'),
+                      mm = base_mixmgl,
+                      bic.title = 'E')
+
+f.hist.b
+save_plot('0_plot_fret_hist.png', f.hist.b, base_width = 7, base_height = 5)
+
+# fret
+draw.fret.abs <- ggdraw(plot.fret.abs) +
+  draw_plot(plot.box.zero.abs, x = 0.1, y = 0.58, width = 0.25, height = 0.3) +
+  draw_plot_label(c("Ha"),
+                  c(0),
+                  c(0.91),
+                  size = font.size + 3)
+draw.fret.df <- ggdraw(plot.fret.df) +
+  draw_plot_label(c("Ia"),
+                  c(0),
+                  c(0.91),
+                  size = font.size + 3)
+# draw.box.zero <- ggdraw(plot.box.zero.abs) +
+#   draw_plot_label(c("E"),
+#                   c(0),
+#                   c(1),
+#                   size = font.size + 3)
+draw.box.si.abs <- ggdraw(plot.box.si.abs) +
+  draw_plot_label(c("Hc"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+draw.box.ti.abs <- ggdraw(plot.box.ti.abs) +
+  draw_plot_label(c("Hb"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+draw.box.si.df <- ggdraw(plot.box.si.df) +
+  draw_plot_label(c("Ic"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+draw.box.ti.df <- ggdraw(plot.box.ti.df) +
+  draw_plot_label(c("Ib"),
                   c(0),
                   c(1),
                   size = font.size + 3)
 
-save_plot('0_plot_h_vs_f.png', draw.hf, base_width = 16, base_height = 8)
+fret.abs <- plot_grid(draw.fret.abs, draw.box.ti.abs, draw.box.si.abs,
+          rel_widths = c(1,0.5,0.5), nrow=1)
+save_plot('0_plot_fret_abs.png', fret.abs, base_width = 18, base_height = 4)
+
+fret.df <- plot_grid(draw.fret.df, draw.box.ti.df, draw.box.si.df,
+          rel_widths = c(1,0.5,0.5), nrow=1)
+save_plot('0_plot_fret_df.png', fret.df, base_width = 18, base_height = 4)
+
+# hpca
+draw.hpca.df <- ggdraw(plot.hpca.df) +
+  draw_plot(plot.box.zero.hpca, x = 0.65, y = 0.6, width = 0.25, height = 0.3) +
+  draw_plot_label(c("Ga"),
+                  c(0),
+                  c(0.91),
+                  size = font.size + 3)
+draw.box.si.hpca <- ggdraw(plot.box.si.hpca) +
+  draw_plot_label(c("Gb"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+draw.box.ti.hpca <- ggdraw(plot.box.ti.hpca) +
+  draw_plot_label(c("Gc"),
+                  c(0),
+                  c(1),
+                  size = font.size + 3)
+
+hpca.df <- plot_grid(draw.hpca.df, draw.box.ti.hpca, draw.box.si.hpca,
+          rel_widths = c(1,0.5,0.5), nrow=1)
+save_plot('0_plot_hpca_df.png', hpca.df, base_width = 18, base_height = 4)
