@@ -30,6 +30,7 @@ mid.indexes.h <- seq(10,12)  # seq(7,9)
 end.indexes <- seq(24,28)
 
 ##### DATA PREPROCESSING #####
+
 # UP MASK
 df.ch0_df.up_mask <- bind_rows(read.csv('./24_05_16_04/24_05_16_04_ch0_24_05_16_04_ch0_red-green_up-labels_ΔF.csv'),
                                read.csv('./24_05_16_08/24_05_16_08_ch0_24_05_16_08_ch0_red-green_up-labels_ΔF.csv'),
@@ -1000,7 +1001,8 @@ df.base.zero.stat <- df.fret.sites.avg %>%
   add_significance() %>%
   mutate(y.position = c(0.082,0.035), group2 = c(1,1))
 
-plot.box.zero.abs <- ggplot() + geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'I'),
+plot.box.zero.abs <- ggplot() +
+  geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'I'),
                aes(x = time_interval,
                    y = int_interval,
                    fill = site_type),
@@ -1018,14 +1020,13 @@ plot.box.zero.abs <- ggplot() + geom_boxplot(data = df.fret.sites.avg %>% filter
         axis.ticks.x = element_blank(),
         axis.title.x = element_blank()) +
   scale_fill_manual(values = c('Spine' = 'red', 'Shaft' = 'green4')) +
-  scale_y_continuous(limits = c(0, 0.085), breaks = seq(-1,1,0.025)) +
+  scale_y_continuous(limits = c(0, 0.085), breaks = seq(-1,1,0.04)) +
   facet_wrap(~site_type) +
   theme_classic() +
   theme(legend.position = "none",
-        text=element_text(size = font.size, family = font.fam, face = 'bold'),
+        text=element_text(size = font.size-5, family = font.fam, face = 'bold'),
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
-        axis.title.y = element_blank(),
         strip.background = element_blank(), strip.text.x = element_blank(),
         panel.background = element_rect(fill='transparent'),
         plot.background = element_rect(fill='transparent', color=NA),
@@ -1185,6 +1186,7 @@ df.hpca.sites <- df.mask %>%
 
 # profiles
 plot.hpca.df <- ggplot() +
+  geom_hline(yintercept = 0, lty = 2) +
   annotate('rect', xmin = 0, xmax = 60, ymin = -Inf, ymax = Inf,
          alpha = 0.15, fill = 'red') +
   annotate('rect',
@@ -1314,16 +1316,16 @@ df.base.hpca.zero.stat <- df.hpca.sites.avg %>%
   group_by(site_type) %>%
   wilcox_test(int_interval ~ 1, mu = 0) %>%
   add_significance() %>%
-  mutate(y.position = c(0.01,0.01), group2 = c(1,1))
+  mutate(y.position = c(0.07,0.03), group2 = c(1,1))
 
 plot.box.zero.hpca <- ggplot() +
   geom_hline(yintercept = 0, lty = 2) +
-  geom_boxplot(data = df.hpca.sites.avg %>% filter(time_interval == 'I'),
+  geom_boxplot(data = df.hpca.sites.avg %>% filter(time_interval == 'III'),
                aes(x = time_interval,
                    y = int_interval,
                    fill = site_type),
                alpha = box.alpha) +
-  geom_point(data = df.hpca.sites.avg %>% filter(time_interval == 'I'),
+  geom_point(data = df.hpca.sites.avg %>% filter(time_interval == 'III'),
              aes(x = time_interval,
                  y = int_interval),
              size=2, shape=21) +
@@ -1331,14 +1333,13 @@ plot.box.zero.hpca <- ggplot() +
                      hide.ns = TRUE, remove.bracket = TRUE, size = font.size - 12) +
   geom_hline(yintercept = 0, lty = 2) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) +
-  scale_y_continuous(limits = c(-0.045, 0.015), breaks = seq(-2, 2, 0.02)) + 
+  scale_y_continuous(limits = c(-0.4, 0.1), breaks = seq(-2, 2, 0.2)) +
   facet_wrap(~site_type) +
   theme_classic() +
   theme(legend.position = "none",
-        text=element_text(size = font.size, family = font.fam, face = 'bold'),
+        text=element_text(size = font.size - 5, family = font.fam, face = 'bold'),
         axis.title.x = element_blank(),
         axis.text.x = element_blank(),
-        axis.title.y = element_blank(),
         strip.background = element_blank(), strip.text.x = element_blank(),
         panel.background = element_rect(fill='transparent'),
         plot.background = element_rect(fill='transparent', color=NA),
@@ -1417,7 +1418,7 @@ plot.box.si.hpca <- ggplot() +
 df.h.vs.f <- df.mask %>%
   filter() %>%
   filter(mask == 'fret',
-         index <= 12 & index >= 5,
+         index <= 12 & index >= 6,
          (channel == 'ch0' & int_val == 'df') | (channel == 'Eapp' & int_val == 'abs')) %>%
   mutate(roi = as.factor(roi),
          cell_id = id) %>%
@@ -1439,12 +1440,12 @@ plot.hf <- ggplot(data = df.h.vs.f,
   geom_vline(xintercept = 0, lty = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_mark_hull(aes(fill = site_type, label = site_type),
-                    size = 0, expand = 0.0075) + 
+                    size = 0, expand = 0.01) + 
   # geom_line(aes(color = rel_time, group = roi_id),
   #           alpha = .5) +
   geom_point(aes(color = rel_time, shape = site_type), alpha = .6, size = 3) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) + 
-  scale_color_gradient2(low = "green2", mid = 'yellow', high = "red4") +
+  scale_color_gradient2(low = "green4", mid = 'yellow', high = "black") +
   theme_classic() +
   theme(text=element_text(size = font.size - 3, family = font.fam, face="bold")) +
   labs(color = 'Time',
@@ -1530,12 +1531,12 @@ draw.hpca.df <- ggdraw(plot.hpca.df) +
                   c(0.91),
                   size = font.size + 3)
 draw.box.si.hpca <- ggdraw(plot.box.si.hpca) +
-  draw_plot_label(c("Gb"),
+  draw_plot_label(c("Gc"),
                   c(0),
                   c(1),
                   size = font.size + 3)
 draw.box.ti.hpca <- ggdraw(plot.box.ti.hpca) +
-  draw_plot_label(c("Gc"),
+  draw_plot_label(c("Gb"),
                   c(0),
                   c(1),
                   size = font.size + 3)
