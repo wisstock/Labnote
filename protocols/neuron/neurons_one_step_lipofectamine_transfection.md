@@ -3,6 +3,8 @@ Transfection of primary hippocampal neurons culture with Lipofectamine 2000 with
 
 *Borys Olifirov, 03.2024*
 
+**Warning: suitable for young neurons only (DIV 5-7)**
+
 Protocol for **Lipofectamine 2000** transfection of the primary hippocampal neurons culture (5-15 DIV), based on [Tanaka et al., 2013](https://www.nature.com/articles/nprot.2013.171).
 
 *Note: all values for ONE well of the 12-wells culture plate*
@@ -37,7 +39,7 @@ Protocol for **Lipofectamine 2000** transfection of the primary hippocampal neur
 
 **Warning: DO NOT expose DNA and Lipofectamine to UV light**
 
-**Warning: NEVER freeze Lipofectamin, store it only at 4oC**
+**Warning: NEVER freeze Lipofectamin, store it only at 4°C**
 
 ### 2. Transfection
 2.1. Take two 75 ul aliqoutes of MEM- into 1.5 ml eppendorf tubes
