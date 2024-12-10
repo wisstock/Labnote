@@ -5,7 +5,7 @@ Transfection of primary hippocampal neurons culture with Lipofectamine 2000 with
 
 **Warning: suitable for young neurons only (DIV 5-7)**
 
-Protocol for **Lipofectamine 2000** transfection of the primary hippocampal neurons culture (5-15 DIV), based on [Tanaka et al., 2013](https://www.nature.com/articles/nprot.2013.171).
+Protocol for **Lipofectamine 2000** transfection of the primary hippocampal neurons culture (5-10 DIV), based on [Tanaka et al., 2013](https://www.nature.com/articles/nprot.2013.171).
 
 *Note: all values for ONE well of the 12-wells culture plate*
 
