@@ -15,11 +15,12 @@ Composition and instructions for preparation and storage of work/stock solutions
 | HEPES | Sigma H3375 | 238.3 | 400 g/l | solid | 10 mM | 1192 mg |
 | dH2O                 | -                  | -          | -         | -           | -             | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C.
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3 M NaOH solution, and bring the volume to the final value. Filter and store at 4 °C.
 
-Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
+Add glucose to 10 mM final concentration before use (18 mg per 10 mL).
 
-I = 160 mM, osmolarity ~290-300 mOsmol.
+I = 160 mM, osmolarity ~285-300 mOsmol.
+
 
 ### Low Mg2+ HEPES Buffered Saline (HBS low Mg)
 | Chemical              | ID                 | MW (g/mol) | Stock state | Concentration | 250 ml | 500 ml  |
@@ -31,9 +32,9 @@ I = 160 mM, osmolarity ~290-300 mOsmol.
 | HEPES | Sigma H3375 | 238.3 | solid | 10 mM | 595.75 mg | 1192 mg |
 | dH2O                 | -                  | -          | -           | -             | to 250 ml | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C.
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3 M NaOH solution, and bring the volume to the final value. Filter and store at 4 °C.
 
-Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
+Add glucose (Sigma G7528) to 10 mM final concentration before use (18 mg per 10 ml).
 
 I = 159 mM, osmolarity ~290-300 mOsmol.
 
@@ -46,7 +47,7 @@ I = 159 mM, osmolarity ~290-300 mOsmol.
 | HEPES | Sigma H3375 | 238.3 | solid | 10 mM | 238.4 mg | 1192 mg |
 | dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3M NaOH. Filter and store at 4°C. 
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3 with 2-3 M NaOH solution, and bring the volume to the final value. Filter and store at 4 °C.
 
 Add glucose (Sigma G7528) to 10 mM final concentration before work (18 mg per 10 ml).
 
@@ -62,7 +63,7 @@ I = 157 mM, osmolarity ~290-300 mOsmol.
 | MES | SERVA 29834 | 195.2 | solid | 10 mM | 195.2 mg | 488 mg | 976 mg |
 | dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 250 ml | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with 2-3M NaOH. Filter and store at 4°C. 
+Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with 2-3 M NaOH solution, and bring the volume to the final value. Filter and store at 4 °C.
 
 Low pH solution for SEP imaging.
 
@@ -79,7 +80,7 @@ I = 160 mM, osmolarity ~300-310 mOsmol.
 | MES | SERVA 29834 | 195.2 | solid | 10 mM | 195.2 mg | 488 mg | 976 mg |
 | dH2O                 | -                  | -          | -           | -             | to 100 ml    | to 250 ml | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with 2-3M NaOH. Filter and store at 4°C. 
+Dissolve all components in ~3/4 of the final volume, adjust pH to 6.0 with 2-3 M NaOH solution, and bring the volume to the final value. Filter and store at 4 °C.
 
 Low pH solution for SEP imaging in ChemLTD protocol.
 
@@ -96,7 +97,7 @@ I = 157 mM, osmolarity ~300-310 mOsmol.
 | KH2PO4 | Sigma P5379 | 136.09 | solid | 1.8 mM | 12.25 mg | 122.48 mg |
 | dH2O                 | -                  | -          | -           | -             | to 50 ml   | to 500 ml |
 
-Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3-7.4 with 2-3M NaOH. Filter and store at 4°C. 
+Dissolve all components in ~3/4 of the final volume, adjust pH to 7.3-7.4 with 2-3 M NaOH solution, and bring the volume to the final value. Filter and store at 4 °C.
 
 ### HEPES 0.5 M pH 7.0
 
@@ -151,7 +152,7 @@ Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.
 | HEPES pH 7.3  | Sigma H3375 | 238.3      | 0.5M stock  | 10 mM         | 6.8 ul           | 10 ul   |
 | deionized H2O | -           | -          | -           | -             | 340 ul           | 490 ul  |
 
-Dissolve salt in full volume of H20 and HEPES solution. Aliquot, and store at <-10°C. 
+When working with expansive compounds, we weigh them directly into the Eppendorf tube. To estimate the appropriate volume of ddH20, use the following relationship: 66.608 µl of ddH20 and 1.359 µl of HEPES 0.5 M per 1 mg of NMDA (Mr = 147.13 g/mol). Aliquot, and store at <-10°C. 
 
 ### Glycine 100 mM pH 7.3
 
@@ -173,8 +174,21 @@ Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.
 
 Dissolve salt in ~2/3 volume of H20 + HEPES. Aliquot, and store at <-10°C.  
 
+## Dyes and Indicators
+### Alexa Fluor 594 5 mM
+| Chemical                  | ID                | MW (g/mol) | Solubility (20°C) | Stock state | Concentration | -         |
+| ------------------------- | ----------------- | ---------- | ----------------- | ----------- | ------------- | --------- |
+| Alexa Fluor 594 hidrazide | invitrogen A10438 | 758.79     | ?                 | solid       | 5 mM          | 1 mg      |
+| Solvent                   | -                 | -          | -                 | -           | -             | 263.58 ul |
+
+Volume estimated for one 1 mg vial of the dye (Mr=758.79 g/mol); add appropriate volume of any suitable extracellular solution, and dissolve the compound with active tube agitation or vortex. 
+
+Centrifuge tube briefly to retain all volume at the bottom of the tube, take aliquots, and store at ≤ -10 °C no longer than 10–12 months.
+
+
 
 ## Special Solutions
+
 ### CHO vesiculation buffer with TAPS
 Based on [Piccolo et al., 2012](https://pubmed.ncbi.nlm.nih.gov/22985263/)
 
