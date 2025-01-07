@@ -1,4 +1,4 @@
-# NMDA ionophoresis, FRET between AP2B1-EYFP and HPCA(WT)-ECFP
+# NMDA ionophoresis, FRET between EYFP-mem and HPCA(WT)-ECFP
 # Copyright © 2024 Borys Olifirov
 
 require(stringr)
