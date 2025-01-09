@@ -10,7 +10,8 @@ require(rstatix)
 
 require(mixtools)
 require(Rbeast)
-require(broom)
+# require(broom)
+require(minpack.lm)
 
 require(ggplot2)
 require(ggpubr)
@@ -43,7 +44,6 @@ df.sweep.abs <- read.csv('cloud_sweeps_abs.csv') %>%
          roi_name = factor(roi_name, c('Min up', 'Mid up', 'Max', 'Mid down', 'Min down'),
                            ordered = TRUE))
 
-
 font.size <- 15
 font.fam <- 'Arial'
 box.alpha <- 0.6
@@ -51,20 +51,20 @@ box.alpha <- 0.6
 
 ###### PROF PLOT #####
 # ROI
-ggplot() +
-  annotate('rect', xmin = 0.5, xmax = 17, ymin = -Inf, ymax = Inf,
+roi_profile <- ggplot() +
+  annotate('rect', xmin = 0, xmax = 17, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = 'black') +
-  stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
+  stat_summary(data = df.sweep.abs %>% filter(i_app == '100'),
                aes(x = index_app-3, y = int,
                    color = roi_type, group = roi, linetype = roi_position),
                fun = median,
                geom = 'line', size = 0.75) +
-  stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
+  stat_summary(data = df.sweep.abs %>% filter(i_app == '100'),
                aes(x = index_app-3, y = int,
                    color = roi_type, group = roi, shape = roi_position),
                fun = median,
                geom = 'point', size = 2) +
-  stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
+  stat_summary(data = df.sweep.abs %>% filter(i_app == '100'),
                aes(x = index_app-3, y = int,
                    color = roi_type, fill = roi_type, group = roi),
                fun.min = function(z) { quantile(z,0.25) },
@@ -83,7 +83,11 @@ ggplot() +
   scale_x_continuous(breaks = seq(-5, 60, 5)) +
   labs(caption = 'n = 1/4 (cultures/cells)',
        x = 'Time, s',
-       y = 'a.u.')
+       y = 'Intensity, a.u.')
+
+save_plot('0_profile_roi.png', roi_profile, base_width = 12, base_height = 4, dpi = 300)
+remove(roi_profile)
+
 
 # I app
 ggplot() +
@@ -127,29 +131,42 @@ df.abs.roi.box <- df.sweep.abs %>%
   ungroup() %>%
   select(int, roi_name, id, roi_type)
 
+df.abs.roi.box %>%
+  group_by(roi_name) %>%
+  summarise(median =  median(int), iqr = IQR(int))
+
 df.abs.roi.stat <- df.abs.roi.box %>%
   pairwise_wilcox_test(int ~ roi_name, p.adjust.method = 'BH') %>%
   add_significance() %>%
-  add_xy_position()
+  add_xy_position(step.increase = 0.075) %>%
+  mutate(y.position = c(2000,3400,3523.828,3716.201,3100,4100.947,3700,3250,3550,2000))
 
-ggplot(data = df.abs.roi.box,
+roi_boxplot <- ggplot(data = df.abs.roi.box,
        aes(x = roi_name, y = int)) +
-  geom_boxplot(aes(fill = roi_type), alpha = .7) +
+  geom_boxplot(aes(fill = roi_type), alpha = box.alpha) +
   stat_pvalue_manual(df.abs.roi.stat, label = 'p.adj.signif',
-                     size = font.size - 10) +
+                     size = font.size - 10, hide.ns = TRUE, tip.length = 0.01) +
   scale_fill_manual(values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
   theme_classic() +
   theme(legend.position = 'none',
-        text=element_text(size = font.size, family = font.fam)) +
+        text=element_text(size = font.size, family = font.fam),
+        axis.text.x = element_text(angle = 30, vjust = 0.7)) +
   labs(caption = 'n = 1/4 (cultures/cells)',
        x = 'ROI',
-       y = 'a.u.')
+       y = 'Intensity, a.u.')
 
+save_plot('0_boxplot_roi.png', roi_boxplot, base_width = 4, base_height = 4, dpi = 300)
+remove(roi_boxplot)
 
 ##### I STAT #####
 df.abs.i.box <- df.sweep.abs %>%
   mutate(index_app = index_app - 3) %>%
   filter(index_app == 15, roi_position == 'Up') 
+
+df.abs.i.box %>%
+  group_by(roi_name) %>%
+  summarise(median =  median(int), iqr = IQR(int))
+
 
 df.abs.i.stat <- df.abs.i.box %>%
   ungroup() %>%
@@ -176,93 +193,237 @@ ggplot(data = df.abs.i.box, aes(x = i_app, y = int, fill = roi_type)) +
 
 
 ##### ROI TAU STAT #####
-df.abs.decay.roi <- df.sweep.abs %>%
-  mutate(index_app = index_app - 3) %>%
-  filter(index_app %in% seq(17,50), i_app == '25') %>%
-  mutate(t = index_app - 16) %>%
-  ungroup() %>%
-  select(-roi_position, -i_app, -roi, -index_app) %>%
-  nest_by(roi_name, id) %>%
-  mutate(fit = list(nls(int ~ SSasymp(t,a,a0,log_tau), data = data)))  %>%
-  reframe(tidy(fit)) %>%
-  filter(term == 'log_tau') %>%
-  select(-term) %>%
-  mutate(estimate = exp(estimate),
-         tau = 1/estimate) %>%
-  select(roi_name, id, tau) %>%
-  mutate(roi_type = as.factor(c('Min','Min','Min','Min',
-                           'Mid','Mid','Mid','Mid',
-                           'Max','Max','Max','Max',
-                           'Mid','Mid','Mid','Mid',
-                           'Min','Min','Min','Min')))
-
-ggplot(data = df.abs.decay.roi, aes(x = roi_name, y = tau, fill = roi_type)) +
-  geom_boxplot() +
-  scale_fill_manual(values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
-  # geom_text(data = df.abs.i.stat,
-  #           aes(label = title)) +
-  theme_classic() +
-  theme(legend.position = 'none',
-        text=element_text(size = font.size, family = font.fam)) +
-  labs(caption = 'n = 1/4 (cultures/cells)',
-       x = 'ROI',
-       y = 'Tau, s')
-
-
+### RISE
 df.abs.rise.roi <- df.sweep.abs %>%
   mutate(index_app = index_app - 3) %>%
   filter(index_app %in% seq(0,17), i_app == '100') %>%
   mutate(t = index_app) %>%
   ungroup() %>%
-  select(-roi_type, -roi_position, -i_app, -roi, -index_app) %>%
-  nest_by(roi_name, id) %>%
-  mutate(fit = list(nls(int ~ SSasymp(t,a,a0,log_tau), data = data)))  %>%
-  reframe(tidy(fit)) %>%
-  filter(term == 'log_tau') %>%
-  select(-term) %>%
-  mutate(estimate = exp(estimate),
-         tau = 1/estimate) %>%
-  select(roi_name, id, tau)
+  select(-roi_type, -roi_position, -i_app, -roi, -index_app)
 
-ggplot(data = df.abs.rise.roi, aes(x = roi_name, y = tau, fill = roi_name)) +
-  geom_boxplot()
+df.abs.rise.fit <- df.abs.rise.roi %>%
+  nest_by(roi_name, id) %>%
+  mutate(fit = list(nlsLM(int ~ A - R0 * exp(-B * t),
+                        start = list(A = 5000, R0 = 1000, B = 5),
+                        data = data)))  %>%
+  reframe(tidy(fit)) %>%
+  pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic, p.value)) %>%
+  mutate(tau = 1/estimate_B,
+         roi_type = as.factor(c('Min','Min','Min','Min',
+                                'Mid','Mid','Mid','Mid',
+                                'Max','Max','Max','Max',
+                                'Mid','Mid','Mid','Mid',
+                                'Min','Min','Min','Min')))
+
+df.abs.rise.fit %>%
+  group_by(roi_name) %>%
+  summarise(median =  median(tau), iqr = IQR(tau))
+
+
+df.abs.rise.stat <- df.abs.rise.fit %>%
+  pairwise_wilcox_test(tau ~ roi_name, p.adjust.method = 'BH') %>%
+  add_significance() %>%
+  add_xy_position(step.increase = 0.075) %>%
+  mutate(y.position = c(13.43980,13.95513,14.47047,14.98580,9.75,10.5,16.53180,0,9,0))
+
+rise_boxplot <- ggplot(data = df.abs.rise.fit, aes(x = roi_name, y = tau)) +
+  geom_boxplot(aes(fill = roi_type), alpha = box.alpha) +
+  stat_pvalue_manual(df.abs.rise.stat, label = 'p.adj.signif',
+                     size = font.size - 10, hide.ns = TRUE, tip.length = 0.01) +
+  scale_fill_manual(values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
+  theme_classic() +
+  theme(legend.position = 'none',
+        text=element_text(size = font.size, family = font.fam),
+        axis.text.x = element_text(angle = 30, vjust = 0.7)) +
+  labs(caption = 'n = 1/4 (cultures/cells)',
+       x = 'ROI',
+       y = 'Rise \u2CA7, s')
+
+save_plot('0_boxplot_rise.png', rise_boxplot, base_width = 4, base_height = 4, dpi = 300)
+remove(rise_boxplot)
+
+# # fit line demo
+# demo_roi <- 'Min up'
+# demo_id <- '24_05_30_cell2_ch1'
+# 
+# inverse_exp <- function(x, A, R0, B){
+#   A - R0 * exp(-B * x)
+# }
+# 
+# df.predict.demo <- df.abs.rise.roi %>%
+#   filter(roi_name == demo_roi, id == demo_id) %>%
+#   select(-id, -roi_name) %>%
+#   mutate(predict = inverse_exp(x = t,
+#                                A = df.abs.rise.fit$estimate_A[df.abs.rise.fit$roi_name == demo_roi & df.abs.rise.fit$id == demo_id],
+#                                R0 = df.abs.rise.fit$estimate_R0[df.abs.rise.fit$roi_name == demo_roi & df.abs.rise.fit$id == demo_id],
+#                                B = df.abs.rise.fit$estimate_B[df.abs.rise.fit$roi_name == demo_roi & df.abs.rise.fit$id == demo_id]))
+# 
+# ggplot() +
+#   geom_point(data = df.predict.demo,
+#              aes(x = t, y = int), color = 'blue') +
+#   geom_line(data = df.predict.demo,
+#              aes(x = t, y = predict), color = 'red')
+#   
+# 
+# remove(df.predict.demo, demo_roi, demo_id, inverse_exp)
+
+### DECAY
+df.abs.decay.roi <- df.sweep.abs %>%
+  mutate(index_app = index_app - 3) %>%
+  filter(index_app %in% seq(18,50), i_app == '100') %>%
+  mutate(t = index_app - 16) %>%
+  ungroup() %>%
+  select(-roi_position, -i_app, -roi, -index_app)
+
+df.abs.decay.fit <- df.abs.decay.roi %>%
+  nest_by(roi_name, id) %>%
+  mutate(fit = list(nls(int ~ SSasymp(t, A, R0, L),
+                        data = data)))  %>%
+  reframe(tidy(fit)) %>%
+  pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic, p.value)) %>%
+  mutate(B = exp(estimate_L),
+         tau = 1/B,
+         roi_type = as.factor(c('Min','Min','Min','Min',
+                                'Mid','Mid','Mid','Mid',
+                                'Max','Max','Max','Max',
+                                'Mid','Mid','Mid','Mid',
+                                'Min','Min','Min','Min')))
+
+df.abs.decay.fit %>%
+  group_by(roi_name) %>%
+  summarise(median =  median(tau), iqr = IQR(tau))
+
+
+df.abs.decay.stat <- df.abs.decay.fit %>%
+  kruskal_test(tau ~ roi_name) %>%
+  add_significance() %>%
+  mutate(title = paste('H Test p=', p, sep=''),
+         roi_name = factor('Mid up', c('Min up', 'Mid up', 'Max', 'Mid down', 'Min down'),
+                           ordered = TRUE),
+         tau = 10)
+
+decay_boxplot <- ggplot(data = df.abs.decay.fit, aes(x = roi_name, y = tau)) +
+  geom_boxplot(aes(fill = roi_type), alpha = box.alpha) +
+  geom_text(data = df.abs.decay.stat,
+            aes(label = title)) +
+  scale_fill_manual(values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
+  theme_classic() +
+  theme(legend.position = 'none',
+        text=element_text(size = font.size, family = font.fam),
+        axis.text.x = element_text(angle = 30, vjust = 0.7)) +
+  labs(caption = 'n = 1/4 (cultures/cells)',
+       x = 'ROI',
+       y = 'Decay \u2CA7, s')
+
+save_plot('0_boxplot_decay.png', decay_boxplot, base_width = 4, base_height = 4, dpi = 300)
+remove(decay_boxplot)
+
+# # fit line demo
+# demo_roi <- 'Min down'
+# demo_id <- '24_05_30_cell2_ch1'
+# 
+# ssasymp <- function(x, A, R0, L){
+#   A + R0 * exp(-exp(L) * x)
+# }
+# 
+# df.predict.demo <- df.abs.decay.roi %>%
+#   filter(roi_name == demo_roi, id == demo_id) %>%
+#   select(-id, -roi_name) %>%
+#   mutate(predict = ssasymp(x = t,
+#                            A = df.abs.decay.fit$estimate_A[df.abs.rise.fit$roi_name == demo_roi & df.abs.rise.fit$id == demo_id],
+#                            R0 = df.abs.decay.fit$estimate_R0[df.abs.rise.fit$roi_name == demo_roi & df.abs.rise.fit$id == demo_id],
+#                            L = df.abs.decay.fit$estimate_L[df.abs.rise.fit$roi_name == demo_roi & df.abs.rise.fit$id == demo_id]))
+# 
+# ggplot() +
+#   geom_point(data = df.predict.demo,
+#              aes(x = t, y = int), color = 'blue') +
+#   geom_line(data = df.predict.demo,
+#             aes(x = t, y = predict), color = 'red')
+# 
+# 
+# remove(df.predict.demo, demo_roi, demo_id, inverse_exp)
 
 
 ##### I TAU STAT #####
-# https://douglas-watson.github.io/post/2018-09_dplyr_curve_fitting/
-df.abs.decay <- df.sweep.abs %>%
+### RISE
+df.abs.rise.i.roi <- df.sweep.abs %>%
   mutate(index_app = index_app - 3) %>%
-  filter(index_app %in% seq(17,50), roi_name == 'Max') %>%
-  mutate(t = index_app - 16) %>%
-  ungroup() %>%
-  select(-roi_type, -roi_position, -roi_name, -roi, -index_app) %>%
-  nest_by(i_app, id) %>%
-  mutate(fit = list(nls(int ~ SSasymp(t,a,a0,log_tau), data = data)))  %>%
-  reframe(tidy(fit)) %>%
-  filter(term == 'log_tau') %>%
-  select(-term) %>%
-  mutate(estimate = exp(estimate),
-         tau = 1/estimate) %>%
-  select(i_app, id, tau)
-
-ggplot(data = df.abs.decay, aes(x = i_app, y = tau, fill = i_app)) +
-  geom_boxplot()
-
-
-df.abs.rise <- df.sweep.abs %>%
-  mutate(index_app = index_app - 3) %>%
-  filter(index_app %in% seq(0,17), roi_name == 'Max') %>%
+  filter(index_app %in% seq(0,17), roi_type == 'Max') %>%
   mutate(t = index_app) %>%
   ungroup() %>%
-  select(-roi_type, -roi_position, -roi_name, -roi, -index_app) %>%
-  nest_by(i_app, id) %>%
-  mutate(fit = list(nls(int ~ SSasymp(t,a,a0,log_tau), data = data)))  %>%
-  reframe(tidy(fit)) %>%
-  filter(term == 'log_tau') %>%
-  select(-term) %>%
-  mutate(estimate = exp(estimate),
-         tau = 1/estimate) %>%
-  select(i_app, id, tau)
+  select(-roi_type, -roi_position, -roi_name, -roi_type, -roi, -index_app)
 
-ggplot(data = df.abs.rise, aes(x = i_app, y = tau, fill = i_app)) +
-  geom_boxplot()
+df.abs.rise.i.fit <- df.abs.rise.i.roi %>%
+  nest_by(i_app, id) %>%
+  mutate(fit = list(nlsLM(int ~ A - R0 * exp(-B * t),
+                          start = list(A = 3000, R0 = 1500, B = 0.1),
+                          data = data)))  %>%
+  reframe(tidy(fit)) %>%
+  pivot_wider(names_from = term, values_from = c(estimate, std.error, statistic, p.value)) %>%
+  mutate(tau = 1/estimate_B)
+
+df.abs.rise.i.fit %>%
+  group_by(i_app) %>%
+  summarise(median =  median(tau), iqr = IQR(tau))
+
+df.abs.rise.i.stat <- df.abs.rise.i.fit %>%
+  kruskal_test(tau ~ i_app) %>%
+  add_significance() %>%
+  mutate(title = paste('H Test p=', p, sep=''),
+         i_app = factor('25', c('25', '50', '75', '100'),
+                        ordered = TRUE),
+         tau = 10)
+
+ggplot(data = df.abs.rise.i.fit, aes(x = i_app, y = tau)) +
+  geom_boxplot(aes(fill = i_app), alpha = box.alpha) +
+  geom_text(data = df.abs.rise.i.stat,
+            aes(label = title)) +
+  scale_fill_manual(values = c('25' = 'red', '50' = 'red2', '75' = 'red3', '100' = 'red4')) +
+  theme_classic() +
+  theme(legend.position = 'none',
+        text=element_text(size = font.size, family = font.fam)) +
+  labs(caption = 'n = 1/4 (cultures/cells)',
+       x = 'I, nA',
+       y = 'Rise \u2CA7, s')
+
+ggplot(data = df.abs.rise.i.fit,
+       aes(x = i_app, y = tau)) +
+  stat_summary(fun = median, size = 0.5, color = 'red2') +
+  stat_summary(aes(group = -1),
+               fun = median,
+               geom = 'line', size = 0.75, color = 'red2') +
+  stat_summary(fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'errorbar', color = 'red2', width = .1) +
+  geom_point(color = 'grey35') +
+  theme_classic() +
+  theme(legend.position = 'none',
+        text=element_text(size = font.size, family = font.fam)) +
+  labs(caption = 'n = 1/4 (cultures/cells)',
+       x = 'I, nA',
+       y = 'Rise \u2CA7, s')
+
+# # fit line demo
+# i <- '75'
+# demo_id <- '24_05_30_cell2_ch1'
+# 
+# inverse_exp <- function(x, A, R0, B){
+#   A - R0 * exp(-B * x)
+# }
+# 
+# df.predict.demo <- df.abs.rise.i.roi %>%
+#   filter(i_app == i, id == demo_id) %>%
+#   select(-id, -i_app) %>%
+#   mutate(predict = inverse_exp(x = t,
+#                                A = df.abs.rise.i.fit$estimate_A[df.abs.rise.fit$i_app == i & df.abs.rise.fit$id == demo_id],
+#                                R0 = df.abs.rise.i.fit$estimate_R0[df.abs.rise.fit$i_app == i & df.abs.rise.fit$id == demo_id],
+#                                B = df.abs.rise.i.fit$estimate_B[df.abs.rise.fit$i_app == i & df.abs.rise.fit$id == demo_id]))
+# 
+# ggplot() +
+#   geom_point(data = df.predict.demo,
+#              aes(x = t, y = int), color = 'blue') +
+#   geom_line(data = df.predict.demo,
+#              aes(x = t, y = predict), color = 'red')
+# 
+# remove(df.predict.demo, i, demo_id, inverse_exp)
