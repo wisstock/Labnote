@@ -167,7 +167,6 @@ df.abs.i.box %>%
   group_by(roi_name) %>%
   summarise(median =  median(int), iqr = IQR(int))
 
-
 df.abs.i.stat <- df.abs.i.box %>%
   ungroup() %>%
   select(i_app, int, roi_type) %>%
@@ -178,18 +177,33 @@ df.abs.i.stat <- df.abs.i.box %>%
          i_app = factor('50', c('25', '50', '75', '100'), ordered = TRUE)) %>%
   ungroup()
 
-ggplot(data = df.abs.i.box, aes(x = i_app, y = int, fill = roi_type)) +
-  geom_boxplot(alpha = .7) +
-  scale_fill_manual(values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
+i_boxplot <- ggplot(data = df.abs.i.box,
+       aes(x = i_app, y = int, color = roi_type)) +
+  stat_summary(fun = median, size = 0.5) +
+  stat_summary(aes(group = -1),
+               fun = median,
+               geom = 'line', size = 1) +
+  stat_summary(fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'errorbar', width = .3) +
+  geom_point(color = 'grey35', size = 1.5) +
   geom_text(data = df.abs.i.stat,
-            aes(label = title)) +
+            aes(label = title), color = 'black') +
+  facet_wrap(~roi_type, ncol = 3) +
+  scale_color_manual(values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
+  scale_x_discrete(labels=c("25" = "-25", "50" = "-50",
+                            "75" = "-75", "100" = "-100")) +
   theme_classic() +
   theme(legend.position = 'none',
         text=element_text(size = font.size, family = font.fam)) +
   facet_wrap(~roi_type, ncol = 3) +
   labs(caption = 'n = 1/4 (cultures/cells)',
        x = 'I, nA',
-       y = 'a.u.')
+       y = 'Intensity, a.u.')
+
+save_plot('0_boxplot_i.png', i_boxplot, base_width = 6, base_height = 4, dpi = 300)
+remove(i_boxplot)
 
 
 ##### ROI TAU STAT #####
@@ -239,8 +253,7 @@ rise_boxplot <- ggplot(data = df.abs.rise.fit, aes(x = roi_name, y = tau)) +
        x = 'ROI',
        y = 'Rise \u2CA7, s')
 
-save_plot('0_boxplot_rise.png', rise_boxplot, base_width = 4, base_height = 4, dpi = 300)
-remove(rise_boxplot)
+
 
 # # fit line demo
 # demo_roi <- 'Min up'
@@ -370,39 +383,46 @@ df.abs.rise.i.stat <- df.abs.rise.i.fit %>%
   kruskal_test(tau ~ i_app) %>%
   add_significance() %>%
   mutate(title = paste('H Test p=', p, sep=''),
-         i_app = factor('25', c('25', '50', '75', '100'),
+         i_app = factor('50', c('25', '50', '75', '100'),
                         ordered = TRUE),
          tau = 10)
 
-ggplot(data = df.abs.rise.i.fit, aes(x = i_app, y = tau)) +
-  geom_boxplot(aes(fill = i_app), alpha = box.alpha) +
-  geom_text(data = df.abs.rise.i.stat,
-            aes(label = title)) +
-  scale_fill_manual(values = c('25' = 'red', '50' = 'red2', '75' = 'red3', '100' = 'red4')) +
-  theme_classic() +
-  theme(legend.position = 'none',
-        text=element_text(size = font.size, family = font.fam)) +
-  labs(caption = 'n = 1/4 (cultures/cells)',
-       x = 'I, nA',
-       y = 'Rise \u2CA7, s')
-
-ggplot(data = df.abs.rise.i.fit,
+i_rise_boxplot <- ggplot(data = df.abs.rise.i.fit,
        aes(x = i_app, y = tau)) +
   stat_summary(fun = median, size = 0.5, color = 'red2') +
   stat_summary(aes(group = -1),
                fun = median,
-               geom = 'line', size = 0.75, color = 'red2') +
+               geom = 'line', size = 1, color = 'red2') +
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'errorbar', color = 'red2', width = .1) +
-  geom_point(color = 'grey35') +
+               geom = 'errorbar', color = 'red2', width = .3) +
+  geom_point(color = 'grey35', size = 1.5) +
+  geom_text(data = df.abs.rise.i.stat,
+            aes(label = title)) +
+  scale_x_discrete(labels=c("25" = "-25", "50" = "-50",
+                            "75" = "-75", "100" = "-100")) +
   theme_classic() +
   theme(legend.position = 'none',
         text=element_text(size = font.size, family = font.fam)) +
   labs(caption = 'n = 1/4 (cultures/cells)',
        x = 'I, nA',
        y = 'Rise \u2CA7, s')
+
+save_plot('0_boxplot_rise_i.png', i_rise_boxplot, base_width = 2.5, base_height = 4, dpi = 300)
+remove(i_rise_boxplot)
+
+# ggplot(data = df.abs.rise.i.fit, aes(x = i_app, y = tau)) +
+#   geom_boxplot(aes(fill = i_app), alpha = box.alpha) +
+#   geom_text(data = df.abs.rise.i.stat,
+#             aes(label = title)) +
+#   scale_fill_manual(values = c('25' = 'red', '50' = 'red2', '75' = 'red3', '100' = 'red4')) +
+#   theme_classic() +
+#   theme(legend.position = 'none',
+#         text=element_text(size = font.size, family = font.fam)) +
+#   labs(caption = 'n = 1/4 (cultures/cells)',
+#        x = 'I, nA',
+#        y = 'Rise \u2CA7, s')
 
 # # fit line demo
 # i <- '75'
