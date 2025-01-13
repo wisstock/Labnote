@@ -16,7 +16,7 @@ require(ggpubr)
 require(cowplot)
 require(ggsci)
 
-setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_01_7_ionophoresis_bio-protocol')
+setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_01_7_ionophoresis_bio-protocol/cloud')
 
 ##### ΔF DATA PREPROCESSING #####
 # df.abs.raw <- rbind(read.csv('cloud/24_05_30_cell1_ch1_zone_mask_abs.csv'),
@@ -31,8 +31,8 @@ start.idx.2nd <- 57
 start.idx.3d <- 109
 start.idx.4th <- 162
 
-df.dF.raw.cell2_3 <- rbind(read.csv('cloud/24_05_30_cell2_ch1_zone_mask_abs.csv'),
-                   read.csv('cloud/24_05_30_cell3_ch1_zone_mask_abs.csv')) %>%
+df.dF.raw.cell2_3 <- rbind(read.csv('24_05_30_cell2_ch1_zone_mask_abs.csv'),
+                   read.csv('24_05_30_cell3_ch1_zone_mask_abs.csv')) %>%
              select(-X)
 
 df.dF.25 <- df.dF.raw.cell2_3 %>%
@@ -65,9 +65,11 @@ df.dF.sweep.cell2_3 <- rbind(df.dF.25, df.dF.50, df.dF.75, df.dF.100) %>%
   filter(index_app < 55)
 remove(df.dF.25, df.dF.50, df.dF.75, df.dF.100)
 
-ggplot(data = df.dF.sweep.cell2_3 %>% filter(i_app == '100', roi == '1')) +
+ggplot(data = df.dF.sweep.cell2_3 %>% filter(i_app == '25', roi == '1')) +
   geom_point(aes(x = index_app, y = int, color = id), size = 1) +
-  geom_line(aes(x = index_app, y = int, color = id))
+  geom_line(aes(x = index_app, y = int, color = id)) + 
+  annotate('rect', xmin = 4, xmax = 23, ymin = -Inf, ymax = Inf,
+           alpha = 0.1, fill = 'black')
 
 
 df.dF.raw.cell4 <- read.csv('cloud/24_05_30_cell4_ch1_zone_mask_abs.csv') %>%
@@ -105,7 +107,9 @@ remove(df.dF.25, df.dF.50, df.dF.75, df.dF.100)
 
 ggplot(data = df.dF.sweep.cell4 %>% filter(roi == '1')) +
   geom_point(aes(x = index_app, y = int, color = i_app), size = 1) +
-  geom_line(aes(x = index_app, y = int, color = i_app))
+  geom_line(aes(x = index_app, y = int, color = i_app)) +
+  annotate('rect', xmin = 4, xmax = 24, ymin = -Inf, ymax = Inf,
+           alpha = 0.1, fill = 'black')
 
 
 
@@ -144,7 +148,9 @@ remove(df.dF.25, df.dF.50, df.dF.75, df.dF.100)
 
 ggplot(data = df.dF.sweep.cell5 %>% filter(roi == '1')) +
   geom_point(aes(x = index_app, y = int, color = i_app), size = 1) +
-  geom_line(aes(x = index_app, y = int, color = i_app))
+  geom_line(aes(x = index_app, y = int, color = i_app)) +
+  annotate('rect', xmin = 4, xmax = 20, ymin = -Inf, ymax = Inf,
+           alpha = 0.1, fill = 'black')
 
 
 df.dF.sweep <- rbind(df.dF.sweep.cell2_3, df.dF.sweep.cell4, df.dF.sweep.cell5)

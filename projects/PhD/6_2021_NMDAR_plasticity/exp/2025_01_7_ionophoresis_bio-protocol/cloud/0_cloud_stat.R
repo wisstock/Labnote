@@ -18,7 +18,7 @@ require(ggpubr)
 require(cowplot)
 require(ggsci)
 
-setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_01_7_ionophoresis_bio-protocol')
+setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_01_7_ionophoresis_bio-protocol/cloud')
 
 df.sweep.dF <- read.csv('cloud_sweeps_dF.csv') %>%
   select(-X) %>%
@@ -51,20 +51,21 @@ box.alpha <- 0.6
 
 ###### PROF PLOT #####
 # ROI
-roi_profile <- ggplot() +
-  annotate('rect', xmin = 0, xmax = 17, ymin = -Inf, ymax = Inf,
+# roi_profile <- 
+ggplot() +
+  annotate('rect', xmin = 0, xmax = 20, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = 'black') +
-  stat_summary(data = df.sweep.abs %>% filter(i_app == '100'),
+  stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
                aes(x = index_app-3, y = int,
                    color = roi_type, group = roi, linetype = roi_position),
                fun = median,
                geom = 'line', size = 0.75) +
-  stat_summary(data = df.sweep.abs %>% filter(i_app == '100'),
+  stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
                aes(x = index_app-3, y = int,
                    color = roi_type, group = roi, shape = roi_position),
                fun = median,
                geom = 'point', size = 2) +
-  stat_summary(data = df.sweep.abs %>% filter(i_app == '100'),
+  stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
                aes(x = index_app-3, y = int,
                    color = roi_type, fill = roi_type, group = roi),
                fun.min = function(z) { quantile(z,0.25) },
