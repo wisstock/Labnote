@@ -44,16 +44,15 @@ df.sweep.abs <- read.csv('cloud_sweeps_abs.csv') %>%
          roi_name = factor(roi_name, c('Min up', 'Mid up', 'Max', 'Mid down', 'Min down'),
                            ordered = TRUE))
 
-font.size <- 15
+font.size <- 17
 font.fam <- 'Arial'
 box.alpha <- 0.6
 
 
 ###### PROF PLOT #####
 # ROI
-# roi_profile <- 
-ggplot() +
-  annotate('rect', xmin = 0, xmax = 20, ymin = -Inf, ymax = Inf,
+roi_profile <-ggplot() +
+  annotate('rect', xmin = 0, xmax = 17, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = 'black') +
   stat_summary(data = df.sweep.abs %>% filter(i_app == '25'),
                aes(x = index_app-3, y = int,
@@ -79,14 +78,17 @@ ggplot() +
   scale_shape_discrete(name = "ROI position") +
   scale_linetype_discrete(name = "ROI position") +
   theme_classic() +
-  theme(legend.position = c(0.9, 0.7),
-        text=element_text(size = font.size, family = font.fam)) +
+  theme(text=element_text(size = font.size, family = font.fam),
+        # legend.title = element_text(size = font.size-4),
+        # legend.text = element_text(size = font.size-4),
+        plot.caption = element_text(size = font.size-4)) +
   scale_x_continuous(breaks = seq(-5, 60, 5)) +
-  labs(caption = 'n = 1/4 (cultures/cells)',
+  labs(caption = 'n = 1/4 (experimental days/replications)',
        x = 'Time, s',
        y = 'Intensity, a.u.')
 
-save_plot('0_profile_roi.png', roi_profile, base_width = 12, base_height = 4, dpi = 300)
+roi_profile
+save_plot('0_profile_roi.png', roi_profile, base_width = 12, base_height = 3, dpi = 300)
 remove(roi_profile)
 
 
@@ -140,7 +142,7 @@ df.abs.roi.stat <- df.abs.roi.box %>%
   pairwise_wilcox_test(int ~ roi_name, p.adjust.method = 'BH') %>%
   add_significance() %>%
   add_xy_position(step.increase = 0.075) %>%
-  mutate(y.position = c(2000,3400,3523.828,3716.201,3100,4100.947,3700,3250,3550,2000))
+  mutate(y.position = c(2000,3400,3523.828,3716.201,3100,4100.947,3750,3250,3550,2000))
 
 roi_boxplot <- ggplot(data = df.abs.roi.box,
        aes(x = roi_name, y = int)) +
@@ -151,11 +153,13 @@ roi_boxplot <- ggplot(data = df.abs.roi.box,
   theme_classic() +
   theme(legend.position = 'none',
         text=element_text(size = font.size, family = font.fam),
-        axis.text.x = element_text(angle = 30, vjust = 0.7)) +
-  labs(caption = 'n = 1/4 (cultures/cells)',
+        axis.text.x = element_text(angle = 30, vjust = 0.7),
+        plot.caption = element_text(size = font.size-4)) +
+  labs(caption = 'n = 1/4 (experimental days/replications)',
        x = 'ROI',
        y = 'Intensity, a.u.')
 
+roi_boxplot
 save_plot('0_boxplot_roi.png', roi_boxplot, base_width = 4, base_height = 4, dpi = 300)
 remove(roi_boxplot)
 
@@ -249,12 +253,15 @@ rise_boxplot <- ggplot(data = df.abs.rise.fit, aes(x = roi_name, y = tau)) +
   theme_classic() +
   theme(legend.position = 'none',
         text=element_text(size = font.size, family = font.fam),
-        axis.text.x = element_text(angle = 30, vjust = 0.7)) +
-  labs(caption = 'n = 1/4 (cultures/cells)',
+        axis.text.x = element_text(angle = 30, vjust = 0.7),
+        plot.caption = element_text(size = font.size-4)) +
+  labs(caption = 'n = 1/4 (experimental days/replications)',
        x = 'ROI',
        y = 'Rise \u2CA7, s')
 
-
+rise_boxplot
+save_plot('0_boxplot_rise.png', rise_boxplot, base_width = 4, base_height = 4, dpi = 300)
+remove(rise_boxplot)
 
 # # fit line demo
 # demo_roi <- 'Min up'
@@ -324,11 +331,13 @@ decay_boxplot <- ggplot(data = df.abs.decay.fit, aes(x = roi_name, y = tau)) +
   theme_classic() +
   theme(legend.position = 'none',
         text=element_text(size = font.size, family = font.fam),
-        axis.text.x = element_text(angle = 30, vjust = 0.7)) +
-  labs(caption = 'n = 1/4 (cultures/cells)',
+        axis.text.x = element_text(angle = 30, vjust = 0.7),
+        plot.caption = element_text(size = font.size-4)) +
+  labs(caption = 'n = 1/4 (experimental days/replications)',
        x = 'ROI',
        y = 'Decay \u2CA7, s')
 
+decay_boxplot
 save_plot('0_boxplot_decay.png', decay_boxplot, base_width = 4, base_height = 4, dpi = 300)
 remove(decay_boxplot)
 

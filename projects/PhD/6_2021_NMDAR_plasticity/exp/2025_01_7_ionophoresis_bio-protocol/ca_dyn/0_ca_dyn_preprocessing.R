@@ -23,21 +23,21 @@ df.max <- rbind(read.csv('24_05_08_cell7_ch0_24_05_08_cell7_bottom_cell_max_mask
                   mutate(id = '24_05_08_cell7_ch0_up'),
                 read.csv('24_05_9_cell01_ch0_24_05_9_cell01_max_mask_ΔF.csv'),
                 read.csv('24_05_9_cell02_ch0_24_05_9_cell02_ch0_max_mask_ΔF.csv')) %>%
-  mutate(roi = 'Max')
+  mutate(roi_type = 'Max')
 
 df.mid <- rbind(read.csv('24_05_08_cell7_ch0_24_05_08_cell7_bottom_cell_mid_mask_ΔF.csv'),
                 read.csv('24_05_08_cell7_ch0_24_05_08_cell7_up_cell_mid_mask_ΔF.csv') %>%
                   mutate(id = '24_05_08_cell7_ch0_up'),
                 read.csv('24_05_9_cell01_ch0_24_05_9_cell01_mid_mask_ΔF.csv'),
                 read.csv('24_05_9_cell02_ch0_24_05_9_cell02_ch0_mid_mask_ΔF.csv')) %>%
-  mutate(roi = 'Mid')
+  mutate(roi_type = 'Mid')
 
 df.min <- rbind(read.csv('24_05_08_cell7_ch0_24_05_08_cell7_bottom_cell_min_mask_ΔF.csv'),
                 read.csv('24_05_08_cell7_ch0_24_05_08_cell7_up_cell_min_mask_ΔF.csv') %>%
                   mutate(id = '24_05_08_cell7_ch0_up'),
                 read.csv('24_05_9_cell01_ch0_24_05_9_cell01_min_mask_ΔF.csv'),
                 read.csv('24_05_9_cell02_ch0_24_05_9_cell02_ch0_min_mask_ΔF.csv')) %>%
-  mutate(roi = 'Min')
+  mutate(roi_type = 'Min')
 
 df <- rbind(df.max, df.mid, df.min) %>%
   mutate(roi = as.factor(roi)) %>%
