@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Double-click this file to open the Collection in SnapGene.
-/opt/gslbiotech/snapgene/snapgene.sh "$0" &

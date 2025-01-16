@@ -31,6 +31,7 @@ normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
 
+## 100 mM
 df <- rbind(read.csv('24_10_17_3_60s_100mm.csv') %>% mutate(id = '24_10_17_3'),
             read.csv('24_10_16_11_60s_100mm.csv') %>% mutate(id = '24_10_16_11'),
             read.csv('24_10_22_6_60s_100mm.csv') %>% mutate(id = '24_10_22_6'),
@@ -49,6 +50,13 @@ df <- rbind(read.csv('24_10_17_3_60s_100mm.csv') %>% mutate(id = '24_10_17_3'),
                                              between(TimRef, post_70[1], post_70[2]) ~ 'post_70',
                                              between(TimRef, ends_70[1], ends_70[2]) ~ 'ends_70',
                                              .default = 'out')),
+         mid_interval = as.factor(case_when(between(TimRef, 0, 75) ~ 't-75',
+                                            between(TimRef, 75, 150) ~ 't0',
+                                            between(TimRef, 250, 325) ~ 't75',
+                                            between(TimRef, 325, 400) ~ 't150',
+                                            between(TimRef, 400, 475) ~ 't225',
+                                            between(TimRef, 475, 550) ~ 't300',
+                                             .default = '-40')),
          time_interval = as.factor(case_when(between(TimRef, 0, 25) ~ '0',
                                              between(TimRef, 25, 50) ~ '1',
                                              between(TimRef, 50, 75) ~ '2',
@@ -75,15 +83,55 @@ df <- rbind(read.csv('24_10_17_3_60s_100mm.csv') %>% mutate(id = '24_10_17_3'),
   group_by(id) %>%
   mutate(Amp_base = Amp / median(Amp[hold_interval == 'base_70']),
          Amp_norm = Amp / median(Amp[time_interval == '0']),
-         Amp_delta = normalize(Amp)) %>%
+         Amp_delta = normalize(Amp),
+         Amp_mid = Amp / median(Amp[mid_interval == 't-75'])) %>%
   ungroup() %>%
   filter(Amp < 150)
 
 ggplot() +
   geom_point(data = df,
-             aes(x = TimPeak, y = Amp_norm, color = id), alpha = .15) +
+             aes(x = TimPeak, y = Amp_mid, group = id, color = mid_interval), alpha = .15) +
   theme(legend.position = "none") +
   geom_hline(yintercept = 1) +
   facet_wrap(facets = vars(id), ncol = nlevels(df$id)) 
   
 write.csv(df, 'epsc_olf.csv')
+
+
+## 15 mM
+df.15 <- rbind(read.csv('24_10_14_4_60s_15mm.csv') %>% mutate(id = '24_10_14_4'),
+               read.csv('25_01_2_3_60s_15mm.csv') %>% mutate(id = '25_01_2_3'),
+               read.csv('25_01_7_1_60s_15mm.csv') %>% mutate(id = '25_01_7_1'),
+               read.csv('25_01_8_4_filtered_60s_15mm.csv') %>% mutate(id = '25_01_8_4'),
+               read.csv('25_01_8_9_60s_15mm.csv') %>% mutate(id = '25_01_8_9'),
+               read.csv('25_01_9_2_60s_15mm.csv') %>% mutate(id = '25_01_9_2')) %>%
+  mutate_at(colnames(df)[1:10], as.numeric) %>%
+  mutate(id = as.factor(id),
+         hold_interval = as.factor(case_when(between(TimRef, base_70[1], base_70[2]) ~ 'base_70',
+                                                      between(TimRef, base_40[1], base_40[2]) ~ 'base_40',
+                                                      between(TimRef, iono_40[1], iono_40[2]) ~ 'iono_40',
+                                                      between(TimRef, post_40[1], post_40[2]) ~ 'post_40',
+                                                      between(TimRef, post_70[1], post_70[2]) ~ 'post_70',
+                                                      between(TimRef, ends_70[1], ends_70[2]) ~ 'ends_70',
+                                                      .default = 'out')),
+                  mid_interval = as.factor(case_when(between(TimRef, 0, 75) ~ 't-75',
+                                                     between(TimRef, 75, 150) ~ 't0',
+                                                     between(TimRef, 250, 325) ~ 't75',
+                                                     between(TimRef, 325, 400) ~ 't150',
+                                                     between(TimRef, 400, 475) ~ 't225',
+                                                     between(TimRef, 475, 550) ~ 't300',
+                                                     .default = '-40'))) %>%
+  group_by(id) %>%
+  mutate(Amp_base = Amp / median(Amp[hold_interval == 'base_70']),
+         Amp_mid = Amp / median(Amp[mid_interval == 't-75'])) %>%
+  ungroup() %>%
+  filter(Amp < 150)
+
+ggplot() +
+  geom_point(data = df.15,
+             aes(x = TimPeak, y = Amp_mid, group = id, color = mid_interval), alpha = .15) +
+  theme(legend.position = "none") +
+  geom_hline(yintercept = 1) +
+  facet_wrap(facets = vars(id), ncol = nlevels(df.15$id)) 
+
+write.csv(df.15, 'epsc_olf_15mm.csv')
