@@ -26,6 +26,7 @@ font.fam <- 'Arial'
 box.alpha <- 0.6
 
 nmda.100.color <- 'magenta' 
+nmda.100.apv.color <- 'orangered' 
 nmda.15.color <- 'green3'
 
 base_70 <- c(0,150)
@@ -35,10 +36,11 @@ post_40 <- c(230, 250)
 post_70 <- c(250, 400)
 ends_70 <- c(400, 550)
 
-df <- read.csv('epsc_olf.csv') %>%
+# 100 mM
+df <- read.csv('df_epsc_raw.csv') %>%
   select(-X) %>%
   mutate_if(is.character, as.factor) %>%
-  mutate(time_interval = as.factor(time_interval)) %>%
+  filter(conc == '100mM') %>%
   mutate(hold_interval = factor(hold_interval, c('base_70', 'base_40', 'iono_40', 'post_40', 'post_70', 'ends_70'), ordered = TRUE),
          mid_interval = factor(mid_interval, c('t-75', 't0', '-40', 't75', 't150', 't225', 't300'), ordered = TRUE)) %>%
   filter(Amp < 75)
@@ -56,10 +58,21 @@ df.no.ltd <- df %>%
                    '24_10_22_8',
                    '24_10_24_7'))
 
-
-df.15 <- read.csv('epsc_olf_15mm.csv') %>%
+# 100 mM + APV
+df.apv <- read.csv('df_epsc_raw.csv') %>%
   select(-X) %>%
   mutate_if(is.character, as.factor) %>%
+  filter(conc == '100mM+APV') %>%
+  mutate(hold_interval = factor(hold_interval, c('base_70', 'base_40', 'iono_40', 'post_40', 'post_70', 'ends_70'), ordered = TRUE),
+         mid_interval = factor(mid_interval, c('t-75', 't0', '-40', 't75', 't150', 't225', 't300'), ordered = TRUE)) %>%
+  filter(Amp < 75)
+
+
+# 15 mM
+df.15 <- read.csv('df_epsc_raw.csv') %>%
+  select(-X) %>%
+  mutate_if(is.character, as.factor) %>%
+  filter(conc == '15mM') %>%
   mutate(hold_interval = factor(hold_interval, c('base_70', 'base_40', 'iono_40', 'post_40', 'post_70', 'ends_70'), ordered = TRUE),
          mid_interval = factor(mid_interval, c('t-75', 't0', '-40', 't75', 't150', 't225', 't300'), ordered = TRUE)) %>%
   filter(Amp < 75)
@@ -104,6 +117,34 @@ ggplot(data = df %>% filter(mid_interval != '-40'),
         axis.text.x = element_text(angle = 90, vjust = 0.7)) +
   labs(title = '100 mM') +
   facet_wrap(~id, ncol = nlevels(df$id))
+
+
+## 100 mM + APV
+df.apv.hold.stat <- df.apv %>%
+  group_by(id) %>%
+  pairwise_wilcox_test(Amp_mid ~ mid_interval,
+                       p.adjust.method = 'BH', detailed = TRUE) %>%
+  add_significance() %>%
+  add_xy_position()
+
+ggplot(data = df.apv %>% filter(mid_interval != '-40'),
+       aes(x = mid_interval, y = Amp_mid, fill = id)) +
+  geom_hline(yintercept = 1, linetype = 'dashed') +
+  geom_boxplot(aes(group = mid_interval)) +
+  stat_summary(aes(group = id),
+               fun = median,
+               geom = 'line', size = 0.75) +
+  stat_summary(aes(group = id),
+               fun = median,
+               geom = 'point', size = 1.5) +
+  stat_pvalue_manual(df.apv.hold.stat, label = 'p.adj.signif', hide.ns = TRUE,
+                     tip.length = 0.01) +
+  theme_classic() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 90, vjust = 0.7)) +
+  labs(title = '100 mM + APV') +
+  facet_wrap(~id, ncol = nlevels(df$id))
+
 
 ## 15 mM
 df.15.hold.stat <- df.15 %>%
@@ -163,21 +204,6 @@ ggplot(data = df.ltd, aes(x = mid_interval, y = Amp_base,
 
 
 ###### AMP CDF STAT #####
-df.ltd.cdf <- df.ltd %>%
-  filter(mid_interval %in% c('t-75', 't0', 't150', 't300')) %>%
-  droplevels()
-
-df.ltd.cdf %>%
-  select(-id) %>%
-  group_by(mid_interval) %>%
-  summarise(med = median(Amp), iqr = IQR(Amp))
-
-df.ltd.cdf %>%
-  select(-id) %>%
-  group_by(mid_interval) %>%
-  summarise(med = median(IEI), iqr = IQR(IEI))
-
-
 df.15.cdf <- df.15 %>%
   filter(mid_interval %in% c('t-75', 't0', 't150', 't300')) %>%
   droplevels()
@@ -198,6 +224,15 @@ ks.test(sample(df.ltd.cdf$Amp[df.ltd.cdf$mid_interval == 't-75'], size = samp.si
         sample(df.15.cdf$Amp[df.15.cdf$mid_interval == 't-75'], size = samp.size))
 
 ## AMP 100
+df.ltd.cdf <- df.ltd %>%
+  filter(mid_interval %in% c('t-75', 't0', 't150', 't300')) %>%
+  droplevels()
+
+df.ltd.cdf %>%
+  select(-id) %>%
+  group_by(mid_interval) %>%
+  summarise(med = median(Amp), iqr = IQR(Amp))
+
 samp.size <- 500
 
 set.seed(1)
@@ -238,6 +273,66 @@ cdf_amp_100 <- ggplot(data = df.ltd.cdf,
         legend.position = c(0.78, 0.69),
         legend.title = element_text(size = font.size-3),
         panel.border = element_rect(color = nmda.100.color, fill = NA,  size = 3)) +
+  scale_color_manual(values = c('t-75' = 'black', 't0' = 'coral',
+                                't150' = 'deepskyblue', 't300' = 'deeppink2')) +
+  scale_x_continuous(breaks = seq(0, 100, 10),
+                     limits = c(0,75))
+
+cdf_amp_100
+save_plot('0_pic_cdf_amp_100.png', cdf_amp_100, base_width = 4.5, base_height = 5, dpi = 300)
+remove(cdf_amp_100)
+
+
+## AMP 100 + APV
+df.apv.cdf <- df.apv %>%
+  filter(mid_interval %in% c('t-75', 't0', 't150', 't300')) %>%
+  filter(id != '25_01_30_15', id != '25_02_3_15', id != '25_02_3_12') %>%
+  droplevels()
+
+df.apv.cdf %>%
+  select(-id) %>%
+  group_by(mid_interval) %>%
+  summarise(med = median(Amp), iqr = IQR(Amp))
+
+samp.size <- 500
+
+set.seed(1)
+ks.test(sample(df.apv.cdf$Amp[df.apv.cdf$mid_interval == 't-75'], size = samp.size),
+        sample(df.apv.cdf$Amp[df.apv.cdf$mid_interval == 't0'], size = samp.size))
+
+set.seed(1)
+ks.test(sample(df.apv.cdf$Amp[df.apv.cdf$mid_interval == 't-75'], size = samp.size),
+        sample(df.apv.cdf$Amp[df.apv.cdf$mid_interval == 't150'], size = samp.size))
+
+set.seed(1)
+ks.test(sample(df.apv.cdf$Amp[df.apv.cdf$mid_interval == 't-75'], size = samp.size),
+        sample(df.apv.cdf$Amp[df.apv.cdf$mid_interval == 't300'], size = samp.size))
+
+
+# cdf_amp_100 <- 
+  ggplot(data = df.apv.cdf,
+                      aes(x = Amp, color = mid_interval, group = mid_interval)) +
+  geom_hline(yintercept = 0.5, linetype = 'dashed') +
+  stat_ecdf(geom = 'point', alpha = .75) +
+  annotate("text", label = 'KS-test t-75~t0 p=0.370', hjust = 0,
+           size = font.size - 14, x = 24, y = 0.11) +
+  annotate("text", label = 'KS-test t-75~t150 p<0.005', hjust = 0,
+           size = font.size - 14, x = 24, y = 0.06) +
+  annotate("text", label = 'KS-test t-75~t300 p<0.001', hjust = 0,
+           size = font.size - 14, x = 24, y = 0.01) +
+  guides(color=guide_legend('Time interval')) +
+  labs(subtitle = 'NMDA 100 mM + APV',
+       caption = 'n = 3/5 (cultures/cells)',
+       x = 'Amplitude, pA',
+       y = 'Cumulative probability') +
+  theme_classic() +
+  theme(text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4),
+        plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
+                                     face = 'bold', family = font.fam, color = nmda.100.apv.color),
+        legend.position = 'none',
+        legend.title = element_text(size = font.size-3),
+        panel.border = element_rect(color = nmda.100.apv.color, fill = NA,  size = 3)) +
   scale_color_manual(values = c('t-75' = 'black', 't0' = 'coral',
                                 't150' = 'deepskyblue', 't300' = 'deeppink2')) +
   scale_x_continuous(breaks = seq(0, 100, 10),
@@ -353,6 +448,56 @@ save_plot('0_pic_cdf_iei_100.png', cdf_iei_100, base_width = 4.5, base_height = 
 remove(cdf_iei_100)
 
 
+## IEI 100 + APV
+samp.size <- 500
+
+set.seed(1)
+ks.test(sample(df.apv.cdf$IEI[df.apv.cdf$mid_interval == 't-75'], size = samp.size),
+        sample(df.apv.cdf$IEI[df.apv.cdf$mid_interval == 't0'], size = samp.size))
+
+set.seed(1)
+ks.test(sample(df.apv.cdf$IEI[df.apv.cdf$mid_interval == 't-75'], size = samp.size),
+        sample(df.apv.cdf$IEI[df.apv.cdf$mid_interval == 't150'], size = samp.size))
+
+set.seed(1)
+ks.test(sample(df.apv.cdf$IEI[df.apv.cdf$mid_interval == 't-75'], size = samp.size),
+        sample(df.apv.cdf$IEI[df.apv.cdf$mid_interval == 't300'], size = samp.size))
+
+
+# cdf_iei_100_apv <-
+  ggplot(data = df.apv.cdf,
+                      aes(x = IEI, color = mid_interval, group = mid_interval)) +
+  geom_hline(yintercept = 0.5, linetype = 'dashed') +
+  stat_ecdf(geom = 'point', alpha = .75) +
+  annotate("text", label = 'KS-test t-75~t0 p<0.001', hjust = 0,
+           size = font.size - 14, x = 0.31, y = 0.11) +
+  annotate("text", label = 'KS-test t-75~t150 p=0.198', hjust = 0,
+           size = font.size - 14, x = 0.31, y = 0.06) +
+  annotate("text", label = 'KS-test t-75~t300 p<0.001', hjust = 0,
+           size = font.size - 14, x = 0.31, y = 0.01) +
+  guides(color=guide_legend('Time interval')) +
+  labs(subtitle = 'NMDA 100 mM',
+       caption = 'n = 3/5 (cultures/cells)',
+       x = 'IEI, s',
+       y = 'Cumulative probability') +
+  theme_classic() +
+  theme(text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4),
+        plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
+                                     face = 'bold', family = font.fam, color = nmda.100.apv.color),
+        legend.position = 'none',
+        legend.title = element_text(size = font.size-2),
+        panel.border = element_rect(color = nmda.100.apv.color, fill = NA,  size = 3)) +
+  scale_color_manual(values = c('t-75' = 'black', 't0' = 'coral',
+                                't150' = 'deepskyblue', 't300' = 'deeppink2')) +
+  scale_x_continuous(breaks = seq(0, 100, 0.25),
+                     limits = c(0,1))
+
+cdf_iei_100_apv
+save_plot('0_pic_cdf_iei_100_apv.png', cdf_iei_100, base_width = 4.5, base_height = 5, dpi = 300)
+remove(cdf_iei_100_apv)
+
+
 ## IEI 15
 samp.size <- 500
 
@@ -450,12 +595,22 @@ df.15.med <- df.15 %>%
   ungroup() %>%
   droplevels()
 
-kruskal.test(Amp_med ~ mid_interval, data = df.15.med)
+df.apv.med <- df.apv %>%
+  filter(mid_interval != '-40', id != '25_01_30_15', id != '25_02_3_15', id != '25_02_3_12') %>%
+  group_by(mid_interval, id) %>%
+  mutate(Amp_med = median(Amp_mid)) %>%
+  select(id, mid_interval, Amp_med) %>%
+  distinct() %>%
+  ungroup() %>%
+  droplevels()
+
+kruskal.test(Amp_med ~ mid_interval, data = df.apv.med)
 
 df.median <- rbind(df.100.med %>% mutate(conc = '100'),
-                   df.15.med %>% mutate(conc = '15')) %>%
+                   df.15.med %>% mutate(conc = '15'),
+                   df.apv.med %>% mutate(conc = '100+APV')) %>%
   mutate(conc = as.factor(conc))
-remove(df.100.med, df.15.med)
+remove(df.100.med, df.15.med, df.apv.med)
 
 df.median %>%
   select(-id) %>%
@@ -473,14 +628,17 @@ df.median.stat <- df.median %>%
   add_significance() %>%
   add_xy_position(fun = 'median') %>%
   mutate(y.position = c(0, 0.84, 0.79, 0.78, 0.75,
+                        0,0,0.93,0,0,
                         0,0,0.93,0,0),
          xmax = if_else(conc == '15', xmax + point.shift + 0.17, xmax - point.shift - 0.17))
 
 df.median.plot <- df.median %>%
   mutate(mid_interval = as.numeric(mid_interval)) %>%
-  mutate(mid_interval = if_else(conc == '100', mid_interval - .075, mid_interval + .075))
+  mutate(mid_interval = if_else(conc == '100', mid_interval - .1, mid_interval),
+         mid_interval = if_else(conc == '15', mid_interval + .1, mid_interval))
 
-prof_amp <- ggplot(data = df.median.plot, aes(x = mid_interval, y = Amp_med,
+# prof_amp <-
+  ggplot(data = df.median.plot, aes(x = mid_interval, y = Amp_med,
                                   color = conc, group = conc)) +
   geom_hline(yintercept = 1, linetype = 'dashed') +
   stat_summary(fun = median,
@@ -494,7 +652,7 @@ prof_amp <- ggplot(data = df.median.plot, aes(x = mid_interval, y = Amp_med,
   stat_pvalue_manual(df.median.stat, label = 'p.adj.signif', size = font.size - 10,
                      hide.ns = TRUE, remove.bracket = TRUE) +
   annotate("text", size = font.size - 14, label = 'H-test 15 mM p=0.386', hjust = 0, x = 4.5, y = 1.015) +
-  scale_color_manual(values = c('100' = nmda.100.color, '15' = nmda.15.color)) +
+  scale_color_manual(values = c('100' = nmda.100.color, '15' = nmda.15.color, '100+APV' = nmda.100.apv.color)) +
   scale_x_continuous(breaks = 1:6,
                      labels = c('t-75', 't0', 't75', 't150', 't225', 't300')) +
   theme_classic() +
