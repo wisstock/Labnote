@@ -143,7 +143,8 @@ remove(boxplot_rise_tau)
 
 
 ##### REPRESENTATIVE PROFILES #####
-prof_rep <- ggplot(data = df %>% filter(id == '24_05_9_cell01_ch0'),
+# "24_05_08_cell7_ch0"    "24_05_08_cell7_ch0_up" "24_05_9_cell01_ch0"    "24_05_9_cell02_ch0"  
+prof_rep <- ggplot(data = df %>% filter(id == '24_05_9_cell02_ch0'),
        aes(x = index, y = int, color = roi_type, fill = roi_type, group = roi_type)) +
   annotate('rect', xmin = 0, xmax = 20, ymin = -Inf, ymax = Inf,
            alpha = 0.1, fill = 'black') +
@@ -174,3 +175,32 @@ prof_rep <- ggplot(data = df %>% filter(id == '24_05_9_cell01_ch0'),
 prof_rep
 save_plot('0_pic_prof_rep.png', prof_rep, base_width = 7, base_height = 4, dpi = 300)
 remove(prof_rep)
+
+### all cells
+ggplot(data = df,
+       aes(x = index, y = int, color = roi_type, fill = roi_type, group = roi_type)) +
+  annotate('rect', xmin = 0, xmax = 20, ymin = -Inf, ymax = Inf,
+           alpha = 0.1, fill = 'black') +
+  geom_hline(yintercept = 0, linetype = 'dashed') +
+  stat_summary(fun = median,
+               geom = 'line', size = 0.75) +
+  stat_summary(fun = median,
+               geom = 'point', size = 2) +
+  stat_summary(fun.min = function(z) { quantile(z,0.25) },
+               fun.max = function(z) { quantile(z,0.75) },
+               fun = median,
+               geom = 'ribbon', size = 0, alpha = .25) +
+  scale_fill_manual(name = "ROI type",
+                    values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
+  scale_color_manual(name = "ROI type",
+                     values = c('Max' = 'red2', 'Mid' = 'green4', 'Min' = 'blue1')) +
+  scale_shape_discrete(name = "ROI position") +
+  scale_linetype_discrete(name = "ROI position") +
+  theme_classic() +
+  theme(legend.position = c(0.9, 0.7),
+        text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4)) +
+  scale_x_continuous(breaks = c(-5, 0, 10, 20, 30, 40, 50)) +
+  labs(x = 'Time, s',
+      y = expression(ΔF/F[0])) +
+  facet_wrap(~id, nrow=4, scales = "free_y", strip.position = 'right')
