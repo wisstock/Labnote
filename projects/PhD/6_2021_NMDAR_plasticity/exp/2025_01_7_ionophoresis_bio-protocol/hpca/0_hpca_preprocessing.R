@@ -51,8 +51,8 @@ df <- rbind(df.05, df.25, df.50, df.60) %>%
 remove(df.05, df.25, df.50, df.60)
 
 ggplot() +
-  geom_line(data = df %>% group_by(id, index) %>% mutate(int_mean = mean(int)) %>% distinct(),
+  geom_line(data = df %>% filter(app_time != '60') %>% group_by(id, index) %>% mutate(int_mean = mean(int)) %>% distinct(),
             aes(x = index-5, y = int_mean, color = app_time)) +
-  facet_wrap(~id)
+  facet_wrap(~app_time+cell_id, nrow = 3)
 
 write.csv(df, '0_df_hpca.csv')
