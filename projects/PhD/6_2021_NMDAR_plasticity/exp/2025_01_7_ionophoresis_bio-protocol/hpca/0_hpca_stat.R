@@ -1,4 +1,4 @@
-# NMDA ionophoresis, ionophoresis cloud data analysis for bio-protocol
+# NMDA ionophoresis, HPCA translocation data analysis for bio-protocol
 # Copyright © 2025 Borys Olifirov
 
 require(stringr)
@@ -73,7 +73,7 @@ boxplot_max_amp <- ggplot(data = df.max,
        y = expression(ΔF/F[0]))
 
 boxplot_max_amp
-save_plot('0_pic_boxplot_hpca_max_amp.png', boxplot_max_amp, base_width = 3.25, base_height = 4, dpi = 300)
+save_plot('0_pic_boxplot_hpca_max_amp.png', boxplot_max_amp, base_width = 2.75, base_height = 4, dpi = 300)
 remove(boxplot_max_amp)
 
 
@@ -109,12 +109,13 @@ profile_hpca_rep <- ggplot(data = df.prof,
   theme_classic() +
   theme(legend.position = c(0.82,0.85),
         text=element_text(size = font.size, family = font.fam),
-        plot.caption = element_text(size = font.size-4)) +
+        plot.caption = element_text(size = font.size-4),
+        legend.title = element_text(size = font.size-3)) +
   labs(caption = 'n = 1/1/14 (cultures/cells/ROIs)',
        x = 'Time, s',
        y = expression(ΔF/F[0]))
 
 
 profile_hpca_rep
-save_plot('0_pic_profile_hpca_rep.png', profile_hpca_rep, base_width = 5.6, base_height = 4, dpi = 300)
+save_plot('0_pic_profile_hpca_rep.png', profile_hpca_rep, base_width = 5.75, base_height = 4, dpi = 300)
 remove(profile_hpca_rep)
