@@ -21,7 +21,7 @@ require(wesanderson)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_01_7_ionophoresis_bio-protocol/epsc')
 
-font.size <- 19
+font.size <- 22  # 19
 font.fam <- 'Arial'
 box.alpha <- 0.6
 
@@ -250,28 +250,30 @@ ks.test(sample(df.ltd.cdf$Amp[df.ltd.cdf$mid_interval == 't-75'], size = samp.si
 
 cdf_amp_100 <- ggplot(data = df.ltd.cdf,
        aes(x = Amp, color = mid_interval, group = mid_interval)) +
-  geom_hline(yintercept = 0.5, linetype = 'dashed') +
+  # geom_hline(yintercept = 0.5, linetype = 'dashed') +
+  annotate("segment", x = -Inf, xend = 50, y = 0.5, yend = 0.5,
+           colour = 'black', linetype = 'dashed') +
   stat_ecdf(geom = 'point', alpha = .75) +
   annotate("text", label = 'KS-test t-75~t0 p=0.129', hjust = 0,
-           size = font.size - 14, x = 24, y = 0.11) +
+           size = font.size - 17, x = 22.5, y = 0.15) +
   annotate("text", label = 'KS-test t-75~t150 p<0.001', hjust = 0,
-           size = font.size - 14, x = 24, y = 0.06) +
+           size = font.size - 17, x = 22.5, y = 0.08) +
   annotate("text", label = 'KS-test t-75~t300 p<0.001', hjust = 0,
-           size = font.size - 14, x = 24, y = 0.01) +
+           size = font.size - 17, x = 22.5, y = 0.01) +
   # annotate("text", label = 'NMDA 100 mM', hjust = 0.5, fontface = 2,
   #          size = font.size - 12, x = 0, y = 1, color = nmda.100.color) +
-  guides(color=guide_legend('Time interval')) +
+  guides(color=guide_legend('Time interval', override.aes = list(size = 4))) +
   labs(subtitle = 'NMDA 100 mM',
        caption = 'n = 5/5 (cultures/cells)',
        x = 'Amplitude, pA',
-       y = 'Cumulative probability') +
+       y = 'Cumulative prob.') +
   theme_classic() +
   theme(text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
         plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
                                      face = 'bold', family = font.fam, color = nmda.100.color),
-        legend.position = c(0.78, 0.69),
-        legend.title = element_text(size = font.size-3),
+        legend.position = c(0.75, 0.5),
+        legend.title = element_text(size = font.size-4),
         panel.border = element_rect(color = nmda.100.color, fill = NA,  size = 3)) +
   scale_color_manual(values = c('t-75' = 'black', 't0' = 'coral',
                                 't150' = 'deepskyblue', 't300' = 'deeppink2')) +
@@ -364,16 +366,16 @@ cdf_amp_15 <- ggplot(data = df.15.cdf,
   geom_hline(yintercept = 0.5, linetype = 'dashed') +
   stat_ecdf(geom = 'point', alpha = .75) +
   annotate("text", label = 'KS-test t-75~t0 p<0.001', hjust = 0,
-           size = font.size - 14, x = 24, y = 0.11) +
+           size = font.size - 17, x = 25.5, y = 0.15) +
   annotate("text", label = 'KS-test t-75~t150 p<0.05', hjust = 0,
-           size = font.size - 14, x = 24, y = 0.06) +
+           size = font.size - 17, x = 22.5, y = 0.08) +
   annotate("text", label = 'KS-test t-75~t300 p<0.001', hjust = 0,
-           size = font.size - 14, x = 24, y = 0.01) +
+           size = font.size - 17, x = 22.5, y = 0.01) +
   guides(color=guide_legend('Time interval')) +
   labs(subtitle = 'NMDA 15 mM',
        caption = 'n = 5/6 (cultures/cells)',
        x = 'Amplitude, pA',
-       y = 'Cumulative probability') +
+       y = 'Cumulative prob.') +
   theme_classic() +
   theme(text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
@@ -420,16 +422,16 @@ cdf_iei_100 <- ggplot(data = df.ltd.cdf,
   geom_hline(yintercept = 0.5, linetype = 'dashed') +
   stat_ecdf(geom = 'point', alpha = .75) +
   annotate("text", label = 'KS-test t-75~t0 p=0.863', hjust = 0,
-           size = font.size - 14, x = 0.31, y = 0.11) +
+           size = font.size - 17, x = 0.3, y = 0.15) +
   annotate("text", label = 'KS-test t-75~t150 p=0.095', hjust = 0,
-           size = font.size - 14, x = 0.31, y = 0.06) +
+           size = font.size - 17, x = 0.3, y = 0.08) +
   annotate("text", label = 'KS-test t-75~t300 p=0.082', hjust = 0,
-           size = font.size - 14, x = 0.31, y = 0.01) +
+           size = font.size - 17, x = 0.3, y = 0.01) +
   guides(color=guide_legend('Time interval')) +
   labs(subtitle = 'NMDA 100 mM',
        caption = 'n = 5/5 (cultures/cells)',
        x = 'IEI, s',
-       y = 'Cumulative probability') +
+       y = 'Cumulative prob.') +
   theme_classic() +
   theme(text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
@@ -519,16 +521,16 @@ cdf_iei_15 <- ggplot(data = df.15.cdf,
   geom_hline(yintercept = 0.5, linetype = 'dashed') +
   stat_ecdf(geom = 'point', alpha = .75) +
   annotate("text", label = 'KS-test t-75~t0 p<0.001', hjust = 0,
-           size = font.size - 14, x = 0.31, y = 0.11) +
+           size = font.size - 17, x = 0.3, y = 0.15) +
   annotate("text", label = 'KS-test t-75~t150 p=0.770', hjust = 0,
-           size = font.size - 14, x = 0.31, y = 0.06) +
+           size = font.size - 17, x = 0.3, y = 0.08) +
   annotate("text", label = 'KS-test t-75~t300 p<0.001', hjust = 0,
-           size = font.size - 14, x = 0.31, y = 0.01) +
+           size = font.size - 17, x = 0.3, y = 0.01) +
   guides(color=guide_legend('Time interval')) +
   labs(subtitle = 'NMDA 15 mM',
        caption = 'n = 5/6 (cultures/cells)',
        x = 'IEI, s',
-       y = 'Cumulative probability') +
+       y = 'Cumulative prob.') +
   theme_classic() +
   theme(text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
@@ -627,18 +629,18 @@ df.median.stat <- df.median %>%
                        detailed = TRUE, ref.group = 't-75') %>%
   add_significance() %>%
   add_xy_position(fun = 'median') %>%
-  mutate(y.position = c(0, 0.84, 0.79, 0.78, 0.75,
+  mutate(y.position = c(0, 0.83, 0.78, 0.77, 0.74,
                         0,0,0.93,0,0,
                         0,0,0.93,0,0),
-         xmax = if_else(conc == '15', xmax + point.shift + 0.17, xmax - point.shift - 0.17))
+         xmax = if_else(conc == '15', xmax + point.shift + 0.17, xmax - point.shift - 0.18))
 
 df.median.plot <- df.median %>%
   mutate(mid_interval = as.numeric(mid_interval)) %>%
   mutate(mid_interval = if_else(conc == '100', mid_interval - .1, mid_interval),
          mid_interval = if_else(conc == '15', mid_interval + .1, mid_interval))
 
-# prof_amp <-
-  ggplot(data = df.median.plot, aes(x = mid_interval, y = Amp_med,
+prof_amp <- ggplot(data = df.median.plot %>% filter(conc != '100+APV'),
+         aes(x = mid_interval, y = Amp_med,
                                   color = conc, group = conc)) +
   geom_hline(yintercept = 1, linetype = 'dashed') +
   stat_summary(fun = median,
@@ -649,14 +651,14 @@ df.median.plot <- df.median %>%
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
                geom = 'errorbar', width = .1, size = 0.75) +
-  stat_pvalue_manual(df.median.stat, label = 'p.adj.signif', size = font.size - 10,
+  stat_pvalue_manual(df.median.stat, label = 'p.adj.signif', size = font.size - 12,
                      hide.ns = TRUE, remove.bracket = TRUE) +
-  annotate("text", size = font.size - 14, label = 'H-test 15 mM p=0.386', hjust = 0, x = 4.5, y = 1.015) +
+  annotate("text", size = font.size - 17, label = 'H-test 15 mM p=0.386', hjust = 0, x = 4.25, y = 1.015) +
   scale_color_manual(values = c('100' = nmda.100.color, '15' = nmda.15.color, '100+APV' = nmda.100.apv.color)) +
   scale_x_continuous(breaks = 1:6,
                      labels = c('t-75', 't0', 't75', 't150', 't225', 't300')) +
   theme_classic() +
-  theme(legend.position = c(0.12, 0.18),
+  theme(legend.position = c(0.16, 0.18),
         text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
         legend.title = element_text(size = font.size-2)) +
@@ -708,7 +710,8 @@ df.median.iei.stat <- df.median.iei %>%
 
 df.median.iei.plot <- df.median.iei %>%
   mutate(mid_interval = as.numeric(mid_interval)) %>%
-  mutate(mid_interval = if_else(conc == '100', mid_interval - .075, mid_interval + .075))
+  mutate(mid_interval = if_else(conc == '100', mid_interval - .1, mid_interval),
+         mid_interval = if_else(conc == '15', mid_interval + .1, mid_interval))
 
 prof_iei <- ggplot(data = df.median.iei.plot, aes(x = mid_interval, y = IEI_med,
                                       color = conc, group = conc)) +
@@ -720,8 +723,8 @@ prof_iei <- ggplot(data = df.median.iei.plot, aes(x = mid_interval, y = IEI_med,
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
                geom = 'errorbar', width = .1, size = 0.75) +
-  annotate("text", size = font.size - 14, label = 'H-test 100 mM p=0.697', hjust = 0, x = 1, y = 1.5) +
-  annotate("text", size = font.size - 14, label = 'H-test 15 mM p=0.989', hjust = 0, x = 1, y = 1.35) +
+  annotate("text", size = font.size - 17, label = 'H-test 100 mM p=0.697', hjust = 0, x = 1, y = 1.5) +
+  annotate("text", size = font.size - 17, label = 'H-test 15 mM p=0.989', hjust = 0, x = 1, y = 1.3) +
   scale_color_manual(values = c('100' = nmda.100.color, '15' = nmda.15.color)) +
   scale_x_continuous(breaks = 1:6,
                      labels = c('t-75', 't0', 't75', 't150', 't225', 't300')) +
