@@ -263,18 +263,16 @@ cdf_amp_100 <- ggplot(data = df.ltd.cdf,
   # annotate("text", label = 'NMDA 100 mM', hjust = 0.5, fontface = 2,
   #          size = font.size - 12, x = 0, y = 1, color = nmda.100.color) +
   guides(color=guide_legend('Time interval', override.aes = list(size = 4))) +
-  labs(subtitle = 'NMDA 100 mM',
-       caption = 'n = 5/5 (cultures/cells)',
+  labs(caption = 'n = 5/5 (cultures/cells)',  # subtitle = 'NMDA 100 mM',
        x = 'Amplitude, pA',
        y = 'Cumulative prob.') +
   theme_classic() +
   theme(text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
-        plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
-                                     face = 'bold', family = font.fam, color = nmda.100.color),
+        # plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
+        #                              face = 'bold', family = font.fam, color = nmda.100.color),
         legend.position = c(0.75, 0.5),
-        legend.title = element_text(size = font.size-4),
-        panel.border = element_rect(color = nmda.100.color, fill = NA,  size = 3)) +
+        legend.title = element_text(size = font.size-4)) +  # panel.border = element_rect(color = nmda.100.color, fill = NA,  size = 3)
   scale_color_manual(values = c('t-75' = 'black', 't0' = 'coral',
                                 't150' = 'deepskyblue', 't300' = 'deeppink2')) +
   scale_x_continuous(breaks = seq(0, 100, 10),
@@ -422,28 +420,26 @@ cdf_iei_100 <- ggplot(data = df.ltd.cdf,
   geom_hline(yintercept = 0.5, linetype = 'dashed') +
   stat_ecdf(geom = 'point', alpha = .75) +
   annotate("text", label = 'KS-test t-75~t0 p=0.863', hjust = 0,
-           size = font.size - 17, x = 0.3, y = 0.15) +
+           size = font.size - 17, x = 0.14, y = 0.15) +
   annotate("text", label = 'KS-test t-75~t150 p=0.095', hjust = 0,
-           size = font.size - 17, x = 0.3, y = 0.08) +
+           size = font.size - 17, x = 0.14, y = 0.08) +
   annotate("text", label = 'KS-test t-75~t300 p=0.082', hjust = 0,
-           size = font.size - 17, x = 0.3, y = 0.01) +
+           size = font.size - 17, x = 0.14, y = 0.01) +
   guides(color=guide_legend('Time interval')) +
-  labs(subtitle = 'NMDA 100 mM',
-       caption = 'n = 5/5 (cultures/cells)',
+  labs(caption = 'n = 5/5 (cultures/cells)',  # subtitle = 'NMDA 100 mM',
        x = 'IEI, s',
        y = 'Cumulative prob.') +
   theme_classic() +
   theme(text=element_text(size = font.size, family = font.fam),
         plot.caption = element_text(size = font.size-4),
-        plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
-                                     face = 'bold', family = font.fam, color = nmda.100.color),
+        # plot.subtitle = element_text(hjust = 0.5, size = font.size - 5,
+        #                              face = 'bold', family = font.fam, color = nmda.100.color),
         legend.position = 'none',
-        legend.title = element_text(size = font.size-2),
-        panel.border = element_rect(color = nmda.100.color, fill = NA,  size = 3)) +
+        legend.title = element_text(size = font.size-2)) +  # panel.border = element_rect(color = nmda.100.color, fill = NA,  size = 3)
   scale_color_manual(values = c('t-75' = 'black', 't0' = 'coral',
                                 't150' = 'deepskyblue', 't300' = 'deeppink2')) +
-  scale_x_continuous(breaks = seq(0, 100, 0.25),
-                     limits = c(0,1))
+  scale_x_continuous(breaks = seq(0, 100, 0.1),
+                     limits = c(0,0.45))  # 1
 
 cdf_iei_100
 save_plot('0_pic_cdf_iei_100.png', cdf_iei_100, base_width = 4.5, base_height = 5, dpi = 300)
