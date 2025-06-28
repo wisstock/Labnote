@@ -1001,6 +1001,7 @@ df.base.zero.stat <- df.fret.sites.avg %>%
   add_significance() %>%
   mutate(y.position = c(0.082,0.035), group2 = c(1,1))
 
+
 plot.box.zero.abs <- ggplot() +
   geom_boxplot(data = df.fret.sites.avg %>% filter(time_interval == 'I'),
                aes(x = time_interval,
@@ -1042,7 +1043,7 @@ df.time.interval.stat <- df.fret.sites.avg %>%
   group_by(site_type) %>%
   pairwise_wilcox_test(int_interval ~ time_interval, p.adjust.method = 'BH') %>%
   add_significance() %>%
-  add_xy_position(fun = "max") 
+  add_xy_position(fun = "max")
 
 plot.box.ti.abs <- ggplot() +
   geom_boxplot(data = df.fret.sites.avg,
@@ -1430,7 +1431,8 @@ df.h.vs.f <- df.mask %>%
   select(channel, roi_id, int, index, cell_id, site_type, rel_time) %>%
   group_by(roi_id, index) %>%
   pivot_wider(names_from = channel, values_from = int) %>%
-  ungroup()
+  ungroup() %>%
+  filter(rel_time <= 60)
 
 
 plot.hf <- ggplot(data = df.h.vs.f,
@@ -1440,13 +1442,16 @@ plot.hf <- ggplot(data = df.h.vs.f,
   geom_vline(xintercept = 0, lty = 2) +
   geom_hline(yintercept = 0, lty = 2) +
   geom_mark_hull(aes(fill = site_type, label = site_type),
-                    size = 0, expand = 0.01) + 
+                    size = 0, expand = 0.01, con.cap = 0, label.fill = "inherit") + 
   # geom_line(aes(color = rel_time, group = roi_id),
   #           alpha = .5) +
-  geom_point(aes(color = rel_time, shape = site_type), alpha = .6, size = 3) +
+  geom_line(aes(color = rel_time, group = roi_id), alpha = .45, size = 0.5) +
+  geom_point(data = df.h.vs.f %>% filter(rel_time %in% c(0,60)),
+             aes(color = rel_time), alpha = .6, size = 2) +
   scale_fill_manual(values = c('Spine' = '#f54040', 'Shaft' = '#4da50b')) + 
-  scale_color_gradient2(low = "green4", mid = 'yellow', high = "black") +
+  scale_color_gradient2(mid = 'blue2', high = "red") +
   theme_classic() +
+  scale_y_continuous(limits = c(0,0.1)) +
   theme(text=element_text(size = font.size - 3, family = font.fam, face="bold")) +
   labs(color = 'Time',
        x = expression(ΔF/F[0]),
@@ -1456,7 +1461,7 @@ plot.hf <- ggplot(data = df.h.vs.f,
 plot.hf
 
 draw.hf <- ggdraw(plot.hf) +
-  draw_plot_label(c("F"),
+  draw_plot_label(c("B"),
                   c(0),
                   c(1),
                   size = font.size + 3)
