@@ -26,12 +26,13 @@ df.full <- read.csv('data/df.csv') %>%
 
 
 df.selected <- df.full %>%
-  filter(app_factor %in% c('2.5', '5', '10', '20', '30')) %>%
+  filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30')) %>%
   mutate(rel_time = index - 30)
 
 
 spines_id <- df.selected %>%
   filter(lab_id != 'shaft') %>%
+  droplevels() %>%
   mutate(roi_id = interaction(roi, id, sep = '_')) %>%
   group_by(roi_id) %>%
   summarise(has_all = n_distinct(lab_id) == 2) %>%
@@ -55,12 +56,12 @@ df.summary <- df.full %>%
   
 ggplot(data = df.full %>% filter(dist_group != '0'), aes(x = df, fill = dist_group)) +
   geom_density(alpha = .5) +
-  facet_wrap(~lab_id)
+  facet_wrap(~interaction(lab_id, app_factor))
 
 
 ##### AMPLITUDE VS APP TIME #####
-df.max <- df.full %>%
-  filter(dist_group != '0', app_factor != '30') %>%
+df.max <- df.spines %>%
+  filter(dist_group != '0') %>%
   select(df, lab_id, roi, app_factor, dist_group) %>%
   group_by(lab_id, roi, app_factor, dist_group) %>%
   summarise(max_df = max(df)) %>%
@@ -73,32 +74,29 @@ ggplot(data = df.max, aes(x = max_df, fill = lab_id)) +
   geom_density(alpha = .5) +
   facet_wrap(~app, nrow = 3, ncol = 3)
 
-ggplot(data = df.max, aes(x = app, y = max_df)) +
+ggplot(data = df.max, aes(x = app, y = max_df, color = lab_id, group = lab_id)) +
   geom_hline(yintercept = 0, linetype = 2) +
-  stat_summary(aes(color = dist_group, group = dist_group),
-               fun = median,
+  stat_summary(fun = median,
                geom = 'line', linewidth = 0.75) +
-  stat_summary(aes(color = dist_group, group = dist_group),
-               fun = median,
+  stat_summary(fun = median,
                geom = 'point', size = 2) +
-  stat_summary(aes(color = dist_group, group = dist_group),
-               fun.min = function(z) {quantile(z,0.25)},
+  stat_summary(fun.min = function(z) {quantile(z,0.25)},
                fun.max = function(z) {quantile(z,0.75)},
                fun = median,
                geom = 'errorbar', linewidth = 0.5, width=0.05) +
   scale_x_continuous(trans = "log10", breaks = c(0.5, 2.5, 5, 10, 20, 60, 120)) +
-  scale_y_continuous(breaks = seq(0,10,0.1), limits = c(0,0.5)) +
-  facet_wrap(~lab_id, nrow = 3) +
+  scale_y_continuous(breaks = seq(0,10,0.1), limits = c(-0.1,0.5)) +
+  facet_wrap(~dist_group, nrow = 3) +
   theme_minimal_hgrid()
 
 
 
 ##### AMPLITUDE 20 ANALYSIS #####
 df.20 <-  df.full %>%
-  filter(app_factor == '20') %>%
+  filter(app_factor == '0.5') %>%
   mutate(rel_time = index - 30)
 
-ggplot(data = df.full %>% filter(app_factor == '20') %>% mutate(rel_time = index - 30),
+ggplot(data = df.20,
        aes(x = rel_time, y = df)) +
   geom_hline(yintercept = 0, linetype = 2) +
   geom_vline(xintercept = 0, linetype = 3) +
@@ -171,16 +169,17 @@ ggplot(data = df.20.lm, aes(x = rel_time, y = estimate, color = lab_id, fill = l
 
 ##### LM AGREGATE PLOT #####
 # selected frames lm
-time.points <- c(0, 1, 2, 3)
+time.points <- c(3, 15, 18, 20)
 
-ggplot(data = df.selected %>%
-              filter(rel_time %in% time.points, lab_id != 'shaft') %>%
+ggplot(data = df.spines %>%
+              filter(rel_time %in% time.points, lab_id != 'shaft', app_factor == '20') %>%
               mutate(lab_dist = interaction(lab_id, dist_group, sep = '_')),
        aes(x = dist_um, y = df,
            color = lab_id, shape = lab_id, fill = lab_id, group = lab_dist)) +
   geom_vline(xintercept = c(25, 50), linetype = 3) +
   geom_hline(yintercept = 0, linetype = 2) +
   geom_point(alpha = .1) +
+  # geom_line(aes(group = roi_id), alpha = .1) +
   geom_smooth(method = 'lm') +
   scale_y_continuous(limits = c(-0.5, 0.5)) +
   scale_color_manual(values = c('oreol' = 'coral', 'psd' = 'magenta3')) +
@@ -212,8 +211,8 @@ ggplot(data = df.selected %>%
 #   ungroup()
 
 df.by.roi <- df.spines %>%
-  filter(dist_group %in% c('II', 'III')) %>%
-  select(roi_id, df, lab_id, rel_time, app_factor) %>%
+  # filter(dist_group %in% c('II', 'III')) %>%
+  select(roi_id, df, lab_id, rel_time, app_factor, dist_group) %>%
   pivot_wider(names_from = lab_id, values_from = df) %>%
   drop_na() %>%
   group_by(roi_id) %>%
@@ -224,11 +223,11 @@ df.by.roi <- df.spines %>%
   ungroup()
 
 
-track.time <- seq(-1,10)
-track.end <- seq(19,30)
+track.time <- seq(0,30)
+track.end <- seq(19,35)
 
 df.avg.roi <- df.by.roi %>%
-  filter(app_factor %in% c('20')) %>%
+  filter(app_factor %in% c('20'), dist_group == 'III') %>%  # 
   group_by(rel_time) %>%
   summarise(psd_mean = mean(psd, na.rm = TRUE),
             oreol_mean = mean(oreol, na.rm = TRUE),
@@ -241,64 +240,67 @@ df.avg.roi <- df.by.roi %>%
 #        aes(x = psd, y = oreol, color = rel_time)) +
 
 #   geom_point(aes(group = roi_id), alpha = .15) +
-  
+
+# ggplot() +
+# geom_point(data = df.by.roi %>% filter(rel_time %in% track.time),
+#            aes(x = psd, y = oreol, color = rel_time), alpha = .15)
+
+
 ggplot() +
   geom_vline(xintercept = 0, linetype = 2) +
   geom_hline(yintercept = 0, linetype = 2) +
   # geom_line(data = df.avg.roi %>% filter(rel_time %in% track.time),  # up
   #           aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
-  geom_segment(data = df.avg.roi %>% filter(rel_time %in% track.time),
-               aes(x = psd_mean, y = oreol_mean,
-                   xend = lead(psd_mean), yend = lead(oreol_mean),
-                   color = rel_time),
-               arrow = arrow(length = unit(0.3, "cm")), size = 0.75) +
-  geom_point(data = df.avg.roi %>% filter(rel_time %in% track.time),
+  # geom_segment(data = df.avg.roi %>% filter(rel_time %in% track.time),
+  #              aes(x = psd_mean, y = oreol_mean,
+  #                  xend = lead(psd_mean), yend = lead(oreol_mean),
+  #                  color = rel_time),
+  #              arrow = arrow(length = unit(0.3, "cm")), size = 0.75) +
+  geom_path(data = df.avg.roi %>% filter(rel_time %in% track.time),
             aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
-  geom_errorbar(data = df.avg.roi %>% filter(rel_time %in% track.time),
+  geom_point(data = df.avg.roi %>% filter(rel_time %in% track.time),
+             aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
+  geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time),
                 aes(x = psd_mean, y = oreol_mean,
                     xmin = psd_mean - psd_se,
                     xmax = psd_mean + psd_se,
                     color = rel_time),
-                width = 0, size = 0.3) +
-  geom_errorbar(data = df.avg.roi %>% filter(rel_time %in% track.time),
+                size = 0.3) +
+  geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time),
                 aes(x = psd_mean, y = oreol_mean,
                     ymin = oreol_mean - oreol_se,
                     ymax = oreol_mean + oreol_se,
                     color = rel_time),
-                width = 0, size = 0.3) +
+                size = 0.3) +
   # geom_line(data = df.avg.roi %>% filter(rel_time %in% track.end),  # down
   #           aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
-  geom_segment(data = df.avg.roi %>% filter(rel_time %in% track.end),
-               aes(x = psd_mean, y = oreol_mean,
-                   xend = lead(psd_mean), yend = lead(oreol_mean),
-                   color = rel_time),
-               arrow = arrow(length = unit(0.3, "cm")), size = 0.75) +
-  geom_point(data = df.avg.roi %>% filter(rel_time %in% track.end),
-             aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
-  geom_errorbar(data = df.avg.roi %>% filter(rel_time %in% track.end),
-                aes(x = psd_mean, y = oreol_mean,
-                    xmin = psd_mean - psd_se,
-                    xmax = psd_mean + psd_se,
-                    color = rel_time),
-                width = 0, size = 0.3) +
-  geom_errorbar(data = df.avg.roi %>% filter(rel_time %in% track.end),
-                aes(x = psd_mean, y = oreol_mean,
-                    ymin = oreol_mean - oreol_se,
-                    ymax = oreol_mean + oreol_se,
-                    color = rel_time),
-                width = 0, size = 0.3) +
-  scale_x_continuous(limits = c(-0.05,0.0125), breaks = seq(-1,1,0.01)) +
-  scale_y_continuous(limits = c(-0.025,0.1), breaks = seq(-1,1,0.025)) +
+  # geom_segment(data = df.avg.roi %>% filter(rel_time %in% track.end),
+  #              aes(x = psd_mean, y = oreol_mean,
+  #                  xend = lead(psd_mean), yend = lead(oreol_mean),
+  #                  color = rel_time),
+  #              arrow = arrow(length = unit(0.3, "cm")), size = 0.75) +
+  # geom_point(data = df.avg.roi %>% filter(rel_time %in% track.end),
+  #            aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
+  # geom_errorbar(data = df.avg.roi %>% filter(rel_time %in% track.end),
+  #               aes(x = psd_mean, y = oreol_mean,
+  #                   xmin = psd_mean - psd_se,
+  #                   xmax = psd_mean + psd_se,
+  #                   color = rel_time),
+  #               width = 0, size = 0.3) +
+  # geom_errorbar(data = df.avg.roi %>% filter(rel_time %in% track.end),
+  #               aes(x = psd_mean, y = oreol_mean,
+  #                   ymin = oreol_mean - oreol_se,
+  #                   ymax = oreol_mean + oreol_se,
+  #                   color = rel_time),
+  #               width = 0, size = 0.3) +
+  # scale_x_continuous(limits = c(-0.05,0.0125), breaks = seq(-1,1,0.01)) +
+  # scale_y_continuous(limits = c(-0.025,0.1), breaks = seq(-1,1,0.025)) +
   scale_color_gradient2(mid = 'blue', high = "red") +
   theme_minimal()
   
 
 
 ##### ROI REVIEW WITH BOX #####
-df.for.roi.box <- df.spines %>%
-  filter(rel_time == 3) %>%
-  mutate(unique_id = interaction(roi, id, sep = '_'))
-
 ggplot(data = df.spines %>% filter(app_factor == '20', rel_time == 3),
        aes(x = lab_id, y = df,
            fill = lab_id)) +
@@ -308,6 +310,28 @@ ggplot(data = df.spines %>% filter(app_factor == '20', rel_time == 3),
   geom_line(aes(group = roi_id), linewidth = .1) +
   facet_wrap(~dist_group, ncol = 3)
 
+ggplot(data = df.spines %>% filter(app_factor == '20', dist_group != 'I'),
+       aes(x = rel_time, y = df)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_vline(xintercept = 0, linetype = 3) +
+  geom_vline(xintercept = 20, linetype = 3) +
+  stat_summary(aes(color = lab_id, group = interaction(id,lab_id)),
+               fun = median,
+               geom = 'line', linewidth = 0.15) +
+  stat_summary(aes(color = lab_id, group = lab_id),
+               fun = median,
+               geom = 'line', linewidth = 0.75) +
+  stat_summary(aes(color = lab_id, group = lab_id),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(aes(fill = lab_id, group = lab_id),
+               fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .25) +
+  theme_minimal()
+  
+
 
 df.by.roi.tidy <- df.by.roi %>%
   pivot_longer(cols = c('oreol', 'psd'),
@@ -315,7 +339,7 @@ df.by.roi.tidy <- df.by.roi %>%
                values_to = 'df')
 
 ggplot(data = df.by.roi.tidy %>% filter(app_factor == '20',
-                                        rel_time == 2),
+                                        rel_time == 7),
        aes(x = lab_id, y = df, fill = lab_id)) +
   geom_hline(yintercept = 0, linetype = 2) +
   geom_boxplot(alpha = .5) +
