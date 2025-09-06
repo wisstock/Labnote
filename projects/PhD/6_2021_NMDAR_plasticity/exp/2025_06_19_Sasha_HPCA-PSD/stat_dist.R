@@ -19,20 +19,12 @@ df.full <- read.csv('data/df.csv') %>%
            select(-X) %>%
            mutate_if(is.character, factor) %>%
            mutate(roi = as.factor(roi),
-                  app_factor = as.factor(app),
-                  dist_um = dist * 0.16,
-                  dist_group = as.factor(case_when(dist_um <= 25 ~ 'I',
-                                                   (dist_um > 25) & (dist_um <= 50)  ~ 'II',
-                                                   dist_um > 50 ~ 'III',
-                                                   .default = '0')))
+                  app_factor = as.factor(app)) %>%
+           filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30', '60')) %>%
+           mutate(rel_time = index - 30)
 
 
-df.selected <- df.full %>%
-  filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30', '60')) %>%
-  mutate(rel_time = index - 30)
-
-
-spines_id <- df.selected %>%
+spines_id <- df.full %>%
   filter(lab_id != 'shaft') %>%
   droplevels() %>%
   mutate(roi_id = interaction(roi, id, sep = '_')) %>%
@@ -42,7 +34,7 @@ spines_id <- df.selected %>%
   droplevels() %>%
   pull(roi_id)
 
-df.spines <- df.selected %>%
+df.spines <- df.full %>%
   filter(lab_id != 'shaft') %>%
   mutate(roi_id = interaction(roi, id, sep = '_')) %>%
   filter(roi_id %in% spines_id) %>%
@@ -51,13 +43,9 @@ df.spines <- df.selected %>%
   mutate(rise_group =  ifelse(df[lab_id == 'psd'][3] > df[lab_id == 'oreol'][3], TRUE, FALSE),
          rise_group = as.factor(ifelse(!all(rise_group == FALSE), 'invert', 'direct')),
          psd_dist = if_else(lab_id == 'oreol', dist[lab_id == 'psd'][1], dist),
-         psd_um = psd_dist * 0.16,
-         psd_um_group = as.factor(case_when(psd_um <= 25 ~ 'I',
-                                            (psd_um > 25) & (psd_um <= 50)  ~ 'II',
-                                            psd_um > 50 ~ 'III',
-                                            .default = '0'))) %>%
+         psd_um = psd_dist * 0.16) %>%
   droplevels() %>%
-  select(-index, -time, -app, -dist_um, -dist_group, -dist) %>%
+  select(-index, -time, -app, -dist) %>%
   ungroup()
 
 # df.spines.wide <- df.spines %>%
@@ -88,10 +76,12 @@ ggplot(data = df.spines %>% filter(rel_time %in% c(0,1,2,3),
   geom_vline(xintercept = c(20, 40, 60), linetype = 2) +
   geom_line(aes(group = roi_id), linewidth = 0.01, linetype = 2, color = 'black') +
   geom_point(alpha = .25, size = 0.75) +
-  geom_smooth(method = 'loess', span = 0.8, se = FALSE) +
+  geom_smooth(method = 'loess', span = 0.8) +
   # geom_smooth(method = 'lm', se = FALSE) +
   scale_x_continuous(limits = c(0, 100)) +
   scale_y_continuous(limits = c(-0.2, 0.3)) +
+  scale_color_manual(values = c('darkgreen', 'magenta3')) +
+  scale_fill_manual(values = c('darkgreen', 'magenta3')) +
   facet_wrap(~rel_time, ncol = 4)
 
 
@@ -145,14 +135,18 @@ ggplot(data = df.sel.dist,
 
 
 df.sel.dist.roi.stat <- df.sel.dist %>%
-  group_by(lab_id, fac_time) %>%
-  pairwise_wilcox_test(df~dist_seg, p.adjust.method = 'BH', ref.group = '0-20 um') %>%
-  add_significance()
+  group_by(lab_id, dist_seg) %>%
+  pairwise_wilcox_test(df~fac_time, p.adjust.method = 'BH', ref.group = '-1') %>%
+  add_significance() %>%
+  add_xy_position()
 
 ggplot(data = df.sel.dist,
-       aes(x = fac_time, y = df, fill = dist_seg)) +
-  geom_boxplot() +
-  facet_wrap(~lab_id)
+       aes(x = fac_time, y = df)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_boxplot(aes(fill = fac_time)) +
+  facet_grid(lab_id~dist_seg) +
+  stat_pvalue_manual(data = df.sel.dist.roi.stat, label = 'p.adj.signif') +
+  theme_classic()
 
 regeom_point()remove(df.sel.dist)
 
