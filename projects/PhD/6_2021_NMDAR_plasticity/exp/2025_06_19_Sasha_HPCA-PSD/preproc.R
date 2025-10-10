@@ -3,6 +3,7 @@
 library(dplyr)
 library(tidyr)
 library(purrr)
+library(stringr)
 library(rstatix)
 library(gridExtra)
 library(ggplot2)
@@ -19,7 +20,8 @@ df.fret <- rbind(read.csv('data/FRET/07_05_25_cell4_Fc_oreol.csv'),
                 read.csv('data/FRET/07_05_25_cell9_Fc_oreol.csv'),
                 read.csv('data/FRET/07_05_25_cell11_Fc_oreol.csv'),
                 read.csv('data/FRET/07_05_25_cell16_Fc_oreol.csv')) %>%
-            mutate(lab_id = 'oreol', ch = 'fc',
+            mutate(id = str_remove(id, '_Fc'),
+                   lab_id = 'oreol', ch = 'fc',
                    app_factor = '20', app = 20,
                    rel_time = index - 30) %>%
             select(-X) %>%
@@ -27,12 +29,16 @@ df.fret <- rbind(read.csv('data/FRET/07_05_25_cell4_Fc_oreol.csv'),
             mutate(roi = as.factor(roi)) %>%
             rename(df = "dF.F0_int" )
 
+levels(df.fret$id)
+
+
 df.fret.psd <- rbind(read.csv('data/FRET/07_05_25_cell4_Fc_psd.csv'),
                      read.csv('data/FRET/07_05_25_cell7_Fc_psd.csv'),
                      read.csv('data/FRET/07_05_25_cell9_Fc_psd.csv'),
                      read.csv('data/FRET/07_05_25_cell11_Fc_psd.csv'),
                      read.csv('data/FRET/07_05_25_cell16_Fc_psd.csv')) %>%
-              mutate(lab_id = 'psd', ch = 'fc',
+              mutate(id = str_remove(id, '_Fc'),
+                     lab_id = 'psd', ch = 'fc',
                      app_factor = '20', app = 20,
                      rel_time = index - 30) %>%
               select(-X) %>%
@@ -40,14 +46,21 @@ df.fret.psd <- rbind(read.csv('data/FRET/07_05_25_cell4_Fc_psd.csv'),
               mutate(roi = as.factor(roi)) %>%
               rename(df = "dF.F0_int" )
 
+levels(df.fret.psd$id)
+
+
 df.hpca <- read.csv('data/HPCA/df.csv') %>%
            select(-X) %>%
-           mutate(ch='hpca',
-           roi = as.factor(roi),
-           app_factor = as.factor(app)) %>%
+           mutate(id = str_remove(id, '_ch0'),
+                  ch='hpca',
+                  roi = as.factor(roi),
+                  app_factor = as.factor(app)) %>%
            mutate_if(is.character, factor) %>%
-           filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30', '60')) %>%
-           mutate(rel_time = index - 30)
+           mutate(rel_time = index - 30,
+                  id = recode(id, 'cell15' = '07_05_25_cell15', 'cell7' = '06_06_25_cell7'))
+
+levels(df.hpca$id)
+
 
 colnames(df.fret)
 colnames(df.fret.psd)

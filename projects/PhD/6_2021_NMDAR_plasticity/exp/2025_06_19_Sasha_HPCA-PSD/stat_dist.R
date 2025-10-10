@@ -15,7 +15,7 @@ library(introdataviz)
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_06_19_Sasha_HPCA-PSD')
 
 
-df.full <- read.csv('data/df.csv') %>%
+df.full <- read.csv('data/df_combined.csv') %>%
            select(-X) %>%
            mutate_if(is.character, factor) %>%
            mutate(roi = as.factor(roi),
@@ -69,7 +69,8 @@ remove(df.spines.summary)
 
 
 ##### ONE FRAME DF vs DIST #####
-ggplot(data = df.spines %>% filter(rel_time %in% c(0,1,2,3),
+ggplot(data = df.spines %>% filter(ch == 'fc',
+                                   rel_time %in% c(0,1,2,3),
                                    app_factor %in% c('5', '10', '20', '30')),
        aes(x = psd_um, y = df, color = lab_id)) +
   # geom_hline(yintercept = 0, linetype = 2) +
@@ -106,15 +107,16 @@ df.sel.dist <- df.spines %>%
 
 
 df.sel.dist.stat <- df.sel.dist %>%
+  filter(ch == 'fc') %>%
   group_by(fac_time, dist_seg) %>%
-  wilcox_test(df~lab_id) %>%
+  wilcox_test(dF_int~lab_id) %>%
   add_significance() %>%
   add_y_position(fun = 'max') %>%
   mutate(lab_id = as.factor('oreol'),
          y.position = y.position + y.position*0.1)
 
 ggplot(data = df.sel.dist,
-       aes(x = dist_seg, y = df, fill = lab_id)) +
+       aes(x = dist_seg, y = dF_int, fill = lab_id)) +
   geom_hline(yintercept = 0, linetype = 2) +
   geom_split_violin(alpha = 0.3, trim = FALSE, scale = "width") +
   geom_boxplot(alpha = 0.75, width = 0.2) +
