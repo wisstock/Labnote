@@ -6,7 +6,7 @@
 #             a_region.label,                      # cell_num
 #             one_cell_area,                       # cell_area
 #             one_dot_num,                         # dot_num
-#             one_dot_area,                        # dot_area
+#             one_dot_area,                        # dot_area  це сумарна площа на один астроцит, тобто це не можна використати як параметр окремої точки
 #             round(one_dot_rel_area, 3),          # dot_rel_area
 #             one_dot_sum_int,                     # dot_sum_int
 #             int(one_dot_mean_int),               # dot_mean_int
@@ -17,6 +17,7 @@
 require(dplyr)
 require(tidyr)
 require(purrr)
+library(readr)
 require(rstatix)
 library(gridExtra)
 require(ggplot2)
@@ -28,8 +29,10 @@ require(ggsci)
 setwd('/home/wisstock/bio_note/projects/PhD/9_2024_GLT_in_TBI/exp/2025_08_23_glt_in_astrocytes')
 
 df <- read.csv('astrocyte_count.csv') %>%
-  select(-dot_rel_area, -id) %>%
-  mutate_if(is.character, as.factor)
+  select(-id) %>%
+  mutate(dot_rel_area = parse_number(dot_rel_area, locale = locale(decimal_mark = ","))) %>%
+  mutate_if(is.character, as.factor) %>%
+  mutate(dot_rel_area = dot_area / cell_area)
 
 
 ##### CTRL TEST #####
@@ -38,14 +41,23 @@ df.ctrl <- df %>%
   filter(group == 'cont') %>%
   droplevels() %>%
   select(-group) %>%
-  filter(dot_area < 3000, dot_sum_int < 1.5e+6) %>%
+  filter(dot_rel_area < 1,
+         dot_sum_int < 1.5e+06) %>%
   droplevels()
+  
+ggplot(data = df.ctrl,
+       aes(x = dot_sum_int, y = dot_rel_area,
+           color = treat, fill = treat)) +
+  geom_point(alpha = .3) +
+  geom_smooth(method = 'loess', se = TRUE, span = 0.85)
 
 
 ggplot(data = df.ctrl,
-       aes(x = dot_sum_int, y = dot_area)) +
-  geom_point(aes(color = treat), alpha = .75) +
-  geom_smooth(aes(group = treat), method = 'lm', se = FALSE)
+       aes(x = dot_rel_area, fill = treat)) +
+  geom_density(alpha = .3) +
+  scale_x_continuous(limits = c(0,1))
+
+
 
 
 ggplot(data = df.ctrl,
@@ -58,11 +70,31 @@ df.ctrl %>%
   kruskal_test(dot_sum_int ~ name) %>%
   add_significance()
 
+df.ctrl %>%
+  wilcox_test(dot_sum_int ~ treat) %>%
+  add_significance()
+
+
+ggplot(data = df.ctrl,
+       aes(x = name, y = dot_rel_area, fill = treat)) +
+  geom_boxplot() +
+  geom_point()
+
+df.ctrl %>%
+  group_by(treat) %>%
+  kruskal_test(dot_rel_area ~ name) %>%
+  add_significance()
+
+df.ctrl %>%
+  wilcox_test(dot_rel_area ~ treat) %>%
+  add_significance()
+
+
 # MED
 df.ctrl.med <- df.ctrl %>%
   group_by(name) %>%
   mutate(med_dot_sum_int = median(dot_sum_int),
-         med_dot_area = median(dot_area),
+         med_dot_area = median(dot_rel_area),
          med_dot_num = median(dot_num),
          med_cell_area = median(cell_area)) %>%
   select(name, treat, med_dot_sum_int, med_dot_area, med_dot_num) %>%
@@ -76,28 +108,50 @@ ggplot(data = df.ctrl.med,
   geom_boxplot() +
   geom_point()
 
+df.ctrl.med %>%
+  wilcox_test(med_dot_sum_int ~ treat) %>%
+  add_significance()
+
 
 ggplot(data = df.ctrl.med,
-       aes(x = med_dot_area, y = med_dot_sum_int, color = treat)) +
+       aes(x = treat, y = med_dot_area, fill = treat)) +
+  geom_boxplot() +
+  geom_point()
+
+df.ctrl.med %>%
+  wilcox_test(med_dot_area ~ treat) %>%
+  add_significance()
+
+
+ggplot(data = df.ctrl.med,
+       aes(y = med_dot_area, x = med_dot_sum_int, color = treat)) +
   geom_point() +
   geom_smooth(method = 'lm', se = FALSE)
 
 
-df.ctrl.med %>%
-  wilcox_test(med_dot_sum_int ~ treat) %>%
-  add_significance()
+
 
 
 ##### EXP MED STAT #####
 # RAW
 df.tbi <-  df %>%
   filter(group != 'cont') %>%
-  droplevels() %>%
-  filter(dot_area < 3000, dot_sum_int < 1.5e+6) %>%
   droplevels()
 
 ggplot(data = df.tbi,
        aes(x = name, y = dot_sum_int, fill = treat)) +
+  geom_boxplot() +
+  facet_wrap(~group, scales = "free_x")
+
+ggplot(data = df.tbi,
+       aes(x = dot_sum_int, y = dot_rel_area)) +
+  geom_point(aes(color = treat, fill = treat), alpha = .3) +
+  geom_smooth(aes(group = treat), method = 'loess', se = TRUE, span = 0.85) +
+  facet_wrap(~group, scales = "free_x")
+
+
+ggplot(data = df.tbi,
+       aes(x = name, y = dot_rel_area, fill = treat)) +
   geom_boxplot() +
   facet_wrap(~group, scales = "free_x")
 
