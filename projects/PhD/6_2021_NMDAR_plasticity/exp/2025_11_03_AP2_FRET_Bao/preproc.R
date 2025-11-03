@@ -12,12 +12,14 @@ df.full <- read.csv('df_FRET.csv') %>%
   select(-'...1') %>%
   rowwise() %>%
   mutate(parts = list(str_split(id, "_"))[[1]],
-         l = length(parts),
-         ch = parts[[l]],
-         app_time = parts[[l-1]])
-  # mutate_if(is.character, factor)
-  # mutate(roi = as.factor(roi),
-  #        app_factor = as.factor(app))
+         len = length(parts),
+         ch = parts[[len]],
+         app_time = parts[[len-1]],
+         id = str_remove(id, "_[^_]+_[^_]+$")) %>%
+  ungroup() %>%
+  select(-len, -parts) %>%
+  mutate(app_time = case_match(app_time, '2' ~ '0.5', '3' ~ '60')) %>%
+  mutate_if(is.character, factor)
 
 
-bb <- df.full$parts[1]
+write.csv(df.full, 'df_processed.csv')

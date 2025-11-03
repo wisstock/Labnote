@@ -15,19 +15,19 @@ library(introdataviz)
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_11_03_AP2_FRET_Bao')
 
 
-df.full <- read.csv('df_FRET.csv') %>%
-           select(-'...1') %>%
-           mutate_if(is.character, factor)
-           mutate(roi = as.factor(roi),
-                  app_factor = as.factor(app)) %>%
-           filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30', '60')) %>%
-           mutate(rel_time = index - 30)
+df.full <- read.csv('df_processed.csv') %>%
+           select(-X) %>%
+           mutate_if(is.character, factor) %>%
+           mutate(app_time = as.factor(app_time),
+                  roi = as.factor(roi),
+                  roi_id = interaction(id, roi, sep = '_'),
+                  dF_F0_int = dF.F0_int) %>%
+           select(-dF.F0_int)
 
 
 spines_id <- df.full %>%
-  filter(lab_id != 'shaft') %>%
+  filter(lab_id != 'shaft', lab_id != 'psd_dots') %>%
   droplevels() %>%
-  mutate(roi_id = interaction(roi, id, sep = '_')) %>%
   group_by(roi_id) %>%
   summarise(has_all = n_distinct(lab_id) == 2) %>%
   filter(has_all) %>%
@@ -35,55 +35,100 @@ spines_id <- df.full %>%
   pull(roi_id)
 
 df.spines <- df.full %>%
-  filter(lab_id != 'shaft') %>%
-  mutate(roi_id = interaction(roi, id, sep = '_')) %>%
+  filter(lab_id != 'shaft', lab_id != 'psd_dots') %>%
   filter(roi_id %in% spines_id) %>%
   droplevels() %>%
   group_by(roi_id) %>%
-  mutate(rise_group =  ifelse(df[lab_id == 'psd'][3] > df[lab_id == 'oreol'][3], TRUE, FALSE),
-         rise_group = as.factor(ifelse(!all(rise_group == FALSE), 'invert', 'direct')),
-         psd_dist = if_else(lab_id == 'oreol', dist[lab_id == 'psd'][1], dist),
-         psd_um = psd_dist * 0.16) %>%
+  mutate(dist_um = dist * 0.16) %>%
   droplevels() %>%
-  select(-index, -time, -app, -dist) %>%
+  select(-index) %>%
   ungroup()
 
-# df.spines.wide <- df.spines %>%
-#   select(-abs_int, -dF_int) %>%
-#   pivot_wider(names_from = lab_id, values_from = df) %>%
-#   drop_na() %>%
-#   group_by(roi_id) %>%
-#   mutate(filter_group = ifelse(((rel_time == 2) & (oreol > psd)), TRUE, FALSE),
-#          rise_group = ifelse(!all(filter_group == FALSE), 'up', 'down')) %>%
-#   select(-filter_group) %>%
-#   droplevels() %>%
-#   ungroup()
+df.spines.05 <- df.spines %>%
+  filter(app_time == '0.5') %>%
+  select(-app_time) %>%
+  mutate(rel_time = time - 1)
+
+df.spines.60 <- df.spines %>%
+  filter(app_time == '60') %>%
+  select(-app_time) %>%
+  mutate(rel_time = time - 40)
 
 
 ##### EXPLORATORY ANALYSIS #####
 df.spines.summary <- df.spines %>%
-  group_by(lab_id, app_factor, psd_um_group) %>%
+  filter(base == 'simple') %>%
+  group_by(lab_id, app_time) %>%
   summarise(n_cell = n_distinct(id), n_roi = n_distinct(roi),
-            max = max(df))
+            max = max(abs_int),
+            min = min(abs_int))
+            # median = median(dF.F0_int),
+            # iqr = IQR(dF.F0_int))
 remove(df.spines.summary)
 
+# PDFs
+ggplot(df.spines.60 %>% filter(base == 'simple',
+                               rel_time == 10),
+       aes(x = dF_F0_int, fill = ch)) +
+  geom_vline(xintercept = 0, linetype = 2) + 
+  geom_density(alpha = .5) +
+  theme_minimal() +
+  facet_wrap(~interaction(lab_id,ch), ncol = 2, scales = 'free_y')
 
-##### ONE FRAME DF vs DIST #####
-ggplot(data = df.spines %>% filter(ch == 'fc',
-                                   rel_time %in% c(0,1,2,3),
-                                   app_factor %in% c('5', '10', '20', '30')),
-       aes(x = psd_um, y = df, color = lab_id)) +
-  # geom_hline(yintercept = 0, linetype = 2) +
-  geom_vline(xintercept = c(20, 40, 60), linetype = 2) +
-  geom_line(aes(group = roi_id), linewidth = 0.01, linetype = 2, color = 'black') +
-  geom_point(alpha = .25, size = 0.75) +
-  geom_smooth(method = 'loess', span = 0.8) +
-  # geom_smooth(method = 'lm', se = FALSE) +
-  scale_x_continuous(limits = c(0, 100)) +
-  scale_y_continuous(limits = c(-0.2, 0.3)) +
-  scale_color_manual(values = c('darkgreen', 'magenta3')) +
-  scale_fill_manual(values = c('darkgreen', 'magenta3')) +
-  facet_wrap(~rel_time, ncol = 4)
+ggplot(df.spines.05 %>% filter(base == 'simple',
+                               rel_time == 0.25),
+       aes(x = dF_F0_int, fill = ch)) +
+  geom_vline(xintercept = 0, linetype = 2) + 
+  geom_density(alpha = .5) +
+  theme_minimal() +
+  facet_wrap(~interaction(lab_id,ch), ncol = 2, scales = 'free_y')
+
+# 0.5 S PROF
+ggplot(data = df.spines.05 %>% filter(base == 'simple'),
+       aes(x = rel_time, y = dF_F0_int, color = id, fill = id)) +
+  stat_summary(fun = median,
+               geom = 'line', linewidth = 0.3) +
+  stat_summary(fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .05) +
+  theme_minimal() +
+  facet_wrap(~interaction(lab_id,ch), ncol = 2, scales = 'free_y')
+
+# 60 S PROF
+ggplot(data = df.spines.60 %>% filter(base == 'dietrich'),
+       aes(x = rel_time, y = dF_int, color = id, fill = id)) +
+  geom_vline(xintercept = 0, linetype = 2) +
+  stat_summary(fun = median,
+               geom = 'line', linewidth = 0.3) +
+  stat_summary(fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .05) +
+  theme_minimal() +
+  facet_wrap(~interaction(lab_id,ch), ncol = 2, scales = 'free_y')
+
+
+# summary plot
+ggplot(data = df.spines.05 %>% filter(base == 'simple'),
+       aes(x = rel_time, y = dF_F0_int, color = lab_id, fill = lab_id)) +
+  geom_vline(xintercept = 0, linetype = 2) +
+  stat_summary(fun = median,
+               geom = 'line', linewidth = 0.3) +
+  stat_summary(fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .05) +
+  theme_minimal() +
+  facet_wrap(~ch, ncol = 2, scales = 'free_y')
+
+
 
 
 ###### SELECTED DIST vs FRAME #####
