@@ -9,8 +9,8 @@ setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_11_
 
 
 df.full <- read.csv('df_FRET.csv') %>%
-  select(-'...1') %>%
-  rowwise() %>%
+  select(-'...1')
+ rowwise() %>%
   mutate(parts = list(str_split(id, "_"))[[1]],
          len = length(parts),
          ch = parts[[len]],
@@ -21,5 +21,17 @@ df.full <- read.csv('df_FRET.csv') %>%
   mutate(app_time = case_match(app_time, '2' ~ '0.5', '3' ~ '60')) %>%
   mutate_if(is.character, factor)
 
+ 
+ 
+ 
+ # df.full.summary <- df.full %>%
+ #   filter(index == 10, base == 'simple') %>%
+ #   group_by(id, lab_id) %>%
+ #   summarise(n_roi = n_distinct(roi))
+ # 
+ # 
+ # 
+ 
+ 
 
 write.csv(df.full, 'df_processed.csv')
