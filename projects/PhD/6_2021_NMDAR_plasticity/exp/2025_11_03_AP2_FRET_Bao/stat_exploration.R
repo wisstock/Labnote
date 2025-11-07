@@ -55,7 +55,7 @@ df.spines <- df.full %>%
 df.spines.05 <- df.spines %>%
   filter(app_time == '0.5') %>%
   select(-app_time) %>%
-  mutate(rel_time = time - 1)
+  mutate(rel_time = time - 0.75)
 
 df.spines.60 <- df.spines %>%
   filter(app_time == '60') %>%
@@ -84,14 +84,14 @@ df.shaft.60 <- df.full %>%
 low.ids <- df.spines.60 %>%
   filter(base == 'dietrich',
          rel_time == 20,
-         (dF_F0_int < 0.05 & lab_id == 'halo' & ch == 'ch0')) %>%
+         (dF_F0_int < 0.075 & lab_id == 'halo' & ch == 'ch0')) %>%
   droplevels()
 low.ids.list <- levels(low.ids$roi_id)
 
 low.shafts <- df.shaft.60 %>%
   filter(base == 'simple',
          rel_time == 30,
-         (dF_F0_int < 0.05 & ch == 'ch0')) %>%
+         (dF_F0_int < 0.075 & ch == 'ch0')) %>%
   droplevels()
 low.shafts.list <- levels(low.shafts$roi_id)
 
@@ -138,8 +138,12 @@ ggplot(df.spines.05 %>% filter(! roi_id %in% low.ids.list,
   facet_wrap(~interaction(lab_id,ch), ncol = 2, scales = 'free')
 
 ###### 0.5 S PROF #####
-ggplot(data = df.spines.05 %>% filter(! roi_id %in% low.ids.list, base == 'simple'),
-       aes(x = rel_time, y = dF_int, color = id, fill = id)) +
+ggplot(data = df.spines.05 %>% filter(!roi_id %in% low.ids.list,
+                                      !id %in% bad.cells.list,
+                                      base == 'simple'),
+       aes(x = rel_time, y = dF_F0_int, color = id, fill = id)) +
+  geom_vline(xintercept = 0, linetype = 2) +
+  geom_vline(xintercept = 0.5, linetype = 2) +
   stat_summary(fun = median,
                geom = 'line', linewidth = 0.3) +
   stat_summary(fun = median,
@@ -152,9 +156,11 @@ ggplot(data = df.spines.05 %>% filter(! roi_id %in% low.ids.list, base == 'simpl
   facet_wrap(~interaction(lab_id,ch), ncol = 2, scales = 'free_y')
 
 ggplot(data = df.shaft.05 %>% filter(base == 'simple',
-                                     !roi_id %in% low.shafts.list),
-       aes(x = rel_time, y = dF_int, color = id, fill = id)) +
+                                     !roi_id %in% low.shafts.list,
+                                     !id %in% bad.cells.list,),
+       aes(x = rel_time, y = dF_F0_int, color = id, fill = id)) +
   geom_vline(xintercept = 0, linetype = 2) +
+  geom_vline(xintercept = 0.5, linetype = 2) +
   stat_summary(fun = median,
                geom = 'line', linewidth = 0.3) +
   stat_summary(fun = median,
@@ -188,7 +194,7 @@ ggplot(data = df.spines.60 %>% filter(base == 'dietrich',
 ggplot(data = df.shaft.60 %>% filter(base == 'dietrich',
                                      !roi_id %in% low.shafts.list,
                                      !id %in% bad.cells.list),
-       aes(x = rel_time, y = abs_int, color = id, fill = id)) +
+       aes(x = rel_time, y = dF_int, color = id, fill = id)) +
   geom_vline(xintercept = 0, linetype = 2) +
   geom_vline(xintercept = 60, linetype = 2) +
   stat_summary(fun = median,
@@ -204,24 +210,53 @@ ggplot(data = df.shaft.60 %>% filter(base == 'dietrich',
 
 
 ###### 60 S HALO vs PSD #####
-df.spines.60.wide <- df.spines.60 %>%
-  filter(base == 'simple', ch %in% c('Fc', 'ch0')) %>%
+df.spines.60.wide.f <- df.spines.60 %>%
+  filter(base == 'dietrich', ch %in% c('ch0', 'ch3')) %>%
   droplevels() %>%
   mutate(lab_ch = interaction(lab_id, ch)) %>%
   select(lab_ch, rel_time, roi_id, id, dF_F0_int) %>%
   distinct() %>%
   pivot_wider(names_from = lab_ch, values_from = dF_F0_int)
 
-df.avg.roi <- df.by.roi %>%
-  filter(app_factor %in% c('20'), dist_group != 'I') %>%  # 
+df.spines.60.wide.e <- df.spines.60 %>%
+  filter(base == 'dietrich', ch %in% c('Eapp')) %>%
+  droplevels() %>%
+  mutate(lab_ch = interaction(lab_id, ch)) %>%
+  select(lab_ch, rel_time, roi_id, id, abs_int) %>%
+  distinct() %>%
+  pivot_wider(names_from = lab_ch, values_from = abs_int)
+
+df.spines.60.wide <- cbind(df.spines.60.wide.f, df.spines.60.wide.e[, 4:5])
+remove(df.spines.60.wide.f, df.spines.60.wide.e)
+
+df.avg.spines <- df.spines.60.wide %>%
   group_by(rel_time) %>%
-  summarise(psd_mean = mean(psd, na.rm = TRUE),
-            oreol_mean = mean(oreol, na.rm = TRUE),
-            psd_se = sd(psd, na.rm = TRUE) / sqrt(n()),
-            oreol_se = sd(oreol, na.rm = TRUE) / sqrt(n()),
+  summarise(psd_i_mean = mean(psd.ch0, na.rm = TRUE),
+            psd_i_se = sd(psd.ch0, na.rm = TRUE) / sqrt(n()),
+            halo_i_mean = mean(halo.ch0, na.rm = TRUE),
+            halo_i_se = sd(halo.ch0, na.rm = TRUE) / sqrt(n()),
+            psd_e_mean = mean(psd.Eapp, na.rm = TRUE),
+            psd_e_se = sd(psd.Eapp, na.rm = TRUE) / sqrt(n()),
+            halo_e_mean = mean(halo.Eapp[is.finite(halo.Eapp)], na.rm = TRUE),
+            halo_e_se = sd(halo.Eapp[is.finite(halo.Eapp)], na.rm = TRUE) / sqrt(n()),
             n = n(),
             .groups = 'drop')
 
+track.time <- seq(0,120)
+
+ggplot(data = df.avg.spines %>% filter(rel_time %in% track.time),
+       aes(x = psd_e_mean, y = halo_e_mean, color = rel_time)) +
+  # geom_vline(xintercept = 0, linetype = 2) +
+  # geom_hline(yintercept = 0, linetype = 2) +
+  geom_path() +
+  geom_point() +
+  geom_linerange(aes(xmin = psd_e_mean - psd_e_se,
+                     xmax = psd_e_mean + psd_e_se),
+                 size = 0.3) +
+  geom_linerange(aes(ymin = halo_e_mean - halo_e_se,
+                     ymax = halo_e_mean + halo_e_se,
+                     color = rel_time),
+                 size = 0.3)
 
 # df.by.roi <- df.selected %>%
 #   filter(lab_id != 'shaft', dist_group %in% c('II', 'III')) %>%
@@ -237,8 +272,8 @@ df.avg.roi <- df.by.roi %>%
 #   ungroup()
 
 
-ggplot(data = df.spines.60.wide %>% filter(rel_time == 20, !roi_id %in% low.ids.list),
-       aes(x = psd.ch0, y = halo.Fc, color = roi_id)) +
+ggplot(data = df.spines.60.wide %>% filter(rel_time == 30, !roi_id %in% low.ids.list),
+       aes(x = psd.ch0, y = halo.ch0, color = roi_id)) +
   geom_vline(xintercept = 0, linetype = 2) +
   geom_hline(yintercept = 0, linetype = 2) +
   geom_point(alpha = .3) +
@@ -254,8 +289,9 @@ ggplot(data = df.spines.60.wide %>% filter(rel_time >= 0, rel_time <= 100),
 #### CELL SUMMARY PLOT #####
 ggplot(data = df.spines.60 %>% filter(!roi_id %in% low.ids.list,
                                       ch %in% c('Eapp', 'Fc'),  # c('ch0', 'ch3'),
-                                      base == 'simple'),
-       aes(x = rel_time, y = abs_int, color = lab_id, fill = lab_id)) +
+                                      base == 'simple',
+                                      !id %in% bad.cells.list),
+       aes(x = rel_time, y = dF_F0_int, color = lab_id, fill = lab_id)) +
   geom_vline(xintercept = 0, linetype = 2) +
   stat_summary(fun = median,
                geom = 'line', linewidth = 0.3) +
@@ -270,7 +306,8 @@ ggplot(data = df.spines.60 %>% filter(!roi_id %in% low.ids.list,
 
 ggplot(data = df.spines.60 %>% filter(!roi_id %in% low.ids.list,
                                       ch %in% c('ch0', 'ch3'),
-                                      base == 'dietrich'),
+                                      base == 'dietrich',
+                                      !id %in% bad.cells.list),
        aes(x = rel_time, y = dF_F0_int, color = lab_id, fill = lab_id)) +
   geom_vline(xintercept = 0, linetype = 2) +
   stat_summary(fun = median,
