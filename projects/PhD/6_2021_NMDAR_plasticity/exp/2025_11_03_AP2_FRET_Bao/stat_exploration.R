@@ -62,6 +62,8 @@ df.spines.60 <- df.spines %>%
   select(-app_time) %>%
   mutate(rel_time = time - 40)
 
+remove(df.spines)
+
 
 df.shaft.05 <- df.full %>%
   filter(lab_id == 'shaft', app_time == '0.5') %>%
@@ -177,7 +179,7 @@ ggplot(data = df.shaft.05 %>% filter(base == 'simple',
 ggplot(data = df.spines.60 %>% filter(base == 'dietrich',
                                       !roi_id %in% low.ids.list,
                                       !id %in% bad.cells.list),
-       aes(x = rel_time, y = dF_int, color = id, fill = id)) +
+       aes(x = rel_time, y = dF_F0_int, color = id, fill = id)) +
   geom_vline(xintercept = 0, linetype = 2) +
   geom_vline(xintercept = 60, linetype = 2) +
   stat_summary(fun = median,
@@ -194,7 +196,7 @@ ggplot(data = df.spines.60 %>% filter(base == 'dietrich',
 ggplot(data = df.shaft.60 %>% filter(base == 'dietrich',
                                      !roi_id %in% low.shafts.list,
                                      !id %in% bad.cells.list),
-       aes(x = rel_time, y = dF_int, color = id, fill = id)) +
+       aes(x = rel_time, y = dF_F0_int, color = id, fill = id)) +
   geom_vline(xintercept = 0, linetype = 2) +
   geom_vline(xintercept = 60, linetype = 2) +
   stat_summary(fun = median,
