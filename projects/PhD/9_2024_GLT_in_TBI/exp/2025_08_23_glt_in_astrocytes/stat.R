@@ -34,6 +34,14 @@ df <- read.csv('astrocyte_count.csv') %>%
   mutate_if(is.character, as.factor) %>%
   mutate(dot_rel_area = dot_area / cell_area)
 
+# plots settings
+font.size <- 12  # 19
+font.fam <- 'Arial'
+box.alpha <- 0.6
+
+cef.color <- 'coral2' 
+non.color <- 'deepskyblue3' 
+
 
 ##### CTRL TEST #####
 # RAW
@@ -262,9 +270,9 @@ df.tbi.med %>%
   wilcox_test(med_dot_mean_int ~ treat) %>%
   add_significance()
 
-###### TIME LINES #####
+###### TIME LINES ==>> FIN PLOTS <<== #####
 # mean dot int
-ggplot(data = df.tbi.med,
+plot_med_dot_mean_int <- ggplot(data = df.tbi.med,
        aes(x = group, y = med_dot_mean_int,
            color = treat, group = treat)) +
   geom_hline(yintercept = 354.75, linetype = 'dashed') +
@@ -275,10 +283,21 @@ ggplot(data = df.tbi.med,
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'errorbar', width = .1, size = 0.75)
+               geom = 'errorbar', width = .1, size = 0.75) +
+  scale_color_manual(name = "Treat",
+                     labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('3d afrer TBI', '7d afrer TBI', '14d afrer TBI')) +
+  labs(x = 'Group', y = 'Median of dots averaged intensity, a.u.') +
+  theme(text=element_text(size = font.size, family = font.fam))
+
+plot_med_dot_mean_int
+save_plot('plot_med_dot_mean_intt.png', plot_med_dot_mean_int,
+          base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
 
 # mean sum int
-ggplot(data = df.tbi.med,
+plot_med_dot_sum_int <- ggplot(data = df.tbi.med,
        aes(x = group, y = med_dot_sum_int,
            color = treat, group = treat)) +
   geom_hline(yintercept = 138463.5, linetype = 'dashed') +
@@ -289,10 +308,20 @@ ggplot(data = df.tbi.med,
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'errorbar', width = .1, size = 0.75)
+               geom = 'errorbar', width = .1, size = 0.75) +
+  scale_color_manual(name = "Treat",
+                     labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('3d afrer TBI', '7d afrer TBI', '14d afrer TBI')) +
+  labs(x = 'Group', y = 'Median of dots sum intensity, a.u.') +
+  theme(text=element_text(size = font.size, family = font.fam))
+
+plot_med_dot_sum_int
+save_plot('plot_med_dot_sum_int.png', plot_med_dot_sum_int,
+          base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
 
 # mean sum int
-ggplot(data = df.tbi.med,
+plot_med_dot_area <- ggplot(data = df.tbi.med,
        aes(x = group, y = med_dot_area,
            color = treat, group = treat)) +
   geom_hline(yintercept = 0.23, linetype = 'dashed') +
@@ -303,13 +332,30 @@ ggplot(data = df.tbi.med,
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'errorbar', width = .1, size = 0.75)
+               geom = 'errorbar', width = .1, size = 0.75) +
+  scale_color_manual(name = "Treat",
+                       labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('3d afrer TBI', '7d afrer TBI', '14d afrer TBI')) +
+  labs(x = 'Group', y = 'Median of the relative dots area') +
+  theme(text=element_text(size = font.size, family = font.fam))
 
-
+plot_med_dot_area
+save_plot('plot_median_dot_area.png', plot_med_dot_area,
+          base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
 
 ###### TBI LINE PLOT ######
-
-ggplot(data = df.tbi %>% filter(group == 'tbi3'),
+plot_area_vs_sum <- ggplot(data = df.tbi %>% filter(group == 'tbi3'),
        aes(x=dot_rel_area, y = dot_sum_int, color = treat)) +
   geom_point(alpha = .1) +
-  geom_smooth(method = 'lm', se = FALSE)
+  geom_smooth(method = 'lm', se = FALSE) +
+  labs(x = 'Relative dots area', y = 'Dots sum intensity, a.u.') +
+  scale_color_manual(name = "Treat",
+                     labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_y_continuous(limits = c(0, 500000)) +                            # set up y limits here
+  theme(text=element_text(size = font.size, family = font.fam))
+
+plot_area_vs_sum
+save_plot('plot_plot_area_vs_sum.png', plot_area_vs_sum,
+          base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here

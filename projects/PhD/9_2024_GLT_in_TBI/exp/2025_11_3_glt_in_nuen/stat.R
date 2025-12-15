@@ -40,9 +40,18 @@ df.med <- df %>%
   select(-relative_area, -relative_intensity) %>%
   distinct() %>%
   ungroup()
+
+# plots settings
+font.size <- 12  # 19
+font.fam <- 'Arial'
+box.alpha <- 0.6
+
+cef.color <- 'coral2' 
+non.color <- 'deepskyblue3' 
+
  
 ##### REL AREA #####
-ggplot(data = df %>% filter(group != 'Cont'),
+plot_relative_area <- ggplot(data = df %>% filter(group != 'Cont'),
        aes(x = group, y = relative_area,
            color = treat, group = treat)) +
   geom_hline(yintercept = 0.36, linetype = 'dashed') +
@@ -53,10 +62,20 @@ ggplot(data = df %>% filter(group != 'Cont'),
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'errorbar', width = .1, size = 0.75)
+               geom = 'errorbar', width = .1, size = 0.75) +
+  scale_color_manual(name = "Treat",
+                     labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'none' = non.color)) +
+  scale_x_discrete(labels = c('3d afrer TBI', '7d afrer TBI', '14d afrer TBI')) +
+  labs(x = 'Group', y = 'Dots relative area') +
+  theme(text=element_text(size = font.size, family = font.fam))
+
+plot_relative_area
+save_plot('plot_relative_area.png', plot_relative_area,
+          base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
 
 ##### REL INT #####
-ggplot(data = df %>% filter(group != 'Cont'),
+plot_relative_int <- ggplot(data = df %>% filter(group != 'Cont'),
        aes(x = group, y = relative_intensity,
            color = treat, group = treat)) +
   geom_hline(yintercept = 0.4, linetype = 'dashed') +
@@ -67,4 +86,14 @@ ggplot(data = df %>% filter(group != 'Cont'),
   stat_summary(fun.min = function(z) { quantile(z,0.25) },
                fun.max = function(z) { quantile(z,0.75) },
                fun = median,
-               geom = 'errorbar', width = .1, size = 0.75)
+               geom = 'errorbar', width = .1, size = 0.75) +
+  scale_color_manual(name = "Treat",
+                     labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'none' = non.color)) +
+  scale_x_discrete(labels = c('3d afrer TBI', '7d afrer TBI', '14d afrer TBI')) +
+  labs(x = 'Group', y = 'Dots relative intensity') +
+  theme(text=element_text(size = font.size, family = font.fam))
+
+plot_relative_int
+save_plot('plot_relative_int.png', plot_relative_int,
+          base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here

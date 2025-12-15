@@ -13,7 +13,7 @@ require(ggsci)
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_06_19_Sasha_HPCA-PSD')
 
 
-df.full <- read.csv('data/df.csv') %>%
+df.full <- read.csv('data/HPCA/df.csv') %>%
            select(-X) %>%
            mutate_if(is.character, factor) %>%
            mutate(roi = as.factor(roi),
@@ -22,15 +22,12 @@ df.full <- read.csv('data/df.csv') %>%
                   dist_group = as.factor(case_when(dist_um <= 25 ~ 'I',
                                                    (dist_um > 25) & (dist_um <= 50)  ~ 'II',
                                                    dist_um > 50 ~ 'III',
-                                                   .default = '0')))
+                                                   .default = '0'))) %>%
+          filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30')) %>%
+          mutate(rel_time = index - 30)
 
 
-df.selected <- df.full %>%
-  filter(app_factor %in% c('0.5','2.5', '5', '10', '20', '30')) %>%
-  mutate(rel_time = index - 30)
-
-
-spines_id <- df.selected %>%
+spines_id <- df.full %>%
   filter(lab_id != 'shaft') %>%
   droplevels() %>%
   mutate(roi_id = interaction(roi, id, sep = '_')) %>%
@@ -40,27 +37,34 @@ spines_id <- df.selected %>%
   droplevels() %>%
   pull(roi_id)
 
-df.spines <- df.selected %>%
+df.spines <- df.full %>%
   filter(lab_id != 'shaft') %>%
   mutate(roi_id = interaction(roi, id, sep = '_')) %>%
   filter(roi_id %in% spines_id) %>%
   droplevels()
 
+df.shaft <- df.full %>%
+  filter(lab_id == 'shaft')
+
+remove(spines_id)
+
 
 ##### EXPLORATORY ANALYSIS #####
-df.summary <- df.spines %>%
+df.summary.spines <- df.spines %>%
   filter(dist_group != '0') %>%
-  group_by(lab_id, app_factor, dist_group) %>%
+  group_by(app_factor) %>%
   summarise(n_cell = n_distinct(id), n_roi = n_distinct(roi),
             max = max(df))
-  
-ggplot(data = df.full %>% filter(dist_group != '0'), aes(x = df, fill = dist_group)) +
-  geom_density(alpha = .5) +
-  facet_wrap(~interaction(lab_id, app_factor))
+
+df.summary.shaft <- df.shaft %>%
+  filter(dist_group != '0') %>%
+  group_by(app_factor) %>%
+  summarise(n_cell = n_distinct(id), n_roi = n_distinct(roi),
+            max = max(df))
 
 
 ##### AMPLITUDE VS APP TIME #####
-df.max <- df.spines %>%
+df.max <- df.full %>%
   filter(dist_group != '0') %>%
   select(df, lab_id, roi, app_factor, dist_group) %>%
   group_by(lab_id, roi, app_factor, dist_group) %>%
@@ -84,7 +88,7 @@ ggplot(data = df.max, aes(x = app, y = max_df, color = lab_id, group = lab_id)) 
                fun.max = function(z) {quantile(z,0.75)},
                fun = median,
                geom = 'errorbar', linewidth = 0.5, width=0.05) +
-  scale_x_continuous(trans = "log10", breaks = c(0.5, 2.5, 5, 10, 20, 60, 120)) +
+  scale_x_continuous(trans = "log10", breaks = c(0.5, 2.5, 5, 10, 20, 30)) +
   scale_y_continuous(breaks = seq(0,10,0.1), limits = c(-0.1,0.5)) +
   facet_wrap(~dist_group, nrow = 3) +
   theme_minimal_hgrid()
@@ -92,25 +96,25 @@ ggplot(data = df.max, aes(x = app, y = max_df, color = lab_id, group = lab_id)) 
 
 
 ##### AMPLITUDE 20 ANALYSIS #####
-df.20 <-  df.full %>%
-  filter(app_factor == '0.5') %>%
+df.20 <-  df.spines %>%
+  filter(app_factor == '20') %>%
   mutate(rel_time = index - 30)
 
 ggplot(data = df.20,
        aes(x = rel_time, y = df)) +
   geom_hline(yintercept = 0, linetype = 2) +
   geom_vline(xintercept = 0, linetype = 3) +
+  stat_summary(aes(fill = dist_group, group = dist_group),
+               fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .25) +
   stat_summary(aes(color = dist_group, group = dist_group),
                fun = median,
                geom = 'line', linewidth = 0.75) +
   stat_summary(aes(color = dist_group, group = dist_group),
                fun = median,
                geom = 'point', size = 1) +
-  stat_summary(aes(fill = dist_group, group = dist_group),
-               fun.min = function(z) {quantile(z,0.25)},
-               fun.max = function(z) {quantile(z,0.75)},
-               fun = median,
-               geom = 'ribbon', linewidth = 0, alpha = .25) +
   facet_wrap(~lab_id)
 
 
@@ -133,8 +137,7 @@ ggplot(data = df.20.cor, aes(x = rel_time, y = cor, color = lab_id, fill = lab_i
        color = 'Region',
        fill = 'Region') +
   facet_wrap(~dist_group) +
-  theme_minimal() +
-  theme(legend.position = c(0.1, 0.8))
+  theme_minimal()
 
 # slope test
 df.20.lm <- df.20 %>%
@@ -163,8 +166,7 @@ ggplot(data = df.20.lm, aes(x = rel_time, y = estimate, color = lab_id, fill = l
        y = 'Slope',
        color = 'Region',
        fill = 'Region') +
-  theme_minimal() +
-  theme(legend.position = c(0.1, 0.8))
+  theme_minimal()
   
 
 ##### LM AGREGATE PLOT #####

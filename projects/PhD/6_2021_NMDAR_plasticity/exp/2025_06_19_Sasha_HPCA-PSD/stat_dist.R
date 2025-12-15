@@ -62,7 +62,7 @@ df.spines <- df.full %>%
 
 ##### EXPLORATORY ANALYSIS #####
 df.spines.summary <- df.spines %>%
-  group_by(lab_id, app_factor, psd_um_group) %>%
+  group_by(lab_id, app_factor) %>%
   summarise(n_cell = n_distinct(id), n_roi = n_distinct(roi),
             max = max(df))
 remove(df.spines.summary)
