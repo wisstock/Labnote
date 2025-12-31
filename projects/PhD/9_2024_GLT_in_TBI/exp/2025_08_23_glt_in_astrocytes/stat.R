@@ -13,10 +13,10 @@
 #             int(one_dot_sum_int / one_dot_num),  # dot_men_int_per_dot
 #             int(one_dot_mean_int_dens)]          # dot_mean_int_dens
 
-
 library(dplyr)
 library(tidyr)
 library(purrr)
+library(forcats)
 library(readr)
 library(rstatix)
 library(gridExtra)
@@ -34,6 +34,14 @@ df <- read.csv('astrocyte_count.csv') %>%
   mutate_if(is.character, as.factor) %>%
   mutate(dot_rel_area = dot_area / cell_area)
 
+df.ctrl <- df %>%
+  filter(group == 'cont') %>%
+  droplevels() %>%
+  select(-group) %>%
+  filter(dot_rel_area < 1,
+         dot_sum_int < 1.5e+06) %>%
+  droplevels()
+
 # plots settings
 font.size <- 12  # 19
 font.fam <- 'Arial'
@@ -45,13 +53,7 @@ non.color <- 'deepskyblue3'
 
 ##### CTRL TEST #####
 # RAW
-df.ctrl <- df %>%
-  filter(group == 'cont') %>%
-  droplevels() %>%
-  select(-group) %>%
-  filter(dot_rel_area < 1,
-         dot_sum_int < 1.5e+06) %>%
-  droplevels()
+
   
 ggplot(data = df.ctrl,
        aes(x = dot_sum_int, y = dot_rel_area,
@@ -108,7 +110,7 @@ df.ctrl %>%
   wilcox_test(dot_mean_int_dens ~ treat) %>%
   add_significance()
 
-# MED
+###### MEDIAN CTRL BOXPLOTS ==>> FIN PLOTS <<== #####
 df.ctrl.med <- df.ctrl %>%
   group_by(name) %>%
   mutate(med_dot_mean_int = median(dot_mean_int_dens),
@@ -120,44 +122,82 @@ df.ctrl.med <- df.ctrl %>%
   droplevels() %>%
   ungroup()
 
-ggplot(data = df.ctrl.med,
-       aes(x = treat, y = med_dot_sum_int, fill = treat)) +
-  geom_boxplot() +
-  geom_point()
 
-df.ctrl.med %>%
+med_dot_sum_stat <- df.ctrl.med %>%
   wilcox_test(med_dot_sum_int ~ treat) %>%
-  add_significance()
+  add_significance() %>%
+  add_xy_position()
 
-
-ggplot(data = df.ctrl.med,
-       aes(x = treat, y = med_dot_area, fill = treat)) +
-  geom_boxplot() +
-  geom_point()
-
-df.ctrl.med %>%
-  wilcox_test(med_dot_area ~ treat) %>%
-  add_significance()
-
-
-
-ggplot(data = df.ctrl.med,
-       aes(x = treat, y = med_dot_mean_int, fill = treat)) +
-  geom_boxplot() +
-  geom_point()
-
-df.ctrl.med %>%
-  wilcox_test(med_dot_mean_int ~ treat) %>%
-  add_significance()
-
-
-ggplot(data = df.ctrl.med,
-       aes(y = med_dot_area, x = med_dot_sum_int, color = treat)) +
+boxplot_med_dot_sum_int <- ggplot(data = df.ctrl.med,
+       aes(x = fct_relevel(treat, 'non', 'cef'), y = med_dot_sum_int)) +
+  geom_boxplot(aes(fill = treat), alpha = box.alpha) +
+  stat_pvalue_manual(data = med_dot_sum_stat, size = font.size-6) +
   geom_point() +
-  geom_smooth(method = 'lm', se = FALSE)
+  scale_fill_manual(name = "Treat",
+                     labels = c("Cef.", "Non"),
+                     values = c('cef' = cef.color, 'non' = non.color)) +
+    scale_x_discrete(labels = c('Non', 'Cef.')) +
+    labs(x = 'Control group', y = 'Dots sum intensity, a.u.') +
+    theme(text=element_text(size = font.size, family = font.fam),
+          legend.position = 'None')
+
+boxplot_med_dot_sum_int
+save_plot('boxplot_med_dot_sum_int.png', boxplot_med_dot_sum_int,
+          base_width = 3.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
+remove(boxplot_med_dot_sum_int, med_dot_sum_stat)
 
 
 
+med_dot_area_stat <- df.ctrl.med %>%
+  wilcox_test(med_dot_area ~ treat) %>%
+  add_significance() %>%
+  add_xy_position()
+
+boxplot_med_dot_area <- ggplot(data = df.ctrl.med,
+       aes(x = fct_relevel(treat, 'non', 'cef'), y = med_dot_area)) +
+  geom_boxplot(aes(fill = treat), alpha = box.alpha) +
+  stat_pvalue_manual(data = med_dot_area_stat, size = font.size-6) +
+  geom_point() +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Control group', y = 'Relative dots area') +
+  theme(text=element_text(size = font.size, family = font.fam),
+        legend.position = 'None')
+
+boxplot_med_dot_area
+save_plot('boxplot_med_dot_area.png', boxplot_med_dot_area,
+          base_width = 3.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
+remove(boxplot_med_dot_area, med_dot_area_stat)
+
+
+
+med_dot_mean_stat <- df.ctrl.med %>%
+  wilcox_test(med_dot_mean_int ~ treat) %>%
+  add_significance() %>%
+  add_xy_position()
+
+boxplot_med_dot_mean_int <- ggplot(data = df.ctrl.med,
+       aes(x = fct_relevel(treat, 'non', 'cef'), y = med_dot_mean_int)) +
+  geom_boxplot(aes(fill = treat), alpha = box.alpha) +
+  geom_point() +
+  stat_pvalue_manual(data = med_dot_mean_stat, size = font.size-6) +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Control group', y = 'Dots average intensity, a.u.') +
+  theme(text=element_text(size = font.size, family = font.fam),
+        legend.position = 'None')
+
+boxplot_med_dot_mean_int
+save_plot('boxplot_med_dot_mean_int.png', boxplot_med_dot_mean_int,
+          base_width = 3.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
+remove(boxplot_med_dot_mean_int, med_dot_mean_stat)
 
 
 ##### EXP MED STAT #####

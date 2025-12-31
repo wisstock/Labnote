@@ -3,6 +3,7 @@
 require(dplyr)
 require(tidyr)
 require(purrr)
+require(forcats)
 require(rstatix)
 library(gridExtra)
 require(ggplot2)
@@ -12,13 +13,23 @@ require(ggsci)
 
 setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_06_19_Sasha_HPCA-PSD')
 
+# PLOT SETTINGS
+shaft.color <- 'dodgerblue3'
+psd.color <- 'magenta3'
+halo.color <- 'coral2'
 
+max.color <- 'red'
+mid.color <- 'green4'
+min.color <- 'blue'
+
+##### DATA LOADING AND PREPROCESSING #####
 df.full <- read.csv('data/HPCA/df.csv') %>%
            select(-X) %>%
            mutate_if(is.character, factor) %>%
            mutate(roi = as.factor(roi),
                   app_factor = as.factor(app),
                   dist_um = dist * 0.16,
+                  lab_id = fct_recode(lab_id, 'halo' = 'oreol'),
                   dist_group = as.factor(case_when(dist_um <= 25 ~ 'I',
                                                    (dist_um > 25) & (dist_um <= 50)  ~ 'II',
                                                    dist_um > 50 ~ 'III',
@@ -39,32 +50,64 @@ spines_id <- df.full %>%
 
 df.spines <- df.full %>%
   filter(lab_id != 'shaft') %>%
+  select(-app, -dist) %>%
+  droplevels() %>%
   mutate(roi_id = interaction(roi, id, sep = '_')) %>%
   filter(roi_id %in% spines_id) %>%
-  droplevels()
+  group_by(roi_id, index) %>%
+  mutate(dist_um = dist_um[lab_id == 'psd'],
+         int_diff = abs_int[lab_id == 'halo'] - abs_int[lab_id == 'psd']) %>%
+  ungroup() %>%
+  mutate(dist_group = as.factor(case_when(dist_um <= 25 ~ 'I',
+                                          (dist_um > 25) & (dist_um <= 50)  ~ 'II',
+                                          dist_um > 50 ~ 'III',
+                                          .default = '0')))
 
 df.shaft <- df.full %>%
-  filter(lab_id == 'shaft')
+  filter(lab_id == 'shaft') %>%
+  select(-app, -dist) %>%
+  mutate(roi_id = interaction(roi, id, sep = '_shaft_'),
+         int_diff = 0)
 
-remove(spines_id)
-
+df.preproc <- rbind(df.spines, df.shaft)
+remove(df.shaft, df.spines, spines_id)
 
 ##### EXPLORATORY ANALYSIS #####
-df.summary.spines <- df.spines %>%
+df.summary <- df.preproc %>%
   filter(dist_group != '0') %>%
-  group_by(app_factor) %>%
+  group_by(app_factor, lab_id) %>%
   summarise(n_cell = n_distinct(id), n_roi = n_distinct(roi),
             max = max(df))
 
-df.summary.shaft <- df.shaft %>%
-  filter(dist_group != '0') %>%
-  group_by(app_factor) %>%
-  summarise(n_cell = n_distinct(id), n_roi = n_distinct(roi),
-            max = max(df))
+# selected frames lm
+pdf.time.points <- c(0, 2, 4)
+
+ggplot(data = df.preproc %>%
+         filter(rel_time %in% pdf.time.points, lab_id != 'shaft', app_factor == '20'),
+       aes(x = dF_int, color = as.factor(rel_time))) +
+  stat_ecdf(geom = "step") +
+  facet_wrap(~lab_id)
+  
+
+# abs halo/psd diff
+ggplot(data = df.preproc %>%
+         filter(rel_time %in% time.points, lab_id != 'shaft', app_factor == '20') %>%
+         mutate(lab_dist = interaction(lab_id, dist_group, sep = '_')),
+       aes(x = dist_um, y = abs_int)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_point(alpha = .15) +
+  # geom_line(aes(group = roi_id), alpha = .1, color = 'grey') +
+  geom_smooth(method = 'loess') +
+  # scale_y_continuous(limits = c(-0.5, 0.5)) +
+  facet_wrap(~as.factor(rel_time), ncol = 3) +  # ~interaction(as.factor(rel_time), app_factor, sep = '_')
+  labs(title = 'Distance vs abs int difference (app. 20 s)',
+       x = 'Distance (μm)',
+       y = 'Halo-PSD, a.u.') +
+  theme_minimal()
 
 
 ##### AMPLITUDE VS APP TIME #####
-df.max <- df.full %>%
+df.max <- df.preproc %>%
   filter(dist_group != '0') %>%
   select(df, lab_id, roi, app_factor, dist_group) %>%
   group_by(lab_id, roi, app_factor, dist_group) %>%
@@ -95,8 +138,59 @@ ggplot(data = df.max, aes(x = app, y = max_df, color = lab_id, group = lab_id)) 
 
 
 
-##### AMPLITUDE 20 ANALYSIS #####
-df.20 <-  df.spines %>%
+##### LM AGREGATE PLOT #####
+# selected frames lm
+time.points <- c(0, 1, 3, 5, 10, 25)
+
+
+# loess
+ggplot(data = df.preproc %>%
+         filter(rel_time %in% time.points, app_factor == '20') %>%
+         mutate(lab_dist = interaction(lab_id, dist_group, sep = '_')),
+       aes(x = dist_um, y = df,
+           color = lab_id, fill = lab_id)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_point(alpha = .15) +
+  # geom_line(aes(group = roi_id), alpha = .15, color = 'grey') +
+  geom_smooth(method = 'loess', alpha = .15) +
+  scale_y_continuous(limits = c(-0.5, 0.5)) +
+  facet_wrap(~as.factor(rel_time), ncol = 3) +  # ~interaction(as.factor(rel_time), app_factor, sep = '_')
+  labs(title = 'Distance vs ΔF/F0 (app. 20 s)',
+       x = 'Distance (μm)',
+       y = 'ΔF/F0') +
+  scale_color_manual(name = "Spine region",
+                     values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  theme_minimal() +
+  theme(text = element_text(size = 25))
+
+
+# with lm for intervals
+ggplot(data = df.preproc %>%
+         filter(rel_time %in% time.points, app_factor == '20') %>%
+         mutate(lab_dist = interaction(lab_id, dist_group, sep = '_')),
+       aes(x = dist_um, y = df,
+           color = lab_id, fill = lab_id, group = lab_dist)) +
+  geom_vline(xintercept = c(25, 50), linetype = 3) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_point(alpha = .15) +
+  # geom_line(aes(group = roi_id), alpha = .1, color = 'grey') +
+  geom_smooth(method = 'lm', alpha = 0.15) +
+  scale_y_continuous(limits = c(-0.5, 0.5)) +
+  facet_wrap(~as.factor(rel_time), ncol = 3) +  # ~interaction(as.factor(rel_time), app_factor, sep = '_')
+  labs(title = 'Distance vs ΔF/F0 (app. 20 s)',
+       x = 'Distance (μm)',
+       y = 'ΔF/F0') +
+  scale_color_manual(name = "Spine region",
+                     values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  theme_minimal() +
+  theme(text = element_text(size = 25))
+
+##### PROFILES FOR 20 ANALYSIS #####
+df.20 <-  df.preproc %>%
   filter(app_factor == '20') %>%
   mutate(rel_time = index - 30)
 
@@ -108,16 +202,88 @@ ggplot(data = df.20,
                fun.min = function(z) {quantile(z,0.25)},
                fun.max = function(z) {quantile(z,0.75)},
                fun = median,
-               geom = 'ribbon', linewidth = 0, alpha = .25) +
+               geom = 'ribbon', linewidth = 0, alpha = .15) +
   stat_summary(aes(color = dist_group, group = dist_group),
                fun = median,
                geom = 'line', linewidth = 0.75) +
   stat_summary(aes(color = dist_group, group = dist_group),
                fun = median,
                geom = 'point', size = 1) +
-  facet_wrap(~lab_id)
+  scale_color_manual(name = "Distance group",
+                     labels = c("<25 um", "25-50um", ">50 um"),
+                     values = c('I' = max.color, 'II' = mid.color, 'III' = min.color)) +
+  scale_fill_manual(name = "Distance group",
+                    labels = c("<25 um", "25-50um", ">50 um"),
+                    values = c('I' = max.color, 'II' = mid.color, 'III' = min.color)) +
+  labs(title = 'Median for all ROIs (app. 20 s)',
+       x = 'Time, s',
+       y = 'ΔF/F0') +
+  facet_wrap(~lab_id) +
+  theme_minimal()  +
+  theme(text = element_text(size = 25))
+
+# spines
+ggplot(data = df.20 %>% filter(dist_group != 'I'),
+       aes(x = rel_time, y = df)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_vline(xintercept = 0, linetype = 3) +
+  geom_vline(xintercept = 20, linetype = 3) +
+  stat_summary(aes(color = lab_id, group = interaction(id,lab_id)),
+               fun = median,
+               geom = 'line', linewidth = 0.25) +
+  stat_summary(aes(color = lab_id, group = lab_id),
+               fun = median,
+               geom = 'line', linewidth = 0.75) +
+  stat_summary(aes(color = lab_id, group = lab_id),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(aes(fill = lab_id, group = lab_id),
+               fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .25) +
+  scale_color_manual(name = "Spine region",
+                     values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  labs(title = 'Median for all ROIs per cell without <25 um (app. 20 s)',
+       x = 'Time, s',
+       y = 'ΔF/F0') +
+  theme_minimal() +
+  facet_wrap(~lab_id, ncol=3)  +
+  theme(text = element_text(size = 25))
+
+# average
+ggplot(data = df.20 %>% filter(dist_group != 'I'),
+       aes(x = rel_time, y = df, color = lab_id, fill = lab_id)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  geom_vline(xintercept = 0, linetype = 3) +
+  geom_vline(xintercept = 20, linetype = 3) +
+  stat_summary(aes(color = lab_id, group = lab_id),
+               fun = median,
+               geom = 'line', linewidth = 0.75) +
+  stat_summary(aes(color = lab_id, group = lab_id),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(aes(fill = lab_id, group = lab_id),
+               fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .25) +
+  scale_color_manual(name = "Spine region",
+                     values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  # scale_y_continuous(limits = c(-0.15, 0.3)) +
+  labs(title = 'Median for all ROIs without <25 um (app. 20 s)',
+       x = 'Time, s',
+       y = 'ΔF/F0') +
+  theme_minimal() +
+  theme(text = element_text(size = 25))
+  
 
 
+##### CORR AND SLOPE FOR 20 ANALYSIS #####
 # cor test
 df.20.cor <- df.20 %>%
   filter(rel_time %in% seq(-5,30)) %>%
@@ -130,14 +296,18 @@ ggplot(data = df.20.cor, aes(x = rel_time, y = cor, color = lab_id, fill = lab_i
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high),
-              linewidth = 0, alpha = .3) +
-  labs(title = 'Pearson correlation (distance vs. amplitude) with 95% CI',
+              linewidth = 0, alpha = .15) +
+  labs(title = 'Pearson correlation (distance vs. ΔF/F0) with 95% CI',
        x = 'Time (s)',
-       y = 'Cor. coef.',
-       color = 'Region',
-       fill = 'Region') +
-  facet_wrap(~dist_group) +
-  theme_minimal()
+       y = 'Cor. coef.') +
+  scale_color_manual(name = "Spine region",
+                     values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  facet_wrap(~dist_group,
+             labeller = labeller(dist_group = c('I' = "<25 um", 'II' = "25-50um", 'III' = ">50 um"))) +
+  theme_minimal() +
+  theme(text = element_text(size = 25))
 
 # slope test
 df.20.lm <- df.20 %>%
@@ -159,41 +329,22 @@ ggplot(data = df.20.lm, aes(x = rel_time, y = estimate, color = lab_id, fill = l
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   geom_ribbon(aes(ymin = estimate-(std.error*1.96), ymax = estimate+(std.error*1.96)),
-              size = 0, alpha = .3) +
+              size = 0, alpha = .15) +
   facet_wrap(~dist_group) +
   labs(title = 'Linear fit slope with 95% CI',
        x = 'Time (s)',
-       y = 'Slope',
-       color = 'Region',
-       fill = 'Region') +
-  theme_minimal()
+       y = 'Slope') +
+  scale_color_manual(name = "Spine region",
+                     values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  facet_wrap(~dist_group,
+             labeller = labeller(dist_group = c('I' = "<25 um", 'II' = "25-50um", 'III' = ">50 um"))) +
+  theme_minimal() +
+  theme(text = element_text(size = 25))
   
 
-##### LM AGREGATE PLOT #####
-# selected frames lm
-time.points <- c(3, 15, 18, 20)
 
-ggplot(data = df.spines %>%
-              filter(rel_time %in% time.points, lab_id != 'shaft', app_factor == '20') %>%
-              mutate(lab_dist = interaction(lab_id, dist_group, sep = '_')),
-       aes(x = dist_um, y = df,
-           color = lab_id, shape = lab_id, fill = lab_id, group = lab_dist)) +
-  geom_vline(xintercept = c(25, 50), linetype = 3) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  geom_point(alpha = .1) +
-  # geom_line(aes(group = roi_id), alpha = .1) +
-  geom_smooth(method = 'lm') +
-  scale_y_continuous(limits = c(-0.5, 0.5)) +
-  scale_color_manual(values = c('oreol' = 'coral', 'psd' = 'magenta3')) +
-  scale_fill_manual(values = c('oreol' = 'coral', 'psd' = 'magenta3')) +
-  facet_wrap(~as.factor(rel_time), ncol = length(time.points)) +  # ~interaction(as.factor(rel_time), app_factor, sep = '_')
-  labs(title = 'Linear fit for selected frames (app. 20 s)',
-       x = 'Distance (μm)',
-       y = 'ΔF/F0',
-       color = 'Region',
-       fill = 'Region',
-       shape = 'Region') +
-  theme_minimal()
 
 
 
@@ -212,29 +363,28 @@ ggplot(data = df.spines %>%
 #   droplevels() %>%
 #   ungroup()
 
-df.by.roi <- df.spines %>%
-  filter(dist_group %in% c('II', 'III')) %>%
+df.by.roi <- df.preproc %>%
+  filter(app_factor %in% c('20'), dist_group %in% c('I', 'II', 'III'), lab_id != 'shaft') %>%
   select(roi_id, df, lab_id, rel_time, app_factor, dist_group) %>%
   pivot_wider(names_from = lab_id, values_from = df) %>%
   drop_na() %>%
   group_by(roi_id) %>%
-  mutate(filter_group = ifelse(((rel_time == 2) & (oreol > psd)), TRUE, FALSE),
+  mutate(filter_group = ifelse(((rel_time == 2) & (halo > psd)), TRUE, FALSE),
          rise_group = ifelse(!all(filter_group == FALSE), 'up', 'down')) %>%
   select(-filter_group) %>%
   droplevels() %>%
   ungroup()
 
 
-track.time <- seq(0,30)
+track.time <- seq(-10,40)
 track.end <- seq(19,35)
 
 df.avg.roi <- df.by.roi %>%
-  filter(app_factor %in% c('20'), dist_group != 'I') %>%  # 
   group_by(rel_time) %>%
   summarise(psd_mean = mean(psd, na.rm = TRUE),
-            oreol_mean = mean(oreol, na.rm = TRUE),
+            oreol_mean = mean(halo, na.rm = TRUE),
             psd_se = sd(psd, na.rm = TRUE) / sqrt(n()),
-            oreol_se = sd(oreol, na.rm = TRUE) / sqrt(n()),
+            oreol_se = sd(halo, na.rm = TRUE) / sqrt(n()),
             n = n(),
             .groups = 'drop')
 
@@ -259,21 +409,19 @@ ggplot() +
   #                  color = rel_time),
   #              arrow = arrow(length = unit(0.3, "cm")), size = 0.75) +
   geom_path(data = df.avg.roi %>% filter(rel_time %in% track.time),
-            aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
+            aes(x = psd_mean, y = oreol_mean, color = rel_time), size = 2) +
   geom_point(data = df.avg.roi %>% filter(rel_time %in% track.time),
-             aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
+             aes(x = psd_mean, y = oreol_mean, color = rel_time), size = 3) +
   geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time),
                 aes(x = psd_mean, y = oreol_mean,
-                    xmin = psd_mean - psd_se,
-                    xmax = psd_mean + psd_se,
-                    color = rel_time),
-                size = 0.3) +
+                    xmin = psd_mean - psd_se*1.96,
+                    xmax = psd_mean + psd_se*1.96,
+                    color = rel_time)) +
   geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time),
                 aes(x = psd_mean, y = oreol_mean,
-                    ymin = oreol_mean - oreol_se,
-                    ymax = oreol_mean + oreol_se,
-                    color = rel_time),
-                size = 0.3) +
+                    ymin = oreol_mean - oreol_se*1.96,
+                    ymax = oreol_mean + oreol_se*1.96,
+                    color = rel_time)) +
   # geom_line(data = df.avg.roi %>% filter(rel_time %in% track.end),  # down
   #           aes(x = psd_mean, y = oreol_mean, color = rel_time)) +
   # geom_segment(data = df.avg.roi %>% filter(rel_time %in% track.end),
@@ -297,46 +445,41 @@ ggplot() +
   #               width = 0, size = 0.3) +
   # scale_x_continuous(limits = c(-0.05,0.0125), breaks = seq(-1,1,0.01)) +
   # scale_y_continuous(limits = c(-0.025,0.1), breaks = seq(-1,1,0.025)) +
-  scale_color_gradient2(mid = 'blue', high = "red") +
-  theme_minimal()
+  scale_color_gradient2(low = 'blue', mid = 'yellow', high = "red", midpoint = 20, limits = c(-10, 50)) +
+  labs(title = 'Phase portrait of HPCA translocation in spines (app. 20 s, 95% CI)',
+       x = 'PSD ΔF/F0',
+       y = 'Halo ΔF/F0',
+       color = 'Time, s') +
+  theme_minimal() +
+  theme(text = element_text(size = 20))
   
 
 
 ##### ROI REVIEW WITH BOX #####
-ggplot(data = df.spines %>% filter(app_factor == '20', rel_time == 3),
+ggplot(data = df.preproc %>% filter(!app_factor %in% c('0.5', '2.5'),
+                                    rel_time %in% c(5)),
        aes(x = lab_id, y = df,
            fill = lab_id)) +
   geom_hline(yintercept = 0, linetype = 2) +
-  geom_boxplot() +
+  geom_boxplot(alpha = .5) +
   geom_point(alpha = .15) +
   geom_line(aes(group = roi_id), linewidth = .1) +
-  facet_wrap(~dist_group, ncol = 3)
+  facet_wrap(~interaction(dist_group, app_factor), ncol = 3) +
+  scale_fill_manual(name = "Spine region",
+                    values = c('halo' = halo.color, 'psd' = psd.color, 'shaft' = shaft.color)) +
+  labs(title = 'ΔF/F0 for 5-30 s application, frame 5',
+       x = 'Region',
+       y = 'ΔF/F0') +
+  theme_minimal() +
+  theme(text = element_text(size = 25),
+        legend.position = 'None')
 
-ggplot(data = df.spines %>% filter(app_factor == '20', dist_group != 'I'),
-       aes(x = rel_time, y = df)) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  geom_vline(xintercept = 0, linetype = 3) +
-  geom_vline(xintercept = 20, linetype = 3) +
-  stat_summary(aes(color = lab_id, group = interaction(id,lab_id)),
-               fun = median,
-               geom = 'line', linewidth = 0.15) +
-  stat_summary(aes(color = lab_id, group = lab_id),
-               fun = median,
-               geom = 'line', linewidth = 0.75) +
-  stat_summary(aes(color = lab_id, group = lab_id),
-               fun = median,
-               geom = 'point', size = 1) +
-  stat_summary(aes(fill = lab_id, group = lab_id),
-               fun.min = function(z) {quantile(z,0.25)},
-               fun.max = function(z) {quantile(z,0.75)},
-               fun = median,
-               geom = 'ribbon', linewidth = 0, alpha = .25) +
-  theme_minimal()
+
   
 
 
 df.by.roi.tidy <- df.by.roi %>%
-  pivot_longer(cols = c('oreol', 'psd'),
+  pivot_longer(cols = c('halo', 'psd'),
                names_to = 'lab_id',
                values_to = 'df')
 
