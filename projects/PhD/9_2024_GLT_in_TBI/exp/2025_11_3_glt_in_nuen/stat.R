@@ -19,6 +19,7 @@ library(tidyr)
 library(purrr)
 library(readr)
 library(rstatix)
+library(forcats)
 library(gridExtra)
 library(ggplot2)
 library(ggpubr)
@@ -49,7 +50,31 @@ box.alpha <- 0.6
 cef.color <- 'coral2' 
 non.color <- 'deepskyblue3' 
 
- 
+##### CTRL REL AREA #####
+ctrl_rel_area_stat <- df %>% filter(group == 'Cont') %>%
+  distinct() %>%
+  wilcox_test(relative_area ~ treat) %>%
+  add_significance() %>%
+  add_xy_position()
+
+boxplot_ctrl_rel_area <- ggplot(data = df %>% filter(group == 'Cont'),
+       aes(x = fct_relevel(treat, 'none', 'cef'), y = relative_area)) +
+  geom_boxplot(aes(fill = treat), , alpha = box.alpha) +
+  geom_point(aes(group = treat)) + 
+  stat_pvalue_manual(data = ctrl_rel_area_stat, size = font.size-6) +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'none' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Control group', y = 'Dots relative area') +
+  theme(text=element_text(size = font.size, family = font.fam),
+        legend.position = 'None')
+
+boxplot_ctrl_rel_area
+save_plot('boxplot_ctrl_rel_area.png', boxplot_ctrl_rel_area,
+          base_width = 3.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+remove(boxplot_ctrl_rel_area, ctrl_rel_area_stat)
+
 ##### REL AREA #####
 plot_relative_area <- ggplot(data = df %>% filter(group != 'Cont'),
        aes(x = group, y = relative_area,
@@ -73,6 +98,33 @@ plot_relative_area <- ggplot(data = df %>% filter(group != 'Cont'),
 plot_relative_area
 save_plot('plot_relative_area.png', plot_relative_area,
           base_width = 4.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
+
+##### CTRL REL INT #####
+ctrl_rel_int_stat <- df %>% filter(group == 'Cont') %>%
+  distinct() %>%
+  wilcox_test(relative_intensity ~ treat) %>%
+  add_significance() %>%
+  add_xy_position()
+
+boxplot_ctrl_rel_int <- ggplot(data = df %>% filter(group == 'Cont'),
+                                aes(x = fct_relevel(treat, 'none', 'cef'), y = relative_intensity)) +
+  geom_boxplot(aes(fill = treat), , alpha = box.alpha) +
+  geom_point(aes(group = treat)) + 
+  stat_pvalue_manual(data = ctrl_rel_int_stat, size = font.size-6) +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'none' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Control group', y = 'Dots relative intensity') +
+  theme(text=element_text(size = font.size, family = font.fam),
+        legend.position = 'None')
+
+boxplot_ctrl_rel_int
+save_plot('boxplot_ctrl_rel_int.png', boxplot_ctrl_rel_int,
+          base_width = 3.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+remove(boxplot_ctrl_rel_int, ctrl_rel_int_stat)
+
 
 ##### REL INT #####
 plot_relative_int <- ggplot(data = df %>% filter(group != 'Cont'),
