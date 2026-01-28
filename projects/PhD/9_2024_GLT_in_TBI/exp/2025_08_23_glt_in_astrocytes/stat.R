@@ -54,7 +54,6 @@ non.color <- 'deepskyblue3'
 ##### CTRL TEST #####
 # RAW
 
-  
 ggplot(data = df.ctrl,
        aes(x = dot_sum_int, y = dot_rel_area,
            color = treat, fill = treat)) +
@@ -121,6 +120,18 @@ df.ctrl.med <- df.ctrl %>%
   distinct() %>%
   droplevels() %>%
   ungroup()
+
+df.ctrl.med.summary <- df.ctrl.med %>%
+  group_by(treat) %>%
+  summarise(dot_mean_int_median = median(med_dot_mean_int),
+            dot_mean_int_iqr = IQR(med_dot_mean_int),
+            dot_sum_int_median = median(med_dot_sum_int),
+            dot_sum_int_iqr = IQR(med_dot_sum_int),
+            dot_area_median = median(med_dot_area),
+            dot_area_iqr = IQR(med_dot_area),
+            slices = n())
+write_csv(df.ctrl.med.summary, 'summary_ctrl_groups.csv')
+remove(df.ctrl.med.summary)
 
 
 med_dot_sum_stat <- df.ctrl.med %>%
@@ -244,6 +255,19 @@ df.tbi.med <- df.tbi %>%
   ungroup() %>%
   filter(!(med_dot_area < 0.1 & group == 'tbi14')) %>%
   mutate(group = factor(group, levels = c('cont', 'tbi3', 'tbi7', 'tbi14')))
+
+
+df.tbi.med.summary <- df.tbi.med %>%
+  group_by(treat, group) %>%
+  summarise(dot_mean_int_median = median(med_dot_mean_int),
+            dot_mean_int_iqr = IQR(med_dot_mean_int),
+            dot_sum_int_median = median(med_dot_sum_int),
+            dot_sum_int_iqr = IQR(med_dot_sum_int),
+            dot_area_median = median(med_dot_area),
+            dot_area_iqr = IQR(med_dot_area),
+            slices = n())
+write_csv(df.tbi.med.summary, 'summary_gfap_tbi_groups.csv')
+remove(df.tbi.med.summary)
 
 df.ctrl.non.med <- df.ctrl.med %>%
   filter(treat != 'cef') %>%

@@ -1,4 +1,4 @@
-# GLT in neyrons 
+# GLT in neurons 
 #
 # COLUMNS FROM PLUGIN
 # cell_row = [glt_img.name,                        # id
@@ -42,6 +42,17 @@ df.med <- df %>%
   distinct() %>%
   ungroup()
 
+df.summary <- df %>%
+  group_by(treat, group) %>%
+  summarise(rel_area_median = median(relative_area),
+            rel_area_iqr = IQR(relative_area),
+            rel_intensity_median = median(relative_intensity),
+            rel_intensity_iqr = IQR(relative_intensity),
+            slices = n())
+write_csv(df.summary, 'summary_neun_tbi_groups.csv')
+remove(df.summary)
+
+
 # plots settings
 font.size <- 12  # 19
 font.fam <- 'Arial'
@@ -56,6 +67,7 @@ ctrl_rel_area_stat <- df %>% filter(group == 'Cont') %>%
   wilcox_test(relative_area ~ treat) %>%
   add_significance() %>%
   add_xy_position()
+
 
 boxplot_ctrl_rel_area <- ggplot(data = df %>% filter(group == 'Cont'),
        aes(x = fct_relevel(treat, 'none', 'cef'), y = relative_area)) +

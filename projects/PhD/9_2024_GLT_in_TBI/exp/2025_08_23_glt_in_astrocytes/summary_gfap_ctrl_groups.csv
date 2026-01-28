@@ -1,0 +1,3 @@
+treat,dot_mean_int_median,dot_mean_int_iqr,dot_sum_int_median,dot_sum_int_iqr,dot_area_median,dot_area_iqr,slices
+cef,436,109.5,164978,27686.5,0.33306962025316456,0.06742543706122017,7
+non,354.75,96.875,138463.5,37346.375,0.2303105296847135,0.07442357798431562,22
