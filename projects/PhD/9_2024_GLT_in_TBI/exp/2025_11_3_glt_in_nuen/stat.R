@@ -61,14 +61,19 @@ box.alpha <- 0.6
 cef.color <- 'coral2' 
 non.color <- 'deepskyblue3' 
 
-##### CTRL REL AREA #####
-ctrl_rel_area_stat <- df %>% filter(group == 'Cont') %>%
-  distinct() %>%
+##### GROUP STAT #####
+df %>% filter(group != 'Cont') %>%
+  group_by(group) %>%
   wilcox_test(relative_area ~ treat) %>%
-  add_significance() %>%
-  add_xy_position()
+  add_significance()
+
+df %>% filter(group != 'Cont') %>%
+  group_by(group) %>%
+  wilcox_test(relative_intensity ~ treat) %>%
+  add_significance()
 
 
+##### CTRL REL AREA #####
 boxplot_ctrl_rel_area <- ggplot(data = df %>% filter(group == 'Cont'),
        aes(x = fct_relevel(treat, 'none', 'cef'), y = relative_area)) +
   geom_boxplot(aes(fill = treat), , alpha = box.alpha) +
@@ -88,6 +93,8 @@ save_plot('boxplot_ctrl_rel_area.png', boxplot_ctrl_rel_area,
 remove(boxplot_ctrl_rel_area, ctrl_rel_area_stat)
 
 ##### REL AREA #####
+
+
 plot_relative_area <- ggplot(data = df %>% filter(group != 'Cont'),
        aes(x = group, y = relative_area,
            color = treat, group = treat)) +
