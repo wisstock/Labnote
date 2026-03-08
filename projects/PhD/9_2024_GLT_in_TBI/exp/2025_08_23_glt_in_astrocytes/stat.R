@@ -51,6 +51,48 @@ cef.color <- 'coral2'
 non.color <- 'deepskyblue3' 
 
 
+##### FOV PLOTS ######
+
+boxplot_fov_fot_int <- ggplot(data = df,
+       aes(x = name, y = dot_sum_int, fill = treat)) +
+  geom_boxplot(alpha = box.alpha) +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Field of view',
+       y = 'Dots sum intensity, a.u.') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        legend.position = 'bottom',
+        text=element_text(size = font.size, family = font.fam),) +
+  facet_wrap(~group, nrow = 4, scale = 'free')
+
+boxplot_fov_fot_int
+save_plot('boxplot_fov_fot_int.png', boxplot_fov_fot_int,
+          base_width = 7.5, base_height = 9, dpi = 300)  # set up plot aspect ratio here
+
+
+boxplot_fov_avg_int <- ggplot(data = df,
+                              aes(x = name, y = dot_mean_int, fill = treat)) +
+  geom_boxplot(alpha = box.alpha) +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'non' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Field of view',
+       y = 'Dots average intensity, a.u.') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        legend.position = 'bottom',
+        text=element_text(size = font.size, family = font.fam),) +
+  facet_wrap(~group, nrow = 4, scale = 'free')
+
+boxplot_fov_avg_int
+save_plot('boxplot_fov_avg_int.png', boxplot_fov_avg_int,
+          base_width = 7.5, base_height = 9, dpi = 300)  # set up plot aspect ratio here
+
+
 ##### CTRL TEST #####
 # RAW
 

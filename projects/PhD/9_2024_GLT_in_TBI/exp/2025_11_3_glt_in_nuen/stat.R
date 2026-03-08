@@ -61,6 +61,44 @@ box.alpha <- 0.6
 cef.color <- 'coral2' 
 non.color <- 'deepskyblue3' 
 
+##### FOV PLOTS #####
+
+boxplot_fov_rel_area <- ggplot(data = df,
+                               aes(x = treat, y = relative_area, fill = treat)) +
+  geom_boxplot(alpha = box.alpha) +
+  geom_point() +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'none' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Group',
+       y = 'Dots relative area') +
+  theme(text=element_text(size = font.size, family = font.fam),) +
+  facet_wrap(~group, ncol = 4, scale = 'free')
+
+boxplot_fov_rel_area
+save_plot('boxplot_fov_rel_area.png', boxplot_fov_rel_area,
+          base_width = 7.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
+
+boxplot_fov_rel_int <- ggplot(data = df,
+                               aes(x = treat, y = relative_intensity, fill = treat)) +
+  geom_boxplot(alpha = box.alpha) +
+  geom_point() +
+  scale_fill_manual(name = "Treat",
+                    labels = c("Cef.", "Non"),
+                    values = c('cef' = cef.color, 'none' = non.color)) +
+  scale_x_discrete(labels = c('Non', 'Cef.')) +
+  labs(x = 'Group',
+       y = 'Dots relative intensity') +
+  theme(text=element_text(size = font.size, family = font.fam),) +
+  facet_wrap(~group, ncol = 4, scale = 'free')
+
+boxplot_fov_rel_int
+save_plot('boxplot_fov_rel_int.png', boxplot_fov_rel_int,
+          base_width = 7.5, base_height = 5, dpi = 300)  # set up plot aspect ratio here
+
+
 ##### GROUP STAT #####
 df %>% filter(group != 'Cont') %>%
   group_by(group) %>%
