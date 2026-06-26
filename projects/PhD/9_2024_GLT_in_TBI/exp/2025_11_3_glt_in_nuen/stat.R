@@ -72,7 +72,7 @@ boxplot_fov_rel_area <- ggplot(data = df,
                     values = c('cef' = cef.color, 'none' = non.color)) +
   scale_x_discrete(labels = c('Non', 'Cef.')) +
   labs(x = 'Group',
-       y = 'Dots relative area') +
+       y = 'Clusters relative area') +
   theme(text=element_text(size = font.size, family = font.fam),) +
   facet_wrap(~group, ncol = 4, scale = 'free')
 
@@ -90,7 +90,7 @@ boxplot_fov_rel_int <- ggplot(data = df,
                     values = c('cef' = cef.color, 'none' = non.color)) +
   scale_x_discrete(labels = c('Non', 'Cef.')) +
   labs(x = 'Group',
-       y = 'Dots relative intensity') +
+       y = 'Clusters relative intensity') +
   theme(text=element_text(size = font.size, family = font.fam),) +
   facet_wrap(~group, ncol = 4, scale = 'free')
 

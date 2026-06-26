@@ -31,67 +31,26 @@ df.full.id.summary <- df.full %>%
             min = min(dF0_int))
 
 ##### PLOT PARAMETERS #####
-start_box <- seq(0, 2)
+start_box <- seq(0, 3)
 end_box <- seq(117, 120)
 
-ch0.color <- 'green2'
+font.size <- 17
+font.fam <- 'Arial'
+box.alpha <- 0.6
+
+ch0.color <- 'green4'
 ch1.color <- 'orange2'
 ch3.color <- 'red2'
-fc.color <- 'blue3'
-ea.color <- 'magenta3'
+fc.color <- 'blue'
+ea.color <- 'magenta'
 
 
-##### EXPLORATION #####
-ggplot(data = df.full %>% filter(base == 'simple'),
-       aes(x = time, y = abs_int, color = ch, fill = ch,
-           linetype = data, shape = data)) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  stat_summary(fun = median,
-               geom = 'line', linewidth = 0.3) +
-  stat_summary(fun = median,
-               geom = 'point', size = 1) +
-  stat_summary(fun.min = function(z) {quantile(z,0.25)},
-               fun.max = function(z) {quantile(z,0.75)},
-               fun = median,
-               geom = 'ribbon', linewidth = 0, alpha = .15) +
-  theme_minimal() +
-  facet_wrap(~id)
-
-
-ggplot(data = df.full %>% filter(base == 'simple', ch == 'ch0'),
-       aes(x = time, y = abs_int, color = data, fill = data,
-           group = roi_id)) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  stat_summary(fun = median,
-               geom = 'line', linewidth = 0.3) +
-  # stat_summary(fun = median,
-  #              geom = 'point', size = 1) +
-  # stat_summary(fun.min = function(z) {quantile(z,0.25)},
-  #              fun.max = function(z) {quantile(z,0.75)},
-  #              fun = median,
-  #              geom = 'ribbon', linewidth = 0, alpha = .15) +
-  theme_minimal() +
-  facet_wrap(~id)
-
-
-##### CH PROFILES #####
+##### PANNEL 2 PROFILES #####
 df.ch <- df.full %>%
   filter(base == 'simple', ch %in% c('ch0', 'ch1', 'ch3'), data == 'target') %>%
   droplevels()
 
-ggplot(data = df.ch,
-       aes(x = index, y = dF0_int, colour = ch, fill = ch)) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  stat_summary(fun = median,
-               geom = 'point', size = 1) +
-  stat_summary(fun = median,
-               geom = 'line', size = 0.3) +
-  stat_summary(fun.min = function(z) {quantile(z,0.25)},
-               fun.max = function(z) {quantile(z,0.75)},
-               fun = median,
-               geom = 'ribbon', linewidth = 0, alpha = .15)
-
-
+# abs
 ggplot(data = df.ch,
        aes(x = index, y = abs_int, colour = ch, fill = ch)) +
   geom_hline(yintercept = 0, linetype = 2) +
@@ -102,18 +61,67 @@ ggplot(data = df.ch,
   stat_summary(fun.min = function(z) {quantile(z,0.25)},
                fun.max = function(z) {quantile(z,0.75)},
                fun = median,
-               geom = 'ribbon', linewidth = 0, alpha = .15)
+               geom = 'ribbon', linewidth = 0, alpha = .15) +
+  annotate("segment", x = start_box[1], xend = tail(start_box, n = 1), y = -15, yend = -15, size = 5,
+           colour = 'grey30') +
+  annotate("segment", x = end_box[1], xend = tail(end_box, n = 1), y = -15, yend = -15, size = 5,
+           colour = 'grey30') +
+  scale_fill_manual(values = c('ch0' = ch0.color, 'ch1' = ch1.color, 'ch3' = ch3.color),
+                    labels = c('DD', 'DA', 'AA'),
+                    name = 'Channel') +
+  scale_colour_manual(values = c('ch0' = ch0.color, 'ch1' = ch1.color, 'ch3' = ch3.color),
+                      labels = c('DD', 'DA', 'AA'),
+                      name = 'Channel') +
+  theme_classic() +
+  theme(legend.position = c(0.9,0.8),
+        text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4),
+        legend.title = element_text(size = font.size-3)) +
+  labs(x = 'Time, s',
+       y = 'Intensity, a.u.')  # caption = 'n = 1/2/155 (cultures/cells/ROIs)',
 
 
+# FRET
+Ea_scale = 25
 
+ggplot(data = df.fret %>% mutate(abs_int = if_else(ch == "Ea", abs_int * Ea_scale, abs_int)),
+       aes(x = index, y = abs_int, colour = ch, fill = ch)) +  #  %>% filter(ch == 'Ea')
+  geom_hline(yintercept = 0, linetype = 2) +
+  stat_summary(fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(fun = median,
+               geom = 'line', size = 0.3) +
+  stat_summary(fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .15) +
+  scale_y_continuous(expression(F[c]), 
+                     sec.axis = sec_axis(~ . / Ea_scale, name = expression(E[D]))) +
+  scale_fill_manual(values = c('Fc' = fc.color, 'Ea' = ea.color),
+                    labels = c(expression(F[c]), expression(E[D])),
+                    name = 'FRET') +
+  scale_colour_manual(values = c('Fc' = fc.color, 'Ea' = ea.color),
+                      labels = c(expression(F[c]), expression(E[D])),
+                      name = 'FRET') +
+  theme_classic() +
+  theme(legend.position = c(0.1,0.25),
+        text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4),
+        legend.title = element_text(size = font.size-3)) +
+  labs(caption = 'n = 1/2/155 (cultures/cells/ROIs)',
+       x = 'Time, s')  # y = expression(ΔF/F[0])
+
+
+##### PANNEL 2 BOXPLOT #####
+# raw
 df.ch.box <- df.ch %>%
-  mutate(box = as.factor(case_when(index %in% start_box ~ 'start',
-                         index %in% end_box ~ 'end',
+  mutate(box = as.factor(case_when(index %in% start_box ~ 'Start',
+                         index %in% end_box ~ 'End',
                          .default = 'x'))) %>%
   filter(box != 'x') %>%
   droplevels() %>%
   group_by(ch, box, roi_id) %>%
-  mutate(box = factor(box, levels = c('start', 'end'), ordered = TRUE),
+  mutate(box = factor(box, levels = c('Start', 'End'), ordered = TRUE),
          med_int = median(abs_int),
          med_dF = median(dF_int),
          med_dF0 = median(dF0_int)) %>%
@@ -123,11 +131,74 @@ df.ch.box <- df.ch %>%
   
 length(levels(df.ch.box$roi_id))
 
-ggplot(data = df.ch.box,
-       aes(x = box, y = med_int, fill = ch)) +
-  geom_boxplot() +
-  facet_wrap(~ch)
 
+df.ch.box.abs.stat <- df.ch.box %>%
+  group_by(ch) %>%
+  wilcox_test(med_int ~ box) %>%
+  add_significance() %>%
+  add_xy_position()
+
+
+ggplot(data = df.ch.box,
+       aes(x = box, y = med_int)) +
+  geom_boxplot(aes(fill = ch), alpha = box.alpha) +
+  stat_summary(aes(group = ch),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(aes(group = ch),
+               fun = median,
+               geom = 'line', size = 0.5) +
+  stat_pvalue_manual(df.ch.box.abs.stat) +
+  facet_wrap(~ch, scale = 'free',
+             labeller = as_labeller(c("ch0" = "DD", "ch1" = "DA", "ch3" = "AA"))) +
+  theme_classic() +
+  theme(legend.position = 'none',
+        text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4),
+        legend.title = element_text(size = font.size-3)) +
+  scale_fill_manual(values = c('ch0' = ch0.color, 'ch1' = ch1.color, 'ch3' = ch3.color)) +
+  labs(caption = 'n = 1/2/155 (cultures/cells/ROIs)',
+       x = '',
+       y = 'Intensity, a.u.')
+
+###### FRET DEVIATION TEST #####
+df.fret.box <- df.fret %>%
+  mutate(box = as.factor(case_when(index %in% start_box ~ 'Start',
+                                   index %in% end_box ~ 'End',
+                                   .default = 'x')),
+         box = factor(box, levels = c('Start', 'End'), ordered = TRUE)) %>%
+  filter(box != 'x') %>%
+  droplevels() %>%
+  group_by(ch, box, roi_id) %>%
+  mutate(med_int = median(abs_int)) %>%
+  ungroup() %>%
+  select(ch, roi_id, box, med_int) %>%
+  distinct() %>%
+  group_by(ch, roi_id) %>%
+  mutate(abs_diff = med_int - med_int[box == 'Start']) %>%
+  select(ch, box, roi_id, abs_diff) %>%
+  ungroup() %>%
+  filter(box == 'End') %>%
+  droplevels() %>%
+  distinct()
+  # pivot_wider(names_from = ch, values_from = abs_diff)
+
+length(levels(df.fret.box$roi_id))
+
+df.fret.box.abs.stat <- df.fret.box %>%
+  group_by(ch) %>%
+  sign_test(abs_diff ~ 1, mu = 0) %>%
+  add_significance()
+
+
+Ea_diff_scale = 100
+
+ggplot(data = df.fret.box %>% mutate(abs_int = if_else(ch == "Ea", abs_diff * Ea_diff_scale, abs_diff)),
+         aes(x = ch, y = abs_diff)) +
+    geom_boxplot(aes(fill = ch), alpha = box.alpha) +
+  scale_y_continuous(expression(F[c]), 
+                     sec.axis = sec_axis(~ . / Ea_diff_scale, name = expression(E[D])))
+  
 
 ##### Fc NOISE ANALYSIS #####
 df.fret <- df.full %>%
@@ -146,8 +217,7 @@ ggplot(data = df.fret %>% filter(ch == 'Fc'),
                fun.max = function(z) {quantile(z,0.75)},
                fun = median,
                geom = 'ribbon', linewidth = 0, alpha = .15) +
-  ylim(c(-1,10)) +
-  theme_minimal()
+  ylim(c(-0.25,5))
 
 
 df.fret.box <- df.fret %>%
@@ -165,21 +235,103 @@ df.fret.box <- df.fret %>%
   select(ch, box, med_int, med_dF, med_dF0, roi_id, data) %>%
   distinct()
 
-ggplot(data = df.ch.box %>% filter(ch == 'Fc'),
-       aes(x = data, y = med_int)) +
-  geom_boxplot()
+ggplot(data = df.fret.box %>% filter(ch == 'Fc'),
+       aes(x = box, y = med_int)) +
+  geom_boxplot(aes(fill = data)) +
+  stat_summary(aes(group = data),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(aes(group = data),
+               fun = median,
+               geom = 'line', size = 0.5) +
+  facet_wrap(~data, scale = 'free')
+
+
+ggplot(data = df.fret.box %>% filter(ch == 'Ea'),
+       aes(x = box, y = med_int)) +
+  geom_boxplot(aes(fill = data)) +
+  stat_summary(aes(group = data),
+               fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(aes(group = data),
+               fun = median,
+               geom = 'line', size = 0.5) +
+  facet_wrap(~data, scale = 'free')
 
 
 ##### 2D #####
+df.wide.box <- df.full %>%
+  mutate(box = as.factor(case_when(index %in% start_box ~ 'start',
+                                   index %in% end_box ~ 'end',
+                                   .default = 'x'))) %>%
+  filter(box != 'x') %>%
+  droplevels() %>%
+  filter(base == 'simple', ch %in% c('ch3', 'ch0', 'Fc', 'Ea')) %>%
+  select(ch, box, roi_id, data, abs_int) %>%
+  group_by(ch, box, roi_id, data) %>%
+  mutate(box = factor(box, levels = c('start', 'end'), ordered = TRUE),
+         med_int = median(abs_int)) %>%
+  ungroup() %>%
+  select(ch, box, data, med_int, roi_id) %>%
+  distinct() %>%
+  pivot_wider(names_from = ch, values_from = med_int)
+
+ggplot(data = df.wide.box,
+       aes(x = Ea, y = ch3, colour = data)) +
+  geom_point(alpha = .5)
+scale_y_continuous(trans = "pseudo_log") +
+  scale_x_continuous(trans = "pseudo_log")
+
+
+
 df.wide <- df.full %>%
   filter(base == 'simple', ch %in% c('ch3', 'ch0', 'Fc', 'Ea')) %>%
-  select(id, roi, index, abs_int, ch) %>%
+  select(id, roi, index, abs_int, ch, data) %>%
   pivot_wider(names_from = ch, values_from = abs_int) %>%
   mutate(rel = ch0/ch3)
 
 
-ggplot(data = df.wide,
-       aes(x = rel, y = Fc, colour = id)) +
+ggplot(data = df.wide %>% filter(Fc != 0, ch3 != 0),
+       aes(x = Fc, y = ch3, colour = data)) +
   geom_point(alpha = .5)
-  scale_x_log10() +
-  scale_y_log10()
+  scale_y_continuous(trans = "pseudo_log") +
+  scale_x_continuous(trans = "pseudo_log")
+  
+ggplot(data = df.wide %>% filter(Fc != 0, ch3 != 0),
+       aes(x = Fc, y = ch0, colour = data)) +
+  geom_point(alpha = .5)
+  scale_y_continuous(trans = "pseudo_log") +
+  scale_x_continuous(trans = "pseudo_log")
+  
+  
+  ##### EXPLORATION #####
+  ggplot(data = df.full %>% filter(base == 'simple'),
+         aes(x = time, y = abs_int, color = ch, fill = ch,
+             linetype = data, shape = data)) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    stat_summary(fun = median,
+                 geom = 'line', linewidth = 0.3) +
+    stat_summary(fun = median,
+                 geom = 'point', size = 1) +
+    stat_summary(fun.min = function(z) {quantile(z,0.25)},
+                 fun.max = function(z) {quantile(z,0.75)},
+                 fun = median,
+                 geom = 'ribbon', linewidth = 0, alpha = .15) +
+    theme_minimal() +
+    facet_wrap(~id)
+  
+  
+  ggplot(data = df.full %>% filter(base == 'simple', ch == 'ch0'),
+         aes(x = time, y = abs_int, color = data, fill = data,
+             group = roi_id)) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    stat_summary(fun = median,
+                 geom = 'line', linewidth = 0.3) +
+    # stat_summary(fun = median,
+    #              geom = 'point', size = 1) +
+    # stat_summary(fun.min = function(z) {quantile(z,0.25)},
+    #              fun.max = function(z) {quantile(z,0.75)},
+    #              fun = median,
+    #              geom = 'ribbon', linewidth = 0, alpha = .15) +
+    theme_minimal() +
+    facet_wrap(~id)

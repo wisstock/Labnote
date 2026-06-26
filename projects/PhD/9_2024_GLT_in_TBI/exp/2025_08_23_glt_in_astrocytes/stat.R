@@ -61,7 +61,7 @@ boxplot_fov_fot_int <- ggplot(data = df,
                     values = c('cef' = cef.color, 'non' = non.color)) +
   scale_x_discrete(labels = c('Non', 'Cef.')) +
   labs(x = 'Field of view',
-       y = 'Dots sum intensity, a.u.') +
+       y = 'Clusters sum intensity, a.u.') +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         legend.position = 'bottom',
@@ -81,7 +81,7 @@ boxplot_fov_avg_int <- ggplot(data = df,
                     values = c('cef' = cef.color, 'non' = non.color)) +
   scale_x_discrete(labels = c('Non', 'Cef.')) +
   labs(x = 'Field of view',
-       y = 'Dots average intensity, a.u.') +
+       y = 'Clusters average intensity, a.u.') +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         legend.position = 'bottom',
