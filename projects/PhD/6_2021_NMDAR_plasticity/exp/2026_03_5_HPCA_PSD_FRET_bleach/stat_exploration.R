@@ -22,33 +22,64 @@ df.full <- read.csv('df_combined.csv') %>%
            mutate(roi = as.factor(roi),
                   roi_id = interaction(id, roi, sep = '_'))
   
+# df.full.id.summary <- df.full %>%
+#   filter(base == 'simple', index == 10) %>%
+#   group_by(id, ch) %>%
+#   summarise(n_roi = n_distinct(roi_id),
+#             max = max(dF0_int),
+#             min = min(dF0_int))
 
-df.full.id.summary <- df.full %>%
-  filter(base == 'simple', index == 10) %>%
-  group_by(id, ch) %>%
-  summarise(n_roi = n_distinct(roi_id),
-            max = max(dF0_int),
-            min = min(dF0_int))
+df.ch <- df.full %>%
+  filter(base == 'simple', ch %in% c('ch0', 'ch1', 'ch3'),
+         data == 'target', base == 'simple') %>%
+  droplevels()
+
+df.fret <- df.full %>%
+  filter(base == 'simple', ch %in% c('Fc', 'Ea'),
+         data == 'target', base == 'simple') %>%
+  droplevels()
+
+remove(df.full, df.full.id.summary)
+
+df.bg.raw <- read.csv('df_snr_test.csv')
+
+df.bg.mean <- df.bg.raw %>%
+  select(ch0_mean, ch1_mean, ch3_mean) %>%
+  mutate(index = seq(1,120)) %>%
+  rename_at(.vars = vars(ends_with("_mean")),
+            .funs = funs(sub("[_]mean$", "", .))) %>%
+  pivot_longer(cols = 1:3, names_to = "ch", values_to = "val") %>%
+  mutate(ch = as.factor(ch), wtf = as.factor('mean'))
+  
+df.bg.sd <- df.bg.raw %>%
+  select(ch0_sd, ch1_sd, ch3_sd) %>%
+  mutate(index = seq(1,120)) %>%
+  rename_at(.vars = vars(ends_with("_sd")),
+            .funs = funs(sub("[_]sd$", "", .))) %>%
+  pivot_longer(cols = 1:3, names_to = "ch", values_to = "val") %>%
+  mutate(ch = as.factor(ch), wtf = as.factor('sd'))
+
+df.bg <- rbind(df.bg.mean, df.bg.sd)
+
+remove(df.bg.raw, df.bg.mean, df.bg.sd)
 
 ##### PLOT PARAMETERS #####
-start_box <- seq(0, 3)
-end_box <- seq(117, 120)
+start_box <- seq(0, 1)
+end_box <- seq(119, 120)
 
 font.size <- 17
 font.fam <- 'Arial'
 box.alpha <- 0.6
 
-ch0.color <- 'green4'
+ch0.color <- 'chartreuse3'
 ch1.color <- 'orange2'
-ch3.color <- 'red2'
-fc.color <- 'blue'
-ea.color <- 'magenta'
+ch3.color <- 'firebrick1'
+fc.color <- 'skyblue2'
+ea.color <- 'coral2'
 
 
-##### PANNEL 2 PROFILES #####
-df.ch <- df.full %>%
-  filter(base == 'simple', ch %in% c('ch0', 'ch1', 'ch3'), data == 'target') %>%
-  droplevels()
+##### PANNEL 2 PROFILES INT #####
+
 
 # abs
 ggplot(data = df.ch,
@@ -62,10 +93,15 @@ ggplot(data = df.ch,
                fun.max = function(z) {quantile(z,0.75)},
                fun = median,
                geom = 'ribbon', linewidth = 0, alpha = .15) +
-  annotate("segment", x = start_box[1], xend = tail(start_box, n = 1), y = -15, yend = -15, size = 5,
-           colour = 'grey30') +
-  annotate("segment", x = end_box[1], xend = tail(end_box, n = 1), y = -15, yend = -15, size = 5,
-           colour = 'grey30') +
+  # annotate("segment", x = start_box[1], xend = tail(start_box, n = 1), y = -15, yend = -15, size = 5,
+  #          colour = 'grey30') +
+  # annotate("segment", x = end_box[1], xend = tail(end_box, n = 1), y = -15, yend = -15, size = 5,
+  #          colour = 'grey30') +
+  # annotate("segment", x = 87.5, y = 115, xend = 87.5, yend = 100, 
+  #          size = 8, linejoin = "mitre",
+  #          arrow = arrow(type = "closed", length = unit(0.01, "npc"))) +
+  # annotate("text", x=87.5,y=115, label = "text", color = "white", 
+  #          angle = 90, hjust = 1.5, size = 5, fontface = "bold") +
   scale_fill_manual(values = c('ch0' = ch0.color, 'ch1' = ch1.color, 'ch3' = ch3.color),
                     labels = c('DD', 'DA', 'AA'),
                     name = 'Channel') +
@@ -78,10 +114,68 @@ ggplot(data = df.ch,
         plot.caption = element_text(size = font.size-4),
         legend.title = element_text(size = font.size-3)) +
   labs(x = 'Time, s',
-       y = 'Intensity, a.u.')  # caption = 'n = 1/2/155 (cultures/cells/ROIs)',
+       y = 'Intensity, a.u.',
+       caption = 'n = 1/2/155 (cultures/cells/ROIs)')
+
+# SNR
+ch0.bg.val <- df.bg$val[df.bg$ch == 'ch0' & df.bg$wtf == 'mean']
+ch0.bg.var <- df.bg$val[df.bg$ch == 'ch0' & df.bg$wtf == 'sd']
+ch1.bg.val <- df.bg$val[df.bg$ch == 'ch1' & df.bg$wtf == 'mean']
+ch1.bg.var <- df.bg$val[df.bg$ch == 'ch1' & df.bg$wtf == 'sd']
+ch3.bg.val <- df.bg$val[df.bg$ch == 'ch3' & df.bg$wtf == 'mean']
+ch3.bg.var <- df.bg$val[df.bg$ch == 'ch3' & df.bg$wtf == 'sd']
+
+df.snr <- df.ch %>%
+  select(ch, index, abs_int, id) %>%
+  group_by(ch, index, id) %>%
+  mutate(val = mean(abs_int)) %>%
+  select(-abs_int) %>%
+  distinct() %>%
+  ungroup() %>%
+  group_by(ch, index) %>%
+  mutate(val = mean(val)) %>%
+  select(-id) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate(snr = if_else())
+
+ggplot(data = df.bg %>% filter(wtf == 'mean'),
+       aes(x = index, y = val, color = ch)) +
+  geom_line()
+
+ggplot(data = df.snr, 
+       aes(x = index, y = val, color = ch)) +
+  geom_line()
+
+# dF
+ggplot(data = df.ch,
+       aes(x = index, y = dF0_int, colour = ch, fill = ch)) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  stat_summary(fun = median,
+               geom = 'point', size = 1) +
+  stat_summary(fun = median,
+               geom = 'line', size = 0.3) +
+  stat_summary(fun.min = function(z) {quantile(z,0.25)},
+               fun.max = function(z) {quantile(z,0.75)},
+               fun = median,
+               geom = 'ribbon', linewidth = 0, alpha = .15) +
+  scale_fill_manual(values = c('ch0' = ch0.color, 'ch1' = ch1.color, 'ch3' = ch3.color),
+                    labels = c('DD', 'DA', 'AA'),
+                    name = 'Channel') +
+  scale_colour_manual(values = c('ch0' = ch0.color, 'ch1' = ch1.color, 'ch3' = ch3.color),
+                      labels = c('DD', 'DA', 'AA'),
+                      name = 'Channel') +
+  theme_classic() +
+  theme(legend.position = c(0.9,0.8),
+        text=element_text(size = font.size, family = font.fam),
+        plot.caption = element_text(size = font.size-4),
+        legend.title = element_text(size = font.size-3)) +
+  labs(x = 'Time, s',
+       y = 'Intensity, a.u.',
+       caption = 'n = 1/2/155 (cultures/cells/ROIs)')
 
 
-# FRET
+##### PANNEL 2 PROFILES FRET #####
 Ea_scale = 25
 
 ggplot(data = df.fret %>% mutate(abs_int = if_else(ch == "Ea", abs_int * Ea_scale, abs_int)),
