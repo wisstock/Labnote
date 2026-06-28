@@ -16,7 +16,7 @@ setwd('/home/wisstock/bio_note/projects/PhD/6_2021_NMDAR_plasticity/exp/2025_06_
 # PLOT SETTINGS
 shaft.color <- 'dodgerblue3'
 psd.color <- 'magenta3'
-halo.color <- 'coral2'
+halo.color <- 'green4'
 
 max.color <- 'red'
 mid.color <- 'green4'
