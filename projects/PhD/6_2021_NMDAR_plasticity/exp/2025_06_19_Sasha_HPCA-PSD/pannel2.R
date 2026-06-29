@@ -253,32 +253,55 @@ df.avg.roi <- df.by.roi %>%
             psd_se = sd(psd, na.rm = TRUE) / sqrt(n()),
             oreol_se = sd(halo, na.rm = TRUE) / sqrt(n()),
             n = n(),
-            .groups = 'drop')
+            .groups = 'drop') %>%
+  mutate(app_time = if_else(rel_time %in% seq(0,20), 'app','wo'),
+         app_time = if_else(rel_time < 0, 'base', app_time))
 
+
+back.color <- 'grey40'
+back.color.point <- 'grey20'
 
 plot.phase <- ggplot() +
   geom_vline(xintercept = 0, linetype = 2) +
   geom_hline(yintercept = 0, linetype = 2) +
+  # overall trajectory
   geom_path(data = df.avg.roi %>% filter(rel_time %in% track.time),
-            aes(x = psd_mean, y = oreol_mean, color = rel_time), size = 2) +
-  geom_point(data = df.avg.roi %>% filter(rel_time %in% track.time),
-             aes(x = psd_mean, y = oreol_mean, color = rel_time), size = 3) +
+            aes(x = psd_mean, y = oreol_mean),
+            size = 2, color = back.color) +
   geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time),
                 aes(x = psd_mean, y = oreol_mean,
                     xmin = psd_mean - psd_se*1.96,
-                    xmax = psd_mean + psd_se*1.96,
-                    color = rel_time)) +
+                    xmax = psd_mean + psd_se*1.96),
+                color = back.color) +
   geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time),
-                aes(x = psd_mean, y = oreol_mean,
+                 aes(x = psd_mean, y = oreol_mean,
                     ymin = oreol_mean - oreol_se*1.96,
-                    ymax = oreol_mean + oreol_se*1.96,
-                    color = rel_time)) +
-  scale_color_gradient2(low = 'blue2', mid = 'orange', high = "red2",
-                        midpoint = 15, limits = c(-10, 40)) +
+                    ymax = oreol_mean + oreol_se*1.96),
+                 color = back.color) +
+  geom_point(data = df.avg.roi %>% filter(rel_time %in% track.time),
+             aes(x = psd_mean, y = oreol_mean),
+             size = 3, color = back.color.point) +
+  # application trajectory
+  geom_path(data = df.avg.roi %>% filter(rel_time %in% track.time, app_time == 'app'),
+            aes(x = psd_mean, y = oreol_mean),
+            size = 2, color = halo.color) +
+  geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time, app_time == 'app'),
+                 aes(x = psd_mean, y = oreol_mean,
+                     xmin = psd_mean - psd_se*1.96,
+                     xmax = psd_mean + psd_se*1.96),
+                 color = halo.color) +
+  geom_linerange(data = df.avg.roi %>% filter(rel_time %in% track.time, app_time == 'app'),
+                 aes(x = psd_mean, y = oreol_mean,
+                     ymin = oreol_mean - oreol_se*1.96,
+                     ymax = oreol_mean + oreol_se*1.96),
+                 color = halo.color) +
+  geom_point(data = df.avg.roi %>% filter(rel_time %in% track.time, app_time == 'app'),
+             aes(x = psd_mean, y = oreol_mean),
+             size = 3, color = 'darkgreen') +
   labs(x = 'PSD ΔF/F0',
        y = 'Halo ΔF/F0',
        color = 'Time, s',
-       caption = 'n = 2/5/372 (cultures/cells/ROIs)') +
+       caption = 'n = 2/5/872 (cultures/cells/ROIs)') +
   theme_classic() +
   theme(legend.position = c(0.1, 0.5),
         text=element_text(size = font.size, family = font.fam),
